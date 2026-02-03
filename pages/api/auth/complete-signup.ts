@@ -48,25 +48,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const trialEndsAt = new Date()
     trialEndsAt.setDate(trialEndsAt.getDate() + 14) // 14 days free trial
 
-    // Use INSERT with ON CONFLICT to handle if subscription already exists
+    // Create subscription for this user
     const { error: trialError } = await supabaseAdmin
       .from('subscriptions')
-      .upsert({
+      .insert({
         user_id: userId,
-        plan: 'Premium', // Give them Premium trial
+        plan: 'Premium',
         amount: 0,
-        currency: 'EUR',
-        status: 'active', // Make it active immediately
-        paid_at: new Date().toISOString(),
+        status: 'active',
         expires_at: trialEndsAt.toISOString(),
-      }, {
-        onConflict: 'user_id',
-        ignoreDuplicates: false
       })
+      .select()
 
     if (trialError) {
       console.error('Trial creation error:', trialError)
-      // Don't fail the whole signup if trial creation fails
+      // Only continue if subscription already exists
+      if (!trialError.message.includes('duplicate') && !trialError.message.includes('unique')) {
+        throw trialError
+      }
     }
 
     res.status(200).json({ success: true, hasTrial: !trialError })
