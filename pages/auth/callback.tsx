@@ -40,8 +40,19 @@ export default function AuthCallback() {
               })
             }
 
-            // Redirect to pricing to start trial
-            router.push('/pricing')
+            // Check if user has a subscription (trial should be created)
+            const { data: subscription } = await supabase
+              .from('subscriptions')
+              .select('id')
+              .eq('user_id', user.id)
+              .single()
+
+            // If subscription exists, go straight to dashboard, otherwise to pricing to start trial
+            if (subscription) {
+              router.push('/dashboard')
+            } else {
+              router.push('/pricing')
+            }
           }
         } else {
           // Other auth types or errors
