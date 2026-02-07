@@ -104,7 +104,19 @@ export default function Home() {
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'start' }}>
               <div style={{ background: '#0066cc', color: 'white', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold', flexShrink: 0 }}>1</div>
               <div>
-                <h3 style={{ color: '#0066cc', fontSize: '1.3rem', marginBottom: '0.5rem' }}>Sign Up & Choose Your Plan</h3>
+                <Link href="/auth/signup" style={{
+                  display: 'inline-block',
+                  color: 'white',
+                  background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                  padding: '0.75rem 1.25rem',
+                  borderRadius: '10px',
+                  fontWeight: '700',
+                  textDecoration: 'none',
+                  marginBottom: '0.75rem',
+                  boxShadow: '0 6px 16px rgba(0, 102, 204, 0.35)'
+                }}>
+                  Sign Up & Choose Your Plan →
+                </Link>
                 <p style={{ color: '#64748b', fontSize: '1.05rem', lineHeight: '1.6' }}>Pick the package that fits your needs. Takes 2 minutes.</p>
               </div>
             </div>
@@ -137,7 +149,7 @@ export default function Home() {
       <section id="residency-programs" style={{ padding: '5rem 2rem', background: 'linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%)', scrollMarginTop: '90px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h2 id="assistance-residency-programs" style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '1rem', color: '#1e293b', scrollMarginTop: '90px' }}>
-            Assistance Offered on Residency Programs
+            Types of Residency Programs
           </h2>
           <p style={{ textAlign: 'center', fontSize: '1.2rem', color: '#64748b', marginBottom: '3rem' }}>
             End-to-end support from documentation preparation to AIMA appointment after arrival in Portugal.
