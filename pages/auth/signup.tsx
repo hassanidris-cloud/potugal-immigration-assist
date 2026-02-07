@@ -9,6 +9,8 @@ export default function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState('')
+  const [visaType, setVisaType] = useState('')
   const [phoneCountry, setPhoneCountry] = useState('+351') // Default to Portugal
   const [phone, setPhone] = useState('')
   const [error, setError] = useState('')
@@ -27,6 +29,12 @@ export default function Signup() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            full_name: fullName,
+            phone: phone ? `${phoneCountry} ${phone}` : null,
+            date_of_birth: dateOfBirth,
+            visa_type: visaType,
+          },
         }
       })
 
@@ -50,6 +58,8 @@ export default function Signup() {
             email,
             fullName,
             phone: phone ? `${phoneCountry} ${phone}` : null,
+            dateOfBirth,
+            visaType,
           }),
         })
 
@@ -291,6 +301,73 @@ export default function Signup() {
                 onFocus={(e) => e.target.style.borderColor = '#0066cc'}
                 onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
               />
+            </div>
+
+            <div>
+              <label htmlFor="dateOfBirth" style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#475569',
+                fontSize: '0.9rem',
+                fontWeight: '500'
+              }}>
+                🎂 Date of Birth
+              </label>
+              <input
+                id="dateOfBirth"
+                type="date"
+                value={dateOfBirth}
+                onChange={(e) => setDateOfBirth(e.target.value)}
+                required
+                style={{ 
+                  width: '100%', 
+                  padding: '0.875rem', 
+                  borderRadius: '10px', 
+                  border: '2px solid #e2e8f0',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#0066cc'}
+                onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="visaType" style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#475569',
+                fontSize: '0.9rem',
+                fontWeight: '500'
+              }}>
+                🛂 Visa Type
+              </label>
+              <select
+                id="visaType"
+                value={visaType}
+                onChange={(e) => setVisaType(e.target.value)}
+                required
+                style={{ 
+                  width: '100%', 
+                  padding: '0.875rem', 
+                  borderRadius: '10px', 
+                  border: '2px solid #e2e8f0',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
+                  background: 'white'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#0066cc'}
+                onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              >
+                <option value="" disabled>Select visa type</option>
+                <option value="D2">D2 Visa (Entrepreneur)</option>
+                <option value="D7">D7 Visa (Passive Income)</option>
+                <option value="D8">D8 Visa (Digital Nomad)</option>
+              </select>
             </div>
 
             <div>
