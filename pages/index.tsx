@@ -48,11 +48,27 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', marginBottom: '3rem' }}>
-            <div style={{ textAlign: 'center', padding: '2rem', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+            <button
+              type="button"
+              onClick={() => document.getElementById('residency-programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              style={{
+                textAlign: 'center',
+                padding: '2rem',
+                background: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '2px solid #e2e8f0',
+                cursor: 'pointer',
+                width: '100%'
+              }}
+            >
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🛂</div>
               <h3 style={{ color: '#0066cc', fontSize: '1.3rem', marginBottom: '0.5rem' }}>Residency Visa Programs</h3>
               <p style={{ color: '#64748b', fontSize: '1rem' }}>D2 Entrepreneur, D7 Passive Income, and D8 Digital Nomad</p>
-            </div>
+              <span style={{ display: 'inline-block', marginTop: '0.75rem', color: '#0066cc', fontWeight: '600' }}>
+                View details ↓
+              </span>
+            </button>
 
             <div style={{ textAlign: 'center', padding: '2rem', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>👨‍💼</div>
