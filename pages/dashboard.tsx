@@ -241,7 +241,7 @@ export default function Dashboard() {
           </section>
           
           {/* Personalized Visa Tips */}
-          {cases.length > 0 && cases[0].visa_type && (
+          {profile?.role !== 'admin' && cases.length > 0 && cases[0].visa_type && (
             (() => {
               const visaInfo = getVisaPersonalization(cases[0].visa_type);
               return (
