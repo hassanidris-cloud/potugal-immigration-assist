@@ -196,7 +196,7 @@ export default function EditCase() {
             </div>
 
             <div>
-              <label htmlFor="targetVisaDate" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Target Visa Date (optional)</label>
+              <label htmlFor="targetVisaDate" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Target Application Date (optional)</label>
               <input
                 id="targetVisaDate"
                 type="date"

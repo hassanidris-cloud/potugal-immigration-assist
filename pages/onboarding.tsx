@@ -33,6 +33,12 @@ export default function Onboarding() {
     }
     setUser(user)
 
+    const { data: profileData } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+
     // Admin owners should not create cases
     if (user && profileData?.role === 'admin') {
       setAccessBlocked(true)
