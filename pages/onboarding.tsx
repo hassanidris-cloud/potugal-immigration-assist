@@ -17,6 +17,8 @@ export default function Onboarding() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showVisaInfo, setShowVisaInfo] = useState(false)
+  const [accessBlocked, setAccessBlocked] = useState(false)
+  const [blockMessage, setBlockMessage] = useState('')
   const visaInfo = getVisaPersonalization(visaType)
 
   useEffect(() => {
@@ -31,6 +33,13 @@ export default function Onboarding() {
     }
     setUser(user)
 
+    // Admin owners should not create cases
+    if (user && profileData?.role === 'admin') {
+      setAccessBlocked(true)
+      setBlockMessage('Owner accounts do not create cases. Use the Admin area to manage clients.')
+      return
+    }
+
     // Check if user has active subscription or trial
     const { data: subscriptionData } = await supabase
       .from('subscriptions')
@@ -41,18 +50,26 @@ export default function Onboarding() {
       .limit(1)
       .single()
 
-    // Check if subscription is expired
-    if (subscriptionData && subscriptionData.expires_at) {
-      const expiresAt = new Date(subscriptionData.expires_at)
-      const now = new Date()
-      if (expiresAt < now) {
-        router.push('/pricing')
-        return
-      }
-    }
+    const now = new Date()
+    const isTrial = subscriptionData?.amount === 0
+    const trialExpired = isTrial && subscriptionData?.expires_at && new Date(subscriptionData.expires_at) < now
+    const isPaidActive = subscriptionData?.amount > 0 && subscriptionData?.status === 'active'
 
     if (!subscriptionData) {
-      router.push('/pricing')
+      setAccessBlocked(true)
+      setBlockMessage('Payment is required to create your case. Please select a plan to continue.')
+      return
+    }
+
+    if (isTrial && trialExpired) {
+      setAccessBlocked(true)
+      setBlockMessage('Your 14-day trial has ended. Please complete payment to create or continue your case.')
+      return
+    }
+
+    if (!isTrial && !isPaidActive) {
+      setAccessBlocked(true)
+      setBlockMessage('Your subscription is inactive. Please complete payment to continue.')
       return
     }
 
@@ -70,6 +87,9 @@ export default function Onboarding() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (accessBlocked) {
+      return
+    }
     setError('')
     setLoading(true)
 
@@ -218,7 +238,52 @@ export default function Onboarding() {
             <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#1e293b' }}>🚀 Let's Create Your Case</h1>
             <p style={{ color: '#64748b', marginBottom: '2rem' }}>Tell us about your immigration plans to Portugal</p>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {accessBlocked && (
+              <div style={{
+                background: '#fff7ed',
+                border: '1px solid #fdba74',
+                color: '#9a3412',
+                padding: '1rem',
+                borderRadius: '8px',
+                marginBottom: '1.5rem'
+              }}>
+                <strong>Access Locked:</strong> {blockMessage}
+                <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/pricing')}
+                    style={{
+                      background: '#f97316',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.6rem 1rem',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Go to Pricing
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/admin/users')}
+                    style={{
+                      background: '#10b981',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.6rem 1rem',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Go to Admin
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', opacity: accessBlocked ? 0.6 : 1, pointerEvents: accessBlocked ? 'none' : 'auto' }}>
               {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>{error}</div>}
 
               <div>
@@ -364,38 +429,38 @@ export default function Onboarding() {
               </div>
 
               <div>
-                <label htmlFor="targetVisaDate" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Target Visa Date (Optional)</label>
+                <label htmlFor="targetVisaDate" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Target Application Date (Optional)</label>
                 <input
                   id="targetVisaDate"
-                  type="date"
+                  <button
                   value={targetVisaDate}
-                  onChange={(e) => setTargetVisaDate(e.target.value)}
+                    disabled={loading || accessBlocked}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
                 />
               </div>
-
+                      background: (loading || accessBlocked) ? '#94a3b8' : 'linear-gradient(135deg, #0066cc, #00c896)', 
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary"
+                      cursor: (loading || accessBlocked) ? 'not-allowed' : 'pointer',
                 style={{ width: '100%', padding: '1rem', background: 'linear-gradient(135deg, #0066cc, #00c896)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer' }}
               >
                 {loading ? 'Creating...' : 'Next: Upload Documents →'}
               </button>
-            </form>
+                      boxShadow: (loading || accessBlocked) ? 'none' : '0 4px 12px rgba(0, 102, 204, 0.3)'
           </div>
         )}
-
+                      if (!loading && !accessBlocked) {
         {/* Step 2: Document Upload */}
         {step === 2 && (
           <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
             <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#1e293b' }}>📄 Upload Your Documents</h1>
             <p style={{ color: '#64748b', marginBottom: '2rem' }}>Start by uploading at least one document. You can add more anytime.</p>
 
-            <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '12px' }}>
+                      e.currentTarget.style.boxShadow = (loading || accessBlocked) ? 'none' : '0 4px 12px rgba(0, 102, 204, 0.3)';
               {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
               
-              <div>
+                    {accessBlocked ? '🔒 Payment Required' : (loading ? '⏳ Creating Account...' : '🚀 Create Account')}
                 <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Document Title *</label>
                 <input
                   id="title"

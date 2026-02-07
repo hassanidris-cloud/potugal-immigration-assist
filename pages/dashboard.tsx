@@ -46,20 +46,22 @@ export default function Dashboard() {
         .limit(1)
         .single()
 
-      // Check if subscription is expired
-      if (subscriptionData && subscriptionData.expires_at) {
-        const expiresAt = new Date(subscriptionData.expires_at)
-        const now = new Date()
-        if (expiresAt < now) {
-          // Subscription expired, redirect to pricing
+      if (profileData?.role !== 'admin') {
+        // Check if subscription is expired
+        if (subscriptionData && subscriptionData.expires_at) {
+          const expiresAt = new Date(subscriptionData.expires_at)
+          const now = new Date()
+          if (expiresAt < now) {
+            // Subscription expired, redirect to pricing
+            router.push('/pricing')
+            return
+          }
+        }
+
+        if (!subscriptionData) {
           router.push('/pricing')
           return
         }
-      }
-
-      if (!subscriptionData && profileData?.role !== 'admin') {
-        router.push('/pricing')
-        return
       }
 
       setSubscription(subscriptionData)
@@ -173,7 +175,7 @@ export default function Dashboard() {
       </header>
 
       {/* Free Trial Banner */}
-      {subscription && subscription.amount === 0 && subscription.expires_at && (
+      {profile?.role !== 'admin' && subscription && subscription.amount === 0 && subscription.expires_at && (
         <div style={{
           marginBottom: '2rem',
           padding: '1.5rem',
@@ -344,66 +346,67 @@ export default function Dashboard() {
       )}
 
       {/* Case Section */}
-      <section style={{ marginBottom: '3rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.8rem', color: '#1e293b' }}>📁 Your Case</h2>
-            <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.95rem' }}>You focus on one application at a time.</p>
+      {profile?.role !== 'admin' ? (
+        <section style={{ marginBottom: '3rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.8rem', color: '#1e293b' }}>📁 Your Case</h2>
+              <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.95rem' }}>You focus on one application at a time.</p>
+            </div>
           </div>
-        </div>
 
-        {cases.length === 0 ? (
-          <div
-            style={{
-              padding: '3rem 2rem',
-              background: 'white',
-              borderRadius: '12px',
-              textAlign: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              border: '2px dashed #cbd5e1',
-            }}
-          >
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
-            <h3 style={{ margin: '0 0 0.5rem 0', color: '#1e293b' }}>No cases yet</h3>
-            <p style={{ margin: '0 0 1.5rem 0', color: '#64748b' }}>Start your Portugal immigration journey by creating your first case.</p>
-            <Link
-              href="/onboarding"
+          {cases.length === 0 ? (
+            <div
               style={{
-                display: 'inline-block',
-                padding: '1rem 2rem',
-                background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
-                color: 'white',
-                textDecoration: 'none',
-                borderRadius: '8px',
-                fontWeight: '600',
+                padding: '3rem 2rem',
+                background: 'white',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '2px dashed #cbd5e1',
               }}
             >
-              Create Your First Case
-            </Link>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
-            {cases.map((c) => (
-              <div
-                key={c.id}
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎯</div>
+              <h3 style={{ margin: '0 0 0.5rem 0', color: '#1e293b' }}>No cases yet</h3>
+              <p style={{ margin: '0 0 1.5rem 0', color: '#64748b' }}>Start your Portugal immigration journey by creating your first case.</p>
+              <Link
+                href="/onboarding"
                 style={{
-                  padding: '1.5rem',
-                  background: 'white',
-                  borderRadius: '12px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                  border: '2px solid #e2e8f0',
-                  transition: 'all 0.3s',
-                  cursor: 'pointer',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)'
-                  e.currentTarget.style.transform = 'translateY(-4px)'
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'
-                  e.currentTarget.style.transform = 'translateY(0)'
+                  display: 'inline-block',
+                  padding: '1rem 2rem',
+                  background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
                 }}
               >
+                Create Your First Case
+              </Link>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
+              {cases.map((c) => (
+                <div
+                  key={c.id}
+                  style={{
+                    padding: '1.5rem',
+                    background: 'white',
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    border: '2px solid #e2e8f0',
+                    transition: 'all 0.3s',
+                    cursor: 'pointer',
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)'
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                  }}
+                >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
                   <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.2rem' }}>📋 {c.case_type}</h3>
                   <span
@@ -510,9 +513,37 @@ export default function Dashboard() {
                 </div>
               </div>
             ))}
+            </div>
+          )}
+        </section>
+      ) : (
+        <section style={{ marginBottom: '3rem' }}>
+          <div style={{
+            padding: '2rem',
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: '2px solid #e2e8f0'
+          }}>
+            <h2 style={{ margin: 0, fontSize: '1.6rem', color: '#1e293b' }}>👑 Owner Dashboard</h2>
+            <p style={{ margin: '0.5rem 0 1rem 0', color: '#64748b' }}>Manage clients and view activity without creating a case.</p>
+            <Link
+              href="/admin/users"
+              style={{
+                display: 'inline-block',
+                padding: '0.75rem 1.5rem',
+                background: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                fontWeight: '600'
+              }}
+            >
+              View All Clients
+            </Link>
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* Admin Section */}
       {profile?.role === 'admin' && (
@@ -537,6 +568,25 @@ export default function Dashboard() {
               onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
             >
               📊 All Cases
+            </Link>
+            <Link
+              href="/admin/users"
+              style={{
+                padding: '1.5rem',
+                background: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '12px',
+                textAlign: 'center',
+                fontWeight: '600',
+                fontSize: '1rem',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                transition: 'transform 0.2s',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
+              onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+            >
+              👥 All Users
             </Link>
             <Link
               href="/admin/test-mode"
