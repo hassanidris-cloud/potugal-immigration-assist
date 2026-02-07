@@ -30,7 +30,14 @@ export default function Home() {
             We handle your immigration paperwork so you can focus on your new life
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="#pricing" className="btn btn-primary" style={{
+            <a
+              href="#residency-programs"
+              onClick={(e) => {
+                e.preventDefault()
+                document.getElementById('residency-programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              className="btn btn-primary"
+              style={{
               background: 'white',
               color: '#0066cc',
               padding: '1rem 2.5rem',
@@ -40,8 +47,8 @@ export default function Home() {
               boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
               display: 'inline-block'
             }}>
-              💼 View Plans & Pricing
-            </Link>
+              🛂 View Residency Visas
+            </a>
             <Link href="/auth/login" style={{
               padding: '1rem 2.5rem',
               fontSize: '1.2rem',
@@ -143,6 +150,177 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Residency Programs */}
+      <section id="residency-programs" style={{ padding: '5rem 2rem', background: 'linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%)', scrollMarginTop: '90px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 id="assistance-residency-programs" style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '1rem', color: '#1e293b', scrollMarginTop: '90px' }}>
+            Assistance Offered on Residency Programs
+          </h2>
+          <p style={{ textAlign: 'center', fontSize: '1.2rem', color: '#64748b', marginBottom: '3rem' }}>
+            End-to-end support from documentation preparation to AIMA appointment after arrival in Portugal.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+            {/* D2 Visa */}
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '2px solid #e2e8f0' }}>
+              <h3 style={{ color: '#0066cc', fontSize: '1.6rem', marginBottom: '0.5rem' }}>D2 Visa Program (Entrepreneur Visa)</h3>
+              <p style={{ color: '#475569', lineHeight: '1.7', marginBottom: '1.5rem' }}>
+                Portugal D2 Visa is for non-EU/EEA/Swiss citizens who want to start a business, invest in an existing one, or work as independent professionals in Portugal.
+              </p>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Who Is Eligible?</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Entrepreneurs opening a new company or branch</li>
+                <li>Investors buying shares in a Portuguese business</li>
+                <li>Freelancers with service contracts or proposals from Portuguese clients</li>
+              </ul>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Core Requirements</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Company registration in Portugal</li>
+                <li>Detailed business plan showing economic/social/cultural value</li>
+                <li>Portuguese bank account</li>
+                <li>Financial means: about €11,040 for main applicant (plus family)</li>
+                <li>Additional funds based on startup capital in the plan</li>
+                <li>Portuguese Tax ID (NIF)</li>
+                <li>Proof of accommodation (12-month lease or property deed)</li>
+                <li>Clean criminal record certificate</li>
+              </ul>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Timeline & Validity</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Initial entry visa: 4 months (120 days)</li>
+                <li>Residence permit: 2 years, renewable for 3-year periods</li>
+                <li>Citizenship eligibility after 5 years (language/background requirements)</li>
+              </ul>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Key Benefits</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Visa-free travel within Schengen Area</li>
+                <li>Family reunification</li>
+                <li>Access to public healthcare</li>
+                <li>Free public education up to grade 12</li>
+              </ul>
+
+              <p style={{ color: '#475569', marginBottom: '1rem' }}>
+                <strong>Processing time:</strong> typically 60–90 days for consulate decision.
+              </p>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>How We Can Help</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem' }}>
+                <li>Tax ID (NIF) issuance</li>
+                <li>Company registration</li>
+                <li>Bank account opening (in person or remote)</li>
+                <li>Business plan prepared by certified CPA</li>
+                <li>Long-term lease or property deed support</li>
+                <li>Driver’s license exchange assistance</li>
+              </ul>
+            </div>
+
+            {/* D7 Visa */}
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '2px solid #e2e8f0' }}>
+              <h3 style={{ color: '#0066cc', fontSize: '1.6rem', marginBottom: '0.5rem' }}>D7 Visa Program (Passive Income)</h3>
+              <p style={{ color: '#475569', lineHeight: '1.7', marginBottom: '1.5rem' }}>
+                The Portugal D7 Visa is for non-EU/EEA/Swiss citizens with stable recurring income from outside Portugal.
+              </p>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Who Can Apply?</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Retirees with a pension</li>
+                <li>Investors earning dividends or interest</li>
+                <li>Landlords with rental income</li>
+                <li>Royalty or IP income holders</li>
+              </ul>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Core Financial Requirements (2026)</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Main applicant: €11,040 annually (€920/month)</li>
+                <li>Spouse/parent: +50% (€460/month)</li>
+                <li>Dependent child: +30% (€276/month)</li>
+                <li>Recommended: 12 months of funds in a Portuguese bank</li>
+              </ul>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Other Requirements</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Long-term accommodation (12-month lease or property deed)</li>
+                <li>Portuguese Tax ID (NIF)</li>
+                <li>Clean criminal record certificate</li>
+              </ul>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Key Benefits</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Initial residence permit: 2 years, then 3-year renewal</li>
+                <li>Citizenship eligibility after 5 years</li>
+                <li>Work rights after residence permit issued</li>
+                <li>Access to public healthcare and education</li>
+              </ul>
+
+              <p style={{ color: '#475569', marginBottom: '1rem' }}>
+                <strong>Processing time:</strong> typically 60–90 days for consulate decision.
+              </p>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>How We Can Help</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem' }}>
+                <li>Tax ID (NIF) issuance</li>
+                <li>Bank account opening (in person or remote)</li>
+                <li>Long-term lease or property deed support</li>
+                <li>Driver’s license exchange assistance</li>
+                <li>Portuguese health number assistance</li>
+              </ul>
+            </div>
+
+            {/* D8 Visa */}
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '2px solid #e2e8f0' }}>
+              <h3 style={{ color: '#0066cc', fontSize: '1.6rem', marginBottom: '0.5rem' }}>D8 Visa Program (Digital Nomad)</h3>
+              <p style={{ color: '#475569', lineHeight: '1.7', marginBottom: '1.5rem' }}>
+                The Portugal D8 Visa is for remote workers or freelancers with clients outside Portugal.
+              </p>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Core Requirements (2026)</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Income: €3,680 per month (4× minimum wage)</li>
+                <li>Spouse/partner: +50% (~€460/month)</li>
+                <li>Each child: +30% (~€276/month)</li>
+                <li>Proof of remote work (contract or employer statement)</li>
+                <li>Freelancers: service contracts and recent invoices</li>
+                <li>Means of subsistence: 12 months of funds (~€11,040)</li>
+                <li>Long-term accommodation (12-month lease or property deed)</li>
+                <li>Clean criminal record (apostilled and translated)</li>
+                <li>Portuguese Tax ID (NIF)</li>
+              </ul>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Key Benefits</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem', marginBottom: '1.5rem' }}>
+                <li>Initial residence permit: 2 years, then 3-year renewal</li>
+                <li>Citizenship eligibility after 5 years</li>
+                <li>Work rights after residence permit issued</li>
+                <li>Access to public healthcare and education</li>
+              </ul>
+
+              <p style={{ color: '#475569', marginBottom: '1rem' }}>
+                <strong>Processing time:</strong> typically 60–90 days for consulate decision.
+              </p>
+
+              <h4 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>How We Can Help</h4>
+              <ul style={{ color: '#64748b', lineHeight: '1.7', paddingLeft: '1.2rem' }}>
+                <li>Tax ID (NIF) issuance</li>
+                <li>Bank account opening (in person or remote)</li>
+                <li>Long-term lease or property deed support</li>
+                <li>Driver’s license exchange assistance</li>
+                <li>Portuguese health number assistance</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '3rem', background: '#e0f2fe', padding: '2rem', borderRadius: '12px', borderLeft: '4px solid #0066cc' }}>
+            <h4 style={{ color: '#0066cc', marginBottom: '0.5rem' }}>Stay Requirements</h4>
+            <p style={{ color: '#475569', lineHeight: '1.7', margin: 0 }}>
+              To keep the residency permit valid and lead to citizenship, you generally cannot be absent from Portugal for more than 6 consecutive months or 8 non-consecutive months within the permit's validity period.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <h2 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '3rem', color: '#1e293b' }}>What You Get</h2>
@@ -182,117 +360,6 @@ export default function Home() {
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💳</div>
             <h3 style={{ color: '#0066cc', marginBottom: '0.75rem', fontSize: '1.2rem' }}>Easy Payment</h3>
             <p style={{ color: '#64748b', lineHeight: '1.6' }}>Secure online payment with credit card</p>
-          </div>
-        </div>
-
-        {/* Pricing Section */}
-        <div id="pricing" style={{ marginTop: '5rem' }}>
-          <h2 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '1rem', color: '#1e293b' }}>Choose Your Plan</h2>
-          <p style={{ textAlign: 'center', fontSize: '1.2rem', color: '#64748b', marginBottom: '3rem' }}>One-time payment. No subscriptions or hidden fees.</p>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
-            {/* Essential Plan */}
-            <div style={{
-              background: 'white',
-              border: '2px solid #e0f2fe',
-              borderRadius: '16px',
-              padding: '2rem',
-              textAlign: 'center',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-              transition: 'transform 0.2s'
-            }}>
-              <h3 style={{ fontSize: '1.5rem', color: '#0066cc', marginBottom: '0.5rem' }}>Essential</h3>
-              <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '0.5rem' }}>€299</div>
-              <p style={{ color: '#64748b', marginBottom: '2rem' }}>For straightforward applications</p>
-              <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ Document checklist for your visa</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ Secure online storage</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ Track your progress</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ Email support</li>
-              </ul>
-              <Link href="/auth/signup" style={{
-                display: 'block',
-                background: '#0066cc',
-                color: 'white',
-                padding: '0.875rem',
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                textDecoration: 'none'
-              }}>
-                Choose Essential
-              </Link>
-            </div>
-
-            {/* Professional Plan */}
-            <div style={{
-              background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
-              border: '3px solid #0066cc',
-              borderRadius: '16px',
-              padding: '2rem',
-              textAlign: 'center',
-              boxShadow: '0 8px 24px rgba(0,102,204,0.3)',
-              transform: 'scale(1.05)',
-              position: 'relative'
-            }}>
-              <div style={{ position: 'absolute', top: '-12px', right: '20px', background: '#f59e0b', color: 'white', padding: '0.25rem 1rem', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 'bold' }}>
-                MOST POPULAR
-              </div>
-              <h3 style={{ fontSize: '1.5rem', color: 'white', marginBottom: '0.5rem' }}>Professional</h3>
-              <div style={{ fontSize: '3rem', fontWeight: 'bold', color: 'white', marginBottom: '0.5rem' }}>€599</div>
-              <p style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '2rem' }}>Most popular - Full support</p>
-              <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
-                <li style={{ padding: '0.5rem 0', color: 'white' }}>✅ Everything in Essential</li>
-                <li style={{ padding: '0.5rem 0', color: 'white' }}>✅ Your documents reviewed first</li>
-                <li style={{ padding: '0.5rem 0', color: 'white' }}>✅ Two 30-minute video calls</li>
-                <li style={{ padding: '0.5rem 0', color: 'white' }}>✅ Help with translations</li>
-                <li style={{ padding: '0.5rem 0', color: 'white' }}>✅ Application submission guide</li>
-                <li style={{ padding: '0.5rem 0', color: 'white' }}>✅ 24/7 chat support</li>
-              </ul>
-              <Link href="/auth/signup" style={{
-                display: 'block',
-                background: 'white',
-                color: '#0066cc',
-                padding: '0.875rem',
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                textDecoration: 'none'
-              }}>
-                Choose Professional
-              </Link>
-            </div>
-
-            {/* Premium Plan */}
-            <div style={{
-              background: 'white',
-              border: '2px solid #e0f2fe',
-              borderRadius: '16px',
-              padding: '2rem',
-              textAlign: 'center',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
-            }}>
-              <h3 style={{ fontSize: '1.5rem', color: '#0066cc', marginBottom: '0.5rem' }}>Premium</h3>
-              <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '0.5rem' }}>€999</div>
-              <p style={{ color: '#64748b', marginBottom: '2rem' }}>We do everything for you</p>
-              <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ Everything in Professional</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ Personal case manager</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ Unlimited calls & meetings</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ We prepare all documents</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ We schedule appointments</li>
-                <li style={{ padding: '0.5rem 0', color: '#334155' }}>✅ We submit your application</li>
-              </ul>
-              <Link href="/auth/signup" style={{
-                display: 'block',
-                background: '#0066cc',
-                color: 'white',
-                padding: '0.875rem',
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                textDecoration: 'none'
-              }}>
-                Choose Premium
-              </Link>
-            </div>
           </div>
         </div>
 
