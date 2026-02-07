@@ -29,40 +29,7 @@ export default function Home() {
           <p style={{ fontSize: '1.5rem', marginBottom: '3rem', opacity: 0.95 }}>
             We handle your immigration paperwork so you can focus on your new life
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a
-              href="#residency-programs"
-              onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('residency-programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }}
-              className="btn btn-primary"
-              style={{
-              background: 'white',
-              color: '#0066cc',
-              padding: '1rem 2.5rem',
-              fontSize: '1.2rem',
-              borderRadius: '12px',
-              fontWeight: 'bold',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-              display: 'inline-block'
-            }}>
-              🛂 View Residency Visas
-            </a>
-            <Link href="/auth/login" style={{
-              padding: '1rem 2.5rem',
-              fontSize: '1.2rem',
-              borderRadius: '12px',
-              fontWeight: 'bold',
-              border: '2px solid white',
-              color: 'white',
-              display: 'inline-block',
-              background: 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              Login →
-            </Link>
-          </div>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }} />
         </div>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1, background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
       </header>
@@ -73,7 +40,7 @@ export default function Home() {
           <h2 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '2rem', color: '#1e293b' }}>What We Do</h2>
           <div style={{ fontSize: '1.3rem', lineHeight: '1.8', color: '#475569', marginBottom: '3rem', textAlign: 'center' }}>
             <p style={{ marginBottom: '1.5rem' }}>
-              Moving to Portugal means dealing with lots of paperwork, visa requirements, and bureaucracy.
+              Moving to Portugal means lots of paperwork for preparing visa applications, meeting deadlines, and follow-up once the visa is issued.
             </p>
             <p style={{ marginBottom: '1.5rem' }}>
               <strong style={{ color: '#0066cc', fontSize: '1.4rem' }}>We make it simple.</strong> Upload your documents, track your progress, and get expert help when you need it.
@@ -82,9 +49,9 @@ export default function Home() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', marginBottom: '3rem' }}>
             <div style={{ textAlign: 'center', padding: '2rem', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📄</div>
-              <h3 style={{ color: '#0066cc', fontSize: '1.3rem', marginBottom: '0.5rem' }}>Store Your Documents</h3>
-              <p style={{ color: '#64748b', fontSize: '1rem' }}>Keep all your immigration papers in one safe place, accessible anytime</p>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🛂</div>
+              <h3 style={{ color: '#0066cc', fontSize: '1.3rem', marginBottom: '0.5rem' }}>Residency Visa Programs</h3>
+              <p style={{ color: '#64748b', fontSize: '1rem' }}>D2 Entrepreneur, D7 Passive Income, and D8 Digital Nomad</p>
             </div>
 
             <div style={{ textAlign: 'center', padding: '2rem', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
