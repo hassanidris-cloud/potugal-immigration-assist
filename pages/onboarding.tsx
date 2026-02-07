@@ -472,6 +472,9 @@ export default function Onboarding() {
             <p style={{ color: '#64748b', marginBottom: '2rem' }}>Start by uploading at least one document. You can add more anytime.</p>
 
             {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
+
+            <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+              <div>
                 <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Document Title *</label>
                 <input
                   id="title"
