@@ -438,35 +438,40 @@ export default function Onboarding() {
                 <label htmlFor="targetVisaDate" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Target Application Date (Optional)</label>
                 <input
                   id="targetVisaDate"
-                  <button
+                  type="date"
                   value={targetVisaDate}
-                    disabled={loading || accessBlocked}
+                  onChange={(e) => setTargetVisaDate(e.target.value)}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
                 />
               </div>
-                      background: (loading || accessBlocked) ? '#94a3b8' : 'linear-gradient(135deg, #0066cc, #00c896)', 
+
               <button
                 type="submit"
-                disabled={loading}
-                      cursor: (loading || accessBlocked) ? 'not-allowed' : 'pointer',
-                style={{ width: '100%', padding: '1rem', background: 'linear-gradient(135deg, #0066cc, #00c896)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer' }}
+                disabled={loading || accessBlocked}
+                style={{
+                  width: '100%',
+                  padding: '1rem',
+                  background: (loading || accessBlocked) ? '#94a3b8' : 'linear-gradient(135deg, #0066cc, #00c896)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  cursor: (loading || accessBlocked) ? 'not-allowed' : 'pointer'
+                }}
               >
                 {loading ? 'Creating...' : 'Next: Upload Documents →'}
               </button>
-                      boxShadow: (loading || accessBlocked) ? 'none' : '0 4px 12px rgba(0, 102, 204, 0.3)'
+            </form>
           </div>
         )}
-                      if (!loading && !accessBlocked) {
         {/* Step 2: Document Upload */}
         {step === 2 && (
           <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
             <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#1e293b' }}>📄 Upload Your Documents</h1>
             <p style={{ color: '#64748b', marginBottom: '2rem' }}>Start by uploading at least one document. You can add more anytime.</p>
 
-                      e.currentTarget.style.boxShadow = (loading || accessBlocked) ? 'none' : '0 4px 12px rgba(0, 102, 204, 0.3)';
-              {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
-              
-                    {accessBlocked ? '🔒 Payment Required' : (loading ? '⏳ Creating Account...' : '🚀 Create Account')}
+            {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
                 <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Document Title *</label>
                 <input
                   id="title"
