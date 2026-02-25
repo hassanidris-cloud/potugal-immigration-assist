@@ -257,7 +257,7 @@ export default function Onboarding() {
                 <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                   <button
                     type="button"
-                    onClick={() => router.push('/pricing')}
+                    onClick={() => router.push('/auth/signup')}
                     style={{
                       background: '#f97316',
                       color: 'white',
@@ -268,7 +268,7 @@ export default function Onboarding() {
                       cursor: 'pointer'
                     }}
                   >
-                    Go to Pricing
+                    Choose a plan
                   </button>
                   <button
                     type="button"

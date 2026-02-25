@@ -19,7 +19,7 @@ export default function Dashboard() {
   const checkUser = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/auth/login')
         return
@@ -36,7 +36,7 @@ export default function Dashboard() {
 
       setProfile(profileData)
 
-      // Check if user has active subscription or trial - redirect to pricing if not
+      // Check if user has active subscription or trial - redirect to signup if not
       const { data: subscriptionData } = await supabase
         .from('subscriptions')
         .select('*')
@@ -52,14 +52,14 @@ export default function Dashboard() {
           const expiresAt = new Date(subscriptionData.expires_at)
           const now = new Date()
           if (expiresAt < now) {
-            // Subscription expired, redirect to pricing
-            router.push('/pricing')
+            // Subscription expired, redirect to signup
+            router.push('/auth/signup')
             return
           }
         }
 
         if (!subscriptionData) {
-          router.push('/pricing')
+          router.push('/auth/signup')
           return
         }
       }
@@ -192,16 +192,16 @@ export default function Dashboard() {
               🎉 Free 14-Day Trial Active
             </h3>
             <p style={{ margin: 0, opacity: 0.95 }}>
-              Your trial ends on {new Date(subscription.expires_at).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              Your trial ends on {new Date(subscription.expires_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               })}
               {' '}({Math.max(0, Math.ceil((new Date(subscription.expires_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days remaining)
             </p>
           </div>
           <Link
-            href="/pricing"
+            href="/auth/signup"
             style={{
               padding: '0.75rem 1.5rem',
               background: 'white',
@@ -239,17 +239,17 @@ export default function Dashboard() {
               You're one step closer to your Portuguese adventure. Our specialist is here to help you every step of the way.
             </p>
           </section>
-          
+
           {/* Personalized Visa Tips */}
           {profile?.role !== 'admin' && cases.length > 0 && cases[0].visa_type && (
             (() => {
               const visaInfo = getVisaPersonalization(cases[0].visa_type);
               return (
-                <section style={{ 
-                  marginBottom: '3rem', 
-                  padding: '2rem', 
-                  background: 'white', 
-                  borderRadius: '12px', 
+                <section style={{
+                  marginBottom: '3rem',
+                  padding: '2rem',
+                  background: 'white',
+                  borderRadius: '12px',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                   border: '2px solid #e0f2fe'
                 }}>
@@ -259,12 +259,12 @@ export default function Dashboard() {
                       Your {visaInfo.visaType} Journey
                     </h3>
                   </div>
-                  
-                  <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-                    gap: '1rem', 
-                    marginBottom: '1.5rem' 
+
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: '1rem',
+                    marginBottom: '1.5rem'
                   }}>
                     <div style={{ padding: '1rem', background: '#f0f9ff', borderRadius: '8px' }}>
                       <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.25rem', fontWeight: '600' }}>Processing Time</div>
@@ -275,7 +275,7 @@ export default function Dashboard() {
                       <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#10b981' }}>✓ {visaInfo.successRate}</div>
                     </div>
                   </div>
-                  
+
                   <div style={{ marginBottom: '1.5rem' }}>
                     <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span>📌</span> What You Need Next
@@ -286,7 +286,7 @@ export default function Dashboard() {
                       ))}
                     </ul>
                   </div>
-                  
+
                   <div style={{ padding: '1rem', background: '#fef3c7', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
                     <h4 style={{ fontSize: '0.95rem', fontWeight: '600', color: '#92400e', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span>💡</span> Pro Tips for Your Visa
@@ -407,112 +407,112 @@ export default function Dashboard() {
                     e.currentTarget.style.transform = 'translateY(0)'
                   }}
                 >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
-                  <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.2rem' }}>📋 {c.case_type}</h3>
-                  <span
-                    style={{
-                      background: getStatusColor(c.status),
-                      color: 'white',
-                      padding: '0.4rem 0.8rem',
-                      borderRadius: '6px',
-                      fontSize: '0.85rem',
-                      fontWeight: '600',
-                    }}
-                  >
-                    {getStatusEmoji(c.status)} {c.status.replace('_', ' ')}
-                  </span>
-                </div>
-
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <div style={{ marginBottom: '0.75rem' }}>
-                    <span style={{ color: '#64748b', fontSize: '0.9rem' }}>🛂 Visa Type:</span>
-                    <p style={{ margin: '0.25rem 0 0 0', color: '#0066cc', fontWeight: '600' }}>{c.visa_type}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
+                    <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.2rem' }}>📋 {c.case_type}</h3>
+                    <span
+                      style={{
+                        background: getStatusColor(c.status),
+                        color: 'white',
+                        padding: '0.4rem 0.8rem',
+                        borderRadius: '6px',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                      }}
+                    >
+                      {getStatusEmoji(c.status)} {c.status.replace('_', ' ')}
+                    </span>
                   </div>
-                  <div>
-                    <span style={{ color: '#64748b', fontSize: '0.9rem' }}>🌍 From:</span>
-                    <p style={{ margin: '0.25rem 0 0 0', color: '#1e293b', fontWeight: '600' }}>{c.country_of_origin}</p>
+
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ marginBottom: '0.75rem' }}>
+                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>🛂 Visa Type:</span>
+                      <p style={{ margin: '0.25rem 0 0 0', color: '#0066cc', fontWeight: '600' }}>{c.visa_type}</p>
+                    </div>
+                    <div>
+                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>🌍 From:</span>
+                      <p style={{ margin: '0.25rem 0 0 0', color: '#1e293b', fontWeight: '600' }}>{c.country_of_origin}</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem' }}>
+                    <Link
+                      href={`/case/${c.id}/checklist`}
+                      style={{
+                        padding: '0.75rem',
+                        background: '#f0f9ff',
+                        color: '#0066cc',
+                        textDecoration: 'none',
+                        borderRadius: '6px',
+                        textAlign: 'center',
+                        fontWeight: '600',
+                        fontSize: '0.9rem',
+                        border: '2px solid #bfdbfe',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.background = '#0066cc'
+                        e.currentTarget.style.color = 'white'
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.background = '#f0f9ff'
+                        e.currentTarget.style.color = '#0066cc'
+                      }}
+                    >
+                      ✅ Checklist
+                    </Link>
+                    <Link
+                      href={`/case/${c.id}/documents`}
+                      style={{
+                        padding: '0.75rem',
+                        background: '#ecfdf5',
+                        color: '#00c896',
+                        textDecoration: 'none',
+                        borderRadius: '6px',
+                        textAlign: 'center',
+                        fontWeight: '600',
+                        fontSize: '0.9rem',
+                        border: '2px solid #a7f3d0',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.background = '#00c896'
+                        e.currentTarget.style.color = 'white'
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.background = '#ecfdf5'
+                        e.currentTarget.style.color = '#00c896'
+                      }}
+                    >
+                      📄 Documents
+                    </Link>
+                    <Link
+                      href={`/case/${c.id}/edit`}
+                      style={{
+                        padding: '0.75rem',
+                        background: '#f8fafc',
+                        color: '#475569',
+                        textDecoration: 'none',
+                        borderRadius: '6px',
+                        textAlign: 'center',
+                        fontWeight: '600',
+                        fontSize: '0.9rem',
+                        border: '2px solid #e2e8f0',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.background = '#475569'
+                        e.currentTarget.style.color = 'white'
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.background = '#f8fafc'
+                        e.currentTarget.style.color = '#475569'
+                      }}
+                    >
+                      ✏️ Edit Case
+                    </Link>
                   </div>
                 </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem' }}>
-                  <Link
-                    href={`/case/${c.id}/checklist`}
-                    style={{
-                      padding: '0.75rem',
-                      background: '#f0f9ff',
-                      color: '#0066cc',
-                      textDecoration: 'none',
-                      borderRadius: '6px',
-                      textAlign: 'center',
-                      fontWeight: '600',
-                      fontSize: '0.9rem',
-                      border: '2px solid #bfdbfe',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.background = '#0066cc'
-                      e.currentTarget.style.color = 'white'
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = '#f0f9ff'
-                      e.currentTarget.style.color = '#0066cc'
-                    }}
-                  >
-                    ✅ Checklist
-                  </Link>
-                  <Link
-                    href={`/case/${c.id}/documents`}
-                    style={{
-                      padding: '0.75rem',
-                      background: '#ecfdf5',
-                      color: '#00c896',
-                      textDecoration: 'none',
-                      borderRadius: '6px',
-                      textAlign: 'center',
-                      fontWeight: '600',
-                      fontSize: '0.9rem',
-                      border: '2px solid #a7f3d0',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.background = '#00c896'
-                      e.currentTarget.style.color = 'white'
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = '#ecfdf5'
-                      e.currentTarget.style.color = '#00c896'
-                    }}
-                  >
-                    📄 Documents
-                  </Link>
-                  <Link
-                    href={`/case/${c.id}/edit`}
-                    style={{
-                      padding: '0.75rem',
-                      background: '#f8fafc',
-                      color: '#475569',
-                      textDecoration: 'none',
-                      borderRadius: '6px',
-                      textAlign: 'center',
-                      fontWeight: '600',
-                      fontSize: '0.9rem',
-                      border: '2px solid #e2e8f0',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.background = '#475569'
-                      e.currentTarget.style.color = 'white'
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = '#f8fafc'
-                      e.currentTarget.style.color = '#475569'
-                    }}
-                  >
-                    ✏️ Edit Case
-                  </Link>
-                </div>
-              </div>
-            ))}
+              ))}
             </div>
           )}
         </section>

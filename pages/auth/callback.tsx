@@ -47,11 +47,11 @@ export default function AuthCallback() {
               .eq('user_id', user.id)
               .single()
 
-            // If subscription exists, go straight to dashboard, otherwise to pricing to start trial
+            // If subscription exists, go straight to dashboard, otherwise to signup
             if (subscription) {
               router.push('/dashboard')
             } else {
-              router.push('/pricing')
+              router.push('/auth/signup')
             }
           }
         } else {
