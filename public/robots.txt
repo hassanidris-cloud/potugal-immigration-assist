@@ -1,0 +1,16 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Public pages only; auth and dashboard are disallowed by not linking from indexable pages
+Disallow: /api/
+Disallow: /auth/
+Disallow: /dashboard
+Disallow: /case/
+Disallow: /pay/
+Disallow: /admin/
+Disallow: /onboarding
+Disallow: /settings
+Disallow: /debug
+
+Sitemap: /sitemap.xml

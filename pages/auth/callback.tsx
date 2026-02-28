@@ -40,19 +40,8 @@ export default function AuthCallback() {
               })
             }
 
-            // Check if user has a subscription (trial should be created)
-            const { data: subscription } = await supabase
-              .from('subscriptions')
-              .select('id')
-              .eq('user_id', user.id)
-              .single()
-
-            // If subscription exists, go straight to dashboard, otherwise to signup
-            if (subscription) {
-              router.push('/dashboard')
-            } else {
-              router.push('/auth/signup')
-            }
+            // After email confirmation, always send user to login so they can sign in
+            router.push('/auth/login?verified=1')
           }
         } else {
           // Other auth types or errors

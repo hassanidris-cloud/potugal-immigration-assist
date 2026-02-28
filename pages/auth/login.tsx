@@ -67,6 +67,19 @@ export default function Login() {
           </p>
         </div>
 
+        {router.query.verified === '1' && (
+          <div style={{ 
+            color: '#059669', 
+            padding: '0.875rem', 
+            background: '#d1fae5', 
+            borderRadius: '8px',
+            fontSize: '0.9rem',
+            marginBottom: '1rem',
+            border: '1px solid #a7f3d0'
+          }}>
+            Email confirmed! You can now sign in.
+          </div>
+        )}
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {error && (
               <div style={{ 

@@ -330,89 +330,67 @@ export default function Onboarding() {
                   onChange={(e) => { setVisaType(e.target.value); setShowVisaInfo(true); }}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
                 >
-                  <optgroup label="Short Stay (Up to 90 days)">
-                    <option value="Schengen Visa">Schengen Visa - Tourism, business, family visits</option>
-                  </optgroup>
-                  <optgroup label="Temporary Stay (Up to 1 year)">
-                    <option value="Temporary Stay Visa">Temporary Stay Visa - Medical, research, seasonal work</option>
-                  </optgroup>
-                  <optgroup label="National Residence Visas (Type D - Over 1 year)">
-                    <option value="D1 Visa">D1 Visa - Employed workers with contract</option>
+                  <optgroup label="Residency visa programs">
                     <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
-                    <option value="D3 Visa">D3 Visa - Highly qualified activity (self-employed or subordinate)</option>
                     <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
-                    <option value="D8 Visa">D8 Digital Nomad Visa - Remote workers (min €3,280/month income)</option>
-                                      <option value="D7 Digital Nomad">D7 Digital Nomad Visa - Remote workers (min €3,040/month income)</option>
-                                      <option value="D4 Student Visa">D4 Student Visa - University and education</option>
-                                      <option value="D6 Family Reunification">D6 Family Reunification - Join family in Portugal</option>
-                  </optgroup>
-                  <optgroup label="Investment & Job Seeker">
-                    <option value="Golden Visa">Golden Visa (ARI) - Investment starting from €250,000</option>
-                    <option value="Job Seeker Visa">Job Seeker Visa - 120 days to find work (extendable 60 days)</option>
-                
-                                  {/* Personalized Visa Information */}
-                                  {showVisaInfo && (
-                                    <div style={{ 
-                                      marginTop: '1rem', 
-                                      padding: '1.5rem', 
-                                      background: '#f1f5f9', 
-                                      borderRadius: '12px', 
-                                      borderLeft: `4px solid ${getVisaTypeColor(visaType).replace('bg-', '#')}`,
-                                      animation: 'fadeIn 0.3s ease-in'
-                                    }}>
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                                        <span style={{ 
-                                          padding: '0.5rem 1rem', 
-                                          background: 'linear-gradient(135deg, #0066cc, #00c896)', 
-                                          color: 'white', 
-                                          borderRadius: '20px', 
-                                          fontSize: '0.875rem', 
-                                          fontWeight: '600' 
-                                        }}>
-                                          {visaInfo.visaType}
-                                        </span>
-                                      </div>
-                    
-                                      <p style={{ color: '#475569', fontSize: '0.95rem', marginBottom: '1rem', lineHeight: '1.6' }}>
-                                        {visaInfo.welcomeMessage}
-                                      </p>
-                    
-                                      <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                                        {visaInfo.description}
-                                      </p>
-                    
-                                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                                        <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
-                                          <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Processing Time</div>
-                                          <div style={{ fontWeight: '600', color: '#1e293b' }}>⏱️ {visaInfo.processingTime}</div>
-                                        </div>
-                                        <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
-                                          <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Success Rate</div>
-                                          <div style={{ fontWeight: '600', color: '#10b981' }}>✓ {visaInfo.successRate}</div>
-                                        </div>
-                                      </div>
-                    
-                                      <div style={{ marginBottom: '1rem' }}>
-                                        <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>📋 Key Requirements:</h4>
-                                        <ul style={{ fontSize: '0.875rem', color: '#64748b', paddingLeft: '1.25rem', margin: 0 }}>
-                                          {visaInfo.keyRequirements.slice(0, 3).map((req, idx) => (
-                                            <li key={idx} style={{ marginBottom: '0.25rem' }}>{req}</li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                    
-                                      <div>
-                                        <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>💡 Pro Tips:</h4>
-                                        <ul style={{ fontSize: '0.875rem', color: '#64748b', paddingLeft: '1.25rem', margin: 0 }}>
-                                          {visaInfo.tips.slice(0, 2).map((tip, idx) => (
-                                            <li key={idx} style={{ marginBottom: '0.25rem' }}>{tip}</li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    </div>
-                                  )}
+                    <option value="D7 Digital Nomad">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
                   </optgroup>
                 </select>
+                {showVisaInfo && (
+                  <div style={{
+                    marginTop: '1rem',
+                    padding: '1.5rem',
+                    background: '#f1f5f9',
+                    borderRadius: '12px',
+                    borderLeft: `4px solid ${getVisaTypeColor(visaType).replace('bg-', '#')}`,
+                    animation: 'fadeIn 0.3s ease-in'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                      <span style={{
+                        padding: '0.5rem 1rem',
+                        background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                        color: 'white',
+                        borderRadius: '20px',
+                        fontSize: '0.875rem',
+                        fontWeight: '600'
+                      }}>
+                        {visaInfo.visaType}
+                      </span>
+                    </div>
+                    <p style={{ color: '#475569', fontSize: '0.95rem', marginBottom: '1rem', lineHeight: '1.6' }}>
+                      {visaInfo.welcomeMessage}
+                    </p>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+                      {visaInfo.description}
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                      <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Processing Time</div>
+                        <div style={{ fontWeight: '600', color: '#1e293b' }}>⏱️ {visaInfo.processingTime}</div>
+                      </div>
+                      <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Success Rate</div>
+                        <div style={{ fontWeight: '600', color: '#10b981' }}>✓ {visaInfo.successRate}</div>
+                      </div>
+                    </div>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>📋 Key Requirements:</h4>
+                      <ul style={{ fontSize: '0.875rem', color: '#64748b', paddingLeft: '1.25rem', margin: 0 }}>
+                        {visaInfo.keyRequirements.slice(0, 3).map((req, idx) => (
+                          <li key={idx} style={{ marginBottom: '0.25rem' }}>{req}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>💡 Pro Tips:</h4>
+                      <ul style={{ fontSize: '0.875rem', color: '#64748b', paddingLeft: '1.25rem', margin: 0 }}>
+                        {visaInfo.tips.slice(0, 2).map((tip, idx) => (
+                          <li key={idx} style={{ marginBottom: '0.25rem' }}>{tip}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
                 <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.5rem' }}>
                   💡 Most visas are processed through VFS Global
                 </p>

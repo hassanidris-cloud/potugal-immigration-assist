@@ -158,23 +158,10 @@ export default function EditCase() {
                 onChange={(e) => setVisaType(e.target.value)}
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
               >
-                <optgroup label="Short Stay (Up to 90 days)">
-                  <option value="Schengen Visa">Schengen Visa - Tourism, business, family visits</option>
-                </optgroup>
-                <optgroup label="Temporary Stay (Up to 1 year)">
-                  <option value="Temporary Stay Visa">Temporary Stay Visa - Medical, research, seasonal work</option>
-                </optgroup>
-                <optgroup label="National Residence Visas (Type D - Over 1 year)">
-                  <option value="D1 Visa">D1 Visa - Employed workers with contract</option>
+                <optgroup label="Residency visa programs">
                   <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
-                  <option value="D3 Visa">D3 Visa - Highly qualified activity (self-employed or subordinate)</option>
                   <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
-                  <option value="D7 Digital Nomad">D7 Digital Nomad Visa - Remote workers (min €3,040/month income)</option>
-                  <option value="D4 Student Visa">D4 Student Visa - University and education</option>
-                  <option value="D6 Family Reunification">D6 Family Reunification - Join family in Portugal</option>
-                </optgroup>
-                <optgroup label="Investment">
-                  <option value="Golden Visa">Golden Visa (ARI) - Investment starting from €250,000</option>
+                  <option value="D7 Digital Nomad">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
                 </optgroup>
               </select>
             </div>
