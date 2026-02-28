@@ -128,6 +128,9 @@ export default function AIChatWidget() {
                 rows={2}
                 disabled={loading}
                 aria-label="Your message"
+                inputMode="text"
+                enterKeyHint="send"
+                autoComplete="off"
               />
               <button
                 type="button"

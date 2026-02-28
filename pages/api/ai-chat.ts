@@ -58,7 +58,7 @@ export default async function handler(
     if (geminiKey) {
       const contents = buildGeminiContents(trimmed)
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

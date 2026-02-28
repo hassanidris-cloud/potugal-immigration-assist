@@ -14,15 +14,6 @@ const PORTUGAL_IMAGES = [
 ]
 
 /* Gradient colors per slide: light (from image) → grey → dark. Grows with scroll. */
-const SLIDE_GRADIENTS: { from: string; mid: string; to: string }[] = [
-  { from: '#F5F1E8', mid: '#9CA3AF', to: '#1F2937' },   // Lisbon – warm white → grey → dark
-  { from: '#E8F0F5', mid: '#7B9AA8', to: '#1E3A4A' },   // Algarve – light blue/sand → grey → dark blue
-  { from: '#E5E2DB', mid: '#8B9089', to: '#374151' },   // Porto – warm grey → grey → dark
-  { from: '#F0EDE5', mid: '#8A8A82', to: '#2D2D2A' },  // Lisbon streets – cream → grey → dark
-  { from: '#E2EDF2', mid: '#7A8A92', to: '#2C3E50' },   // Portugal coast – sky/sand → grey → dark
-  { from: '#E8EDE5', mid: '#6B7B6B', to: '#2D3B2D' },   // Douro Valley – soft green/grey → grey → dark
-]
-
 /* Professional SVG icons for What You Get (stroke-based, inherit color) */
 const WHAT_YOU_GET_ICONS: Record<string, JSX.Element> = {
   checklist: (
@@ -90,8 +81,6 @@ export default function Home() {
   const [visaChoice, setVisaChoice] = useState<'d2' | 'd7' | 'd8' | null>(null)
   const [stickyCtaVisible, setStickyCtaVisible] = useState(false)
   const [backToTopVisible, setBackToTopVisible] = useState(false)
-  const [scrollY, setScrollY] = useState(0)
-  const [gradientHeightPx, setGradientHeightPx] = useState(0)
   const [navOpen, setNavOpen] = useState(false)
   const [featuresInView, setFeaturesInView] = useState(false)
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
@@ -127,8 +116,6 @@ export default function Home() {
     if (typeof window === 'undefined') return
     const onScroll = () => {
       const y = window.scrollY
-      setScrollY(y)
-      setGradientHeightPx(window.innerHeight + y)
       setStickyCtaVisible(y > 400)
       setBackToTopVisible(y > 300)
     }
@@ -295,25 +282,7 @@ export default function Home() {
           }}
         />
       </Head>
-      <div className="home-nav-spacer min-h-screen overflow-x-hidden font-sans home-page-with-scroll-gradient" style={{ position: 'relative', backgroundColor: SLIDE_GRADIENTS[slideIndex].to }}>
-        {/* Fixed gradient layer: scroll-linked so we move through light → mid → dark */}
-        <div
-          aria-hidden
-          className="home-scroll-gradient-layer"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            pointerEvents: 'none',
-            zIndex: 0,
-            background: (() => {
-              const g = SLIDE_GRADIENTS[slideIndex]
-              return `linear-gradient(180deg, ${g.from} 0%, ${g.mid} 40%, ${g.to} 100%)`
-            })(),
-            backgroundSize: `100% ${Math.max(2800, gradientHeightPx || 2800)}px`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: `0 ${-scrollY}px`,
-          }}
-        />
+      <div className="home-nav-spacer min-h-screen overflow-x-hidden font-sans" style={{ background: '#FFFFFF' }}>
         <div className="home-content-layer">
         {/* Top Bar with WINIT Branding + hamburger on mobile — fixed so it stays visible when scrolling */}
         <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`}>
