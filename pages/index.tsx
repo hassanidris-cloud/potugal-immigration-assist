@@ -2,6 +2,8 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { useState, useEffect, useCallback, useRef } from 'react'
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
+
 const PORTUGAL_IMAGES = [
   'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=1920&q=80', // Lisbon
   'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1920&q=80', // Algarve coast
@@ -9,6 +11,16 @@ const PORTUGAL_IMAGES = [
   'https://images.unsplash.com/photo-1567270671170-fdc10a5bf831?w=1920&q=80', // Lisbon streets
   'https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=1920&q=80',   // Portugal coast
   'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1920&q=80', // Douro Valley nature
+]
+
+/* Gradient colors per slide: light (from image) → grey → dark. Grows with scroll. */
+const SLIDE_GRADIENTS: { from: string; mid: string; to: string }[] = [
+  { from: '#F5F1E8', mid: '#9CA3AF', to: '#1F2937' },   // Lisbon – warm white → grey → dark
+  { from: '#E8F0F5', mid: '#7B9AA8', to: '#1E3A4A' },   // Algarve – light blue/sand → grey → dark blue
+  { from: '#E5E2DB', mid: '#8B9089', to: '#374151' },   // Porto – warm grey → grey → dark
+  { from: '#F0EDE5', mid: '#8A8A82', to: '#2D2D2A' },  // Lisbon streets – cream → grey → dark
+  { from: '#E2EDF2', mid: '#7A8A92', to: '#2C3E50' },   // Portugal coast – sky/sand → grey → dark
+  { from: '#E8EDE5', mid: '#6B7B6B', to: '#2D3B2D' },   // Douro Valley – soft green/grey → grey → dark
 ]
 
 /* Professional SVG icons for What You Get (stroke-based, inherit color) */
@@ -78,17 +90,25 @@ export default function Home() {
   const [visaChoice, setVisaChoice] = useState<'d2' | 'd7' | 'd8' | null>(null)
   const [stickyCtaVisible, setStickyCtaVisible] = useState(false)
   const [backToTopVisible, setBackToTopVisible] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+  const [gradientHeightPx, setGradientHeightPx] = useState(0)
   const [navOpen, setNavOpen] = useState(false)
   const [featuresInView, setFeaturesInView] = useState(false)
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
   const [visaQuizCursor, setVisaQuizCursor] = useState({ x: 0, y: 0 })
   const [whatWeDoCursor, setWhatWeDoCursor] = useState({ x: 0, y: 0 })
   const [howStepsVisible, setHowStepsVisible] = useState(false)
+  const [sectionRevealed, setSectionRevealed] = useState<Record<string, boolean>>({})
   const featuresSectionRef = useRef<HTMLElement>(null)
   const featuresRafRef = useRef<number | null>(null)
   const visaQuizRef = useRef<HTMLElement>(null)
   const whatWeDoRef = useRef<HTMLElement>(null)
   const howItWorksRef = useRef<HTMLElement>(null)
+  const visaRevealRef = useRef<HTMLDivElement>(null)
+  const whatWeDoRevealRef = useRef<HTMLDivElement>(null)
+  const trustedRevealRef = useRef<HTMLDivElement>(null)
+  const faqRevealRef = useRef<HTMLDivElement>(null)
+  const ctaRevealRef = useRef<HTMLDivElement>(null)
 
   const goTo = useCallback((index: number) => {
     setSlideIndex((index + PORTUGAL_IMAGES.length) % PORTUGAL_IMAGES.length)
@@ -107,11 +127,18 @@ export default function Home() {
     if (typeof window === 'undefined') return
     const onScroll = () => {
       const y = window.scrollY
+      setScrollY(y)
+      setGradientHeightPx(window.innerHeight + y)
       setStickyCtaVisible(y > 400)
       setBackToTopVisible(y > 300)
     }
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
 
   useEffect(() => {
@@ -131,7 +158,7 @@ export default function Home() {
     if (!el) return
     const obs = new IntersectionObserver(
       ([e]) => setFeaturesInView(e.isIntersecting),
-      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0, rootMargin: '80px 0px 80px 0px' }
     )
     obs.observe(el)
     return () => obs.disconnect()
@@ -206,21 +233,92 @@ export default function Home() {
     return () => obs.disconnect()
   }, [])
 
+  useEffect(() => {
+    const refs: { ref: React.RefObject<HTMLDivElement | null>; id: string }[] = [
+      { ref: visaRevealRef, id: 'visa' },
+      { ref: whatWeDoRevealRef, id: 'whatWeDo' },
+      { ref: trustedRevealRef, id: 'trusted' },
+      { ref: faqRevealRef, id: 'faq' },
+      { ref: ctaRevealRef, id: 'cta' },
+    ]
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = (entry.target as HTMLElement).getAttribute('data-reveal-id')
+          if (id && entry.isIntersecting) {
+            setSectionRevealed((prev) => ({ ...prev, [id]: true }))
+          }
+        })
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -80px 0px' }
+    )
+    const timer = setTimeout(() => {
+      refs.forEach(({ ref: r }) => { if (r.current) obs.observe(r.current) })
+    }, 100)
+    return () => { clearTimeout(timer); obs.disconnect() }
+  }, [])
+
   return (
     <>
       <Head>
         <title>WINIT — Move to Portugal with Confidence</title>
         <meta name="description" content="Portugal immigration support: D2, D7, and D8 visa applications. Document checklist, expert help, and tracking. Start your application today." />
+        {BASE_URL && <link rel="canonical" href={BASE_URL} />}
         <meta property="og:title" content="WINIT — Move to Portugal with Confidence" />
         <meta property="og:description" content="Portugal immigration support: D2, D7, and D8 visa applications. Document checklist, expert help, and tracking." />
         <meta property="og:type" content="website" />
+        {BASE_URL && <meta property="og:url" content={BASE_URL} />}
+        {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
+        <meta property="og:site_name" content="WINIT Portugal Immigration" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="WINIT — Move to Portugal with Confidence" />
+        <meta name="twitter:description" content="Portugal immigration support: D2, D7, and D8 visa applications. Document checklist, expert help, and tracking." />
+        {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'WINIT Portugal Immigration',
+              description: 'Portugal immigration support: D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking.',
+              ...(BASE_URL && { url: BASE_URL }),
+              ...(BASE_URL && {
+                potentialAction: {
+                  '@type': 'SearchAction',
+                  target: { '@type': 'EntryPoint', urlTemplate: `${BASE_URL}/visa-programs?q={search_term_string}` },
+                  'query-input': 'required name=search_term_string',
+                },
+              }),
+            }),
+          }}
+        />
       </Head>
-      <div className="home-nav-spacer" style={{ minHeight: '100vh', fontFamily: 'sans-serif' }}>
+      <div className="home-nav-spacer min-h-screen overflow-x-hidden font-sans home-page-with-scroll-gradient" style={{ position: 'relative', backgroundColor: SLIDE_GRADIENTS[slideIndex].to }}>
+        {/* Fixed gradient layer: scroll-linked so we move through light → mid → dark */}
+        <div
+          aria-hidden
+          className="home-scroll-gradient-layer"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 0,
+            background: (() => {
+              const g = SLIDE_GRADIENTS[slideIndex]
+              return `linear-gradient(180deg, ${g.from} 0%, ${g.mid} 40%, ${g.to} 100%)`
+            })(),
+            backgroundSize: `100% ${Math.max(2800, gradientHeightPx || 2800)}px`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: `0 ${-scrollY}px`,
+          }}
+        />
+        <div className="home-content-layer">
         {/* Top Bar with WINIT Branding + hamburger on mobile — fixed so it stays visible when scrolling */}
-        <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`} style={{ background: '#1e293b' }}>
-          <div className="home-nav-inner" style={{ paddingTop: '1rem', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-            <Link href="/" className="home-nav-logo" style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none', flexShrink: 0 }}>WINIT</Link>
+        <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`}>
+          <div className="home-nav-inner">
+            <Link href="/" className="home-nav-logo" style={{ fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none', flexShrink: 0 }}>WINIT</Link>
             <button
               type="button"
               className="home-nav-hamburger"
@@ -233,27 +331,19 @@ export default function Home() {
               <span className="hamburger-line" />
             </button>
             <div className="home-nav-links">
-              <Link href="/why-portugal" onClick={() => setNavOpen(false)} style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none', fontWeight: '500' }}>Why Portugal</Link>
-              <Link href="/visa-programs" onClick={() => setNavOpen(false)} style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none', fontWeight: '500' }}>Visa Programs</Link>
-              <a href="#faq" onClick={() => setNavOpen(false)} style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none', fontWeight: '500' }}>FAQ</a>
-              <Link href="/contact" onClick={() => setNavOpen(false)} style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none', fontWeight: '500' }}>Contact</Link>
-              <Link href="/auth/login" onClick={() => setNavOpen(false)} style={{ color: 'white', textDecoration: 'none', fontWeight: '600' }}>Login</Link>
-              <Link href="/auth/signup" className="home-nav-signup" onClick={() => setNavOpen(false)} style={{ color: '#00c896', textDecoration: 'none', fontWeight: 'bold' }}>Sign Up</Link>
+              <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
+              <Link href="/visa-programs" onClick={() => setNavOpen(false)} className="no-underline font-medium">Visa Programs</Link>
+              <a href="#faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</a>
+              <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
+              <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
+              <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
             </div>
           </div>
         </nav>
 
-        {/* Hero Section with Portugal slideshow background */}
+        {/* Hero: image slideshow with light overlay, dark text, blue button */}
         <header
-          className="home-hero-wrap"
-          style={{
-            color: 'white',
-            padding: '5rem 0',
-            textAlign: 'center',
-            position: 'relative',
-            overflow: 'hidden',
-            minHeight: '75vh',
-          }}
+          className="home-hero-wrap home-hero-slideshow"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
@@ -267,8 +357,7 @@ export default function Home() {
               />
             ))}
           </div>
-          <div className="hero-slideshow-overlay" />
-          <div className="hero-mesh" aria-hidden />
+          <div className="hero-slideshow-overlay" aria-hidden />
           <div className="hero-slideshow-arrows">
             <button type="button" onClick={prev} aria-label="Previous image">‹</button>
             <button type="button" onClick={next} aria-label="Next image">›</button>
@@ -284,40 +373,30 @@ export default function Home() {
               />
             ))}
           </div>
-          <div className="home-container home-hero-inner" style={{
-            position: 'relative',
-            zIndex: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '75vh',
-            textAlign: 'center',
-          }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.2em', opacity: 0.9, marginBottom: '1rem', textTransform: 'uppercase' }}>Portugal immigration · WINIT</div>
-            <h1 className="home-hero-title hero-gradient-title" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', marginBottom: '1.25rem' }}>
-              Move to Portugal with Confidence
-            </h1>
-            <p className="home-hero-subtitle" style={{ fontSize: '1.2rem', marginBottom: '2rem', opacity: 0.95, maxWidth: '32rem', fontWeight: 500 }}>
-              We handle the paperwork—you focus on your new life.
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/auth/signup" className="hero-cta hero-cta-primary">Start your application</Link>
-            </div>
+          <div className="home-container home-hero-inner home-hero-clean-inner">
+            <p className="home-hero-eyebrow">Portugal immigration · WINIT</p>
+            <h1 className="home-hero-title">Move to Portugal with Confidence</h1>
+            <p className="home-hero-subtitle">We handle the paperwork—you focus on your new life.</p>
+            <Link href="/auth/signup" className="hero-cta hero-cta-primary">Start your application</Link>
           </div>
         </header>
 
-        {/* Interactive: Which visa is for you? — 3D cards + tilt */}
+        {/* Interactive: Which visa is for you? — 3D cards + tilt, scroll reveal */}
         <section
           id="check-eligibility"
           ref={visaQuizRef}
-          className="visa-quiz-section home-section home-section-padding"
-          style={{ padding: '4rem 0', scrollMarginTop: '5rem', position: 'relative', background: 'linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%)' }}
+          className="visa-quiz-section home-section home-section-padding section-bg-gradient"
+          style={{ padding: '4rem 0', scrollMarginTop: '5rem', position: 'relative' }}
         >
           <div className="home-container" style={{ position: 'relative', zIndex: 1 }}>
-            <h2 className="section-heading" style={{ textAlign: 'center', fontSize: 'clamp(1.75rem, 4vw, 2.25rem)', marginBottom: '0.5rem' }}>Which visa is for you?</h2>
-            <p className="section-heading-sub" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>Choose the option that best describes you — we'll recommend the right program</p>
-            <div className="visa-quiz-grid">
+            <div
+              ref={visaRevealRef}
+              data-reveal-id="visa"
+              className={`scroll-reveal-box home-section-center ${sectionRevealed.visa ? 'visible' : ''}`}
+            >
+              <h2 className="section-heading section-heading-no-underline section-heading-center reveal-stagger" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)', marginBottom: '0.5rem' }}>Which visa is for you?</h2>
+              <p className="section-heading-sub reveal-stagger text-center" style={{ marginBottom: '2.5rem' }}>Choose the option that best describes you — we'll recommend the right program</p>
+              <div className="visa-quiz-grid reveal-stagger">
               {VISA_QUIZ_OPTIONS.map((opt) => (
                 <button
                   key={opt.id}
@@ -338,35 +417,41 @@ export default function Home() {
             </div>
               {visaChoice && (
                 <div className="visa-result-glass">
-                <p style={{ marginBottom: '0.75rem', fontWeight: '600', color: 'var(--text)' }}>
+                <p className="text-text mb-3 font-semibold">
                     {visaChoice === 'd2' && 'D2 (Entrepreneur) visa is likely the best fit.'}
                     {visaChoice === 'd7' && 'D7 (Passive Income) visa is likely the best fit.'}
                     {visaChoice === 'd8' && 'D8 (Digital Nomad) visa is likely the best fit.'}
                   </p>
-                  <p style={{ marginBottom: '1rem', color: '#64748b', fontSize: '0.95rem' }}>
+                  <p className="text-text-muted mb-4 text-sm md:text-base">
                     See full details below, or{' '}
-                    <Link href="/auth/signup" style={{ color: '#0066cc', fontWeight: '600' }}>start your application</Link> and we’ll guide you.
+                    <Link href="/auth/signup" className="text-primary font-semibold">start your application</Link> and we’ll guide you.
                   </p>
                   <Link href={`/visa-programs#visa-${visaChoice}`} className="visa-result-btn">
                   View visa details →
                 </Link>
                 </div>
               )}
+            </div>
           </div>
         </section>
 
-        {/* What We Do — professional feature map */}
-        <section className="what-we-do-section what-we-do-pro home-section-padding">
+        {/* What We Do — section 2: white for breathing space */}
+        <section className="what-we-do-section what-we-do-pro home-section-padding bg-white">
           <div className="home-container what-we-do-pro-inner">
-            <header className="what-we-do-pro-header">
-              <h2 className="section-heading what-we-do-pro-title">What We Do</h2>
-              <p className="what-we-do-pro-sub">End-to-end support for your Portugal residency journey</p>
-              <p className="what-we-do-pro-lead">
-                We simplify the process: upload documents, track progress in one place, and get expert help when you need it.
-              </p>
-            </header>
+            <div
+              ref={whatWeDoRevealRef}
+              data-reveal-id="whatWeDo"
+              className={`scroll-reveal-box ${sectionRevealed.whatWeDo ? 'visible' : ''}`}
+            >
+              <header className="what-we-do-pro-header reveal-stagger">
+                <h2 className="section-heading section-heading-no-underline what-we-do-pro-title">What We Do</h2>
+                <p className="what-we-do-pro-sub">End-to-end support for your Portugal residency journey</p>
+                <p className="what-we-do-pro-lead">
+                  We simplify the process: upload documents, track progress in one place, and get expert help when you need it.
+                </p>
+              </header>
 
-            <div className="what-we-do-feature-map" aria-label="Our services">
+              <div className="what-we-do-feature-map reveal-stagger" aria-label="Our services">
               <Link href="/visa-programs" className="what-we-do-feature-card">
                 <span className="what-we-do-feature-icon" aria-hidden>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></svg>
@@ -393,7 +478,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="what-we-do-why-strip">
+              <div className="what-we-do-why-strip reveal-stagger">
               <div className="what-we-do-why-item">
                 <span className="what-we-do-why-icon" aria-hidden>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
@@ -413,13 +498,14 @@ export default function Home() {
                 <span className="what-we-do-why-text"><strong>Personal support</strong> — Direct access to your specialist</span>
               </div>
             </div>
+            </div>
           </div>
         </section>
 
-        {/* How It Works — timeline + scroll-in */}
-        <section ref={howItWorksRef} className="how-it-works-section home-section-padding" style={{ padding: '4rem 0', position: 'relative' }}>
-          <div className="home-container" style={{ position: 'relative', zIndex: 1 }}>
-            <h2 className="section-heading" style={{ textAlign: 'center', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', marginBottom: '3rem' }}>How It Works</h2>
+        {/* How It Works — timeline + scroll-in, centered, no underline */}
+        <section ref={howItWorksRef} className="how-it-works-section home-section-padding section-bg-gradient" style={{ padding: '4rem 0', position: 'relative' }}>
+          <div className="home-container home-section-center" style={{ position: 'relative', zIndex: 1 }}>
+            <h2 className="section-heading section-heading-no-underline section-heading-center" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', marginBottom: '3rem' }}>How It Works</h2>
             <div className="how-it-works-timeline">
               <div className={`how-step-card ${howStepsVisible ? 'how-step-visible' : ''}`} >
                 <div style={{ position: 'relative' }}>
@@ -456,7 +542,7 @@ export default function Home() {
                   <div className="how-step-num">✓</div>
                 </div>
                 <div className="how-step-content">
-                  <h3 style={{ color: 'var(--secondary)' }}>Get Approved</h3>
+                  <h3>Get Approved</h3>
                   <p>We guide you through submission and help until you get your visa.</p>
                 </div>
               </div>
@@ -468,23 +554,22 @@ export default function Home() {
         <section
           id="what-you-get"
           ref={featuresSectionRef}
-          className="what-you-get-section home-section-padding"
+          className="what-you-get-section home-section-padding bg-white"
           style={{
             padding: '5rem 0',
-            background: 'linear-gradient(165deg, #0f172a 0%, #1e293b 35%, #334155 100%)',
             position: 'relative',
             overflow: 'hidden',
           }}
         >
           <div className="what-you-get-glow" aria-hidden />
           <div className="home-container" style={{ position: 'relative', zIndex: 1 }}>
-            <p className="what-you-get-tagline" style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.9rem', fontWeight: '600', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+            <p className="what-you-get-tagline text-center text-sm font-semibold tracking-widest uppercase mb-3" style={{ letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
               Your journey, simplified
             </p>
-            <h2 className="what-you-get-title" style={{ textAlign: 'center', fontSize: '2.75rem', marginBottom: '0.5rem', color: 'white', fontWeight: '700' }}>
+            <h2 className="what-you-get-title text-center font-bold" style={{ fontSize: '2.75rem', marginBottom: '0.5rem', color: 'var(--text)' }}>
               What You Get
             </h2>
-            <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '1.1rem', marginBottom: '3rem', maxWidth: '520px', marginLeft: 'auto', marginRight: 'auto' }}>
+            <p className="text-text-muted text-center max-w-[520px] mx-auto" style={{ fontSize: '1.1rem', marginBottom: '3rem' }}>
               Scroll to discover — move your cursor over the cards to bring them to life.
             </p>
 
@@ -503,16 +588,16 @@ export default function Home() {
                   style={{
                     transform: featuresInView
                       ? `perspective(900px) rotateX(${cursorPos.y * 4}deg) rotateY(${cursorPos.x * 4}deg) translateY(0)`
-                      : 'perspective(900px) rotateX(0) rotateY(0) translateY(32px)',
+                      : 'perspective(900px) rotateX(0) rotateY(0) translateY(24px)',
                     transition: 'transform 0.2s ease-out, opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease',
                     transitionDelay: featuresInView ? `${i * 80}ms` : '0ms',
-                    opacity: featuresInView ? 1 : 0,
+                    opacity: 1,
                   }}
                 >
                   <div className="what-you-get-card-inner">
                     <span className="what-you-get-icon" aria-hidden>{WHAT_YOU_GET_ICONS[item.iconKey]}</span>
-                    <h3 style={{ color: 'white', marginBottom: '0.5rem', fontSize: '1.25rem', fontWeight: '600' }}>{item.title}</h3>
-                    <p style={{ color: '#94a3b8', lineHeight: '1.6', margin: 0, fontSize: '0.95rem' }}>{item.desc}</p>
+                    <h3 className="mb-2 text-xl font-semibold" style={{ color: 'var(--text)' }}>{item.title}</h3>
+                    <p className="text-text-muted leading-relaxed m-0 text-sm md:text-base">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -520,30 +605,42 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Licensed & trusted + Reviews (light section) */}
-        <section className="home-section-padding" style={{ padding: '4rem 0', background: '#f8fafc' }}>
+        {/* Licensed & trusted + Reviews (light section) — scroll reveal */}
+        <section className="home-section-padding section-bg-gradient" style={{ padding: '4rem 0' }}>
           <div className="home-container">
+            <div
+              ref={trustedRevealRef}
+              data-reveal-id="trusted"
+              className={`scroll-reveal-box floating-box home-section-center ${sectionRevealed.trusted ? 'visible' : ''}`}
+            >
             {/* Licensed & trusted */}
-            <div className="home-trusted-block">
-              <h2 className="section-heading" style={{ textAlign: 'center', fontSize: 'clamp(1.5rem, 3vw, 1.75rem)', marginBottom: '1.25rem' }}>Licensed & trusted</h2>
-              <p style={{ textAlign: 'center', color: '#64748b', marginBottom: '1.5rem', maxWidth: '560px', marginLeft: 'auto', marginRight: 'auto' }}>
+            <div className="home-trusted-block text-center">
+              <h2 className="section-heading section-heading-center" style={{ fontSize: 'clamp(1.5rem, 3vw, 1.75rem)', marginBottom: '1.25rem' }}>Licensed & trusted</h2>
+              <p className="text-text-muted max-w-[560px] mx-auto" style={{ marginBottom: '1.5rem' }}>
                 We work with licensed immigration specialists. Your data is secure and confidential.
               </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem 2rem' }}>
-                <li style={{ color: '#475569', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>✓ Licensed immigration support</li>
-                <li style={{ color: '#475569', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>✓ Secure & confidential</li>
-                <li style={{ color: '#475569', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>✓ Bank-level encryption for documents</li>
+              <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 list-none p-0 m-0">
+                <li className="text-text-muted flex items-center justify-center gap-2 text-base">✓ Licensed immigration support</li>
+                <li className="text-text-muted flex items-center justify-center gap-2 text-base">✓ Secure & confidential</li>
+                <li className="text-text-muted flex items-center justify-center gap-2 text-base">✓ Bank-level encryption for documents</li>
               </ul>
             </div>
 
             {/* Reviews */}
-            <h2 className="section-heading" style={{ textAlign: 'center', fontSize: 'clamp(1.75rem, 3.5vw, 2rem)', marginBottom: '2rem' }}>Reviews</h2>
-            <p style={{ textAlign: 'center', color: '#64748b', fontSize: '1rem', margin: 0 }}>No reviews yet.</p>
+            <h2 className="section-heading section-heading-center" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2rem)', marginBottom: '2rem' }}>Reviews</h2>
+            <p className="text-text-muted text-base m-0">No reviews yet.</p>
+            </div>
 
-            {/* FAQ */}
-            <div id="faq" style={{ scrollMarginTop: '5rem' }}>
-              <h2 className="section-heading" style={{ textAlign: 'center', fontSize: 'clamp(1.75rem, 3.5vw, 2rem)', marginBottom: '1.5rem' }}>Frequently asked questions</h2>
-              <div className="faq-list">
+            {/* FAQ — scroll reveal */}
+            <div
+              id="faq"
+              ref={faqRevealRef}
+              data-reveal-id="faq"
+              className={`scroll-reveal-box floating-box home-section-center ${sectionRevealed.faq ? 'visible' : ''}`}
+              style={{ scrollMarginTop: '5rem', marginTop: '3rem', padding: '2.5rem' }}
+            >
+              <h2 className="section-heading section-heading-center" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2rem)', marginBottom: '1.5rem' }}>Frequently asked questions</h2>
+              <div className="faq-list faq-list-center">
                 {FAQ_ITEMS.map((item, i) => (
                   <div key={i} className="faq-item">
                     <button
@@ -561,7 +658,13 @@ export default function Home() {
               </div>
             </div>
 
-            {/* CTA Section – welcoming close */}
+            {/* CTA Section – welcoming close, scroll reveal */}
+            <div
+              ref={ctaRevealRef}
+              data-reveal-id="cta"
+              className={`scroll-reveal-box ${sectionRevealed.cta ? 'visible' : ''}`}
+              style={{ marginTop: '3rem' }}
+            >
             <div className="home-cta-block">
               <p className="home-cta-eyebrow">Your new chapter awaits</p>
               <h2 className="home-cta-title">We’d love to help you get there.</h2>
@@ -577,6 +680,7 @@ export default function Home() {
                 Start my application — it’s free to begin
               </Link>
               <p className="home-cta-trust">🔒 Secure & confidential · No commitment until you choose a plan</p>
+            </div>
             </div>
           </div>
         </section>
@@ -602,21 +706,22 @@ export default function Home() {
         {/* Footer */}
         <footer className="home-footer">
           <div className="home-container">
-            <div style={{ marginBottom: '1rem', fontSize: '1.5rem', fontWeight: 'bold' }}>WINIT</div>
-            <p style={{ opacity: 0.9, marginBottom: '0.5rem' }}>Licensed immigration support · Your data is secure and confidential</p>
-            <p style={{ opacity: 0.85, marginBottom: '0.5rem' }}>
-              For official requirements, see <a href="https://www.aima.gov.pt" target="_blank" rel="noopener noreferrer" style={{ color: '#00c896', textDecoration: 'underline' }}>AIMA</a> and your consulate.
+            <div className="font-bold text-primary mb-4 text-2xl">WINIT</div>
+            <p className="text-text-muted mb-2">Licensed immigration support · Your data is secure and confidential</p>
+            <p className="text-text-muted mb-2">
+              For official requirements, see <a href="https://www.aima.gov.pt" target="_blank" rel="noopener noreferrer" className="text-accent underline">AIMA</a> and your consulate.
             </p>
-            <p style={{ opacity: 0.8, marginBottom: '0.5rem' }}>
-              <Link href="/privacy" style={{ color: 'rgba(255,255,255,0.9)', marginRight: '1rem' }}>Privacy</Link>
-              <Link href="/terms" style={{ color: 'rgba(255,255,255,0.9)', marginRight: '1rem' }}>Terms</Link>
-              <Link href="/contact" style={{ color: 'rgba(255,255,255,0.9)', marginRight: '1rem' }}>Contact</Link>
-              <Link href="/cookies" style={{ color: 'rgba(255,255,255,0.9)' }}>Cookies</Link>
+            <p className="mb-2">
+              <Link href="/privacy" className="mr-4">Privacy</Link>
+              <Link href="/terms" className="mr-4">Terms</Link>
+              <Link href="/contact" className="mr-4">Contact</Link>
+              <Link href="/cookies">Cookies</Link>
             </p>
-            <p style={{ opacity: 0.8 }}>© 2026 WINIT Portugal Immigration Platform. All rights reserved.</p>
-            <p style={{ opacity: 0.6, fontSize: '0.9rem', marginTop: '0.5rem' }}>Empowering your immigration journey</p>
+            <p className="text-text-muted">© 2026 WINIT Portugal Immigration Platform. All rights reserved.</p>
+            <p className="text-text-muted text-sm mt-2">Empowering your immigration journey</p>
           </div>
         </footer>
+        </div>
       </div>
     </>
   )

@@ -229,9 +229,9 @@ export default function Onboarding() {
         {/* Progress Bar */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <span style={{ fontWeight: 'bold', color: step >= 1 ? '#0066cc' : '#94a3b8' }}>1. Case Details</span>
-            <span style={{ fontWeight: 'bold', color: step >= 2 ? '#0066cc' : '#94a3b8' }}>2. Upload Documents</span>
-            <span style={{ fontWeight: 'bold', color: step >= 3 ? '#0066cc' : '#94a3b8' }}>3. Complete</span>
+            <span className={step >= 1 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>1. Case Details</span>
+            <span className={step >= 2 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>2. Upload Documents</span>
+            <span className={step >= 3 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>3. Complete</span>
           </div>
           <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{ width: `${(step / 3) * 100}%`, height: '100%', background: 'linear-gradient(90deg, #0066cc, #00c896)', transition: 'width 0.3s' }} />
@@ -241,8 +241,8 @@ export default function Onboarding() {
         {/* Step 1: Case Details */}
         {step === 1 && (
           <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-            <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#1e293b' }}>🚀 Let's Create Your Case</h1>
-            <p style={{ color: '#64748b', marginBottom: '2rem' }}>Tell us about your immigration plans to Portugal</p>
+            <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚀 Let&apos;s Create Your Case</h1>
+            <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Tell us about your immigration plans to Portugal</p>
 
             {accessBlocked && (
               <div style={{
@@ -290,10 +290,10 @@ export default function Onboarding() {
             )}
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', opacity: accessBlocked ? 0.6 : 1, pointerEvents: accessBlocked ? 'none' : 'auto' }}>
-              {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>{error}</div>}
+              {error && <div className="text-error" style={{ padding: '1rem', background: '#fee2e2', borderRadius: '8px', borderLeft: '4px solid var(--error)' }}>{error}</div>}
 
               <div>
-                <label htmlFor="caseType" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Case Type</label>
+                <label htmlFor="caseType" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Case Type</label>
                 <select
                   id="caseType"
                   value={caseType}
@@ -307,13 +307,13 @@ export default function Onboarding() {
               </div>
 
               <div>
-                <label htmlFor="visaType" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Which Visa Type Do You Need? 🇵🇹</label>
+                <label htmlFor="visaType" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Which Visa Type Do You Need? 🇵🇹</label>
                                 <button
                                   type="button"
                                   onClick={() => setShowVisaInfo(!showVisaInfo)}
                                   style={{ 
                                     fontSize: '0.875rem', 
-                                    color: '#0066cc', 
+                                    color: 'var(--primary)', 
                                     textDecoration: 'underline', 
                                     cursor: 'pointer', 
                                     border: 'none', 
@@ -357,33 +357,33 @@ export default function Onboarding() {
                         {visaInfo.visaType}
                       </span>
                     </div>
-                    <p style={{ color: '#475569', fontSize: '0.95rem', marginBottom: '1rem', lineHeight: '1.6' }}>
+                    <p className="text-text-muted" style={{ fontSize: '0.95rem', marginBottom: '1rem', lineHeight: '1.6' }}>
                       {visaInfo.welcomeMessage}
                     </p>
-                    <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+                    <p className="text-text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
                       {visaInfo.description}
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                       <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Processing Time</div>
-                        <div style={{ fontWeight: '600', color: '#1e293b' }}>⏱️ {visaInfo.processingTime}</div>
+                        <div className="text-text-muted text-xs" style={{ marginBottom: '0.25rem' }}>Processing Time</div>
+                        <div className="text-text font-semibold">⏱️ {visaInfo.processingTime}</div>
                       </div>
                       <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Success Rate</div>
-                        <div style={{ fontWeight: '600', color: '#10b981' }}>✓ {visaInfo.successRate}</div>
+                        <div className="text-text-muted text-xs" style={{ marginBottom: '0.25rem' }}>Success Rate</div>
+                        <div className="font-semibold text-[var(--success)]">✓ {visaInfo.successRate}</div>
                       </div>
                     </div>
                     <div style={{ marginBottom: '1rem' }}>
-                      <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>📋 Key Requirements:</h4>
-                      <ul style={{ fontSize: '0.875rem', color: '#64748b', paddingLeft: '1.25rem', margin: 0 }}>
+                      <h4 className="text-text font-semibold text-sm" style={{ marginBottom: '0.5rem' }}>📋 Key Requirements:</h4>
+                      <ul className="text-text-muted text-sm" style={{ paddingLeft: '1.25rem', margin: 0 }}>
                         {visaInfo.keyRequirements.slice(0, 3).map((req, idx) => (
                           <li key={idx} style={{ marginBottom: '0.25rem' }}>{req}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <h4 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '0.5rem' }}>💡 Pro Tips:</h4>
-                      <ul style={{ fontSize: '0.875rem', color: '#64748b', paddingLeft: '1.25rem', margin: 0 }}>
+                      <h4 className="text-text font-semibold text-sm" style={{ marginBottom: '0.5rem' }}>💡 Pro Tips:</h4>
+                      <ul className="text-text-muted text-sm" style={{ paddingLeft: '1.25rem', margin: 0 }}>
                         {visaInfo.tips.slice(0, 2).map((tip, idx) => (
                           <li key={idx} style={{ marginBottom: '0.25rem' }}>{tip}</li>
                         ))}
@@ -391,13 +391,13 @@ export default function Onboarding() {
                     </div>
                   </div>
                 )}
-                <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.5rem' }}>
+                <p className="text-text-muted text-sm" style={{ marginTop: '0.5rem' }}>
                   💡 Most visas are processed through VFS Global
                 </p>
               </div>
 
               <div>
-                <label htmlFor="countryOfOrigin" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Country of Origin 🌍</label>
+                <label htmlFor="countryOfOrigin" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Country of Origin 🌍</label>
                 <select
                   id="countryOfOrigin"
                   value={countryOfOrigin}
@@ -413,7 +413,7 @@ export default function Onboarding() {
               </div>
 
               <div>
-                <label htmlFor="targetVisaDate" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Target Application Date (Optional)</label>
+                <label htmlFor="targetVisaDate" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Target Application Date (Optional)</label>
                 <input
                   id="targetVisaDate"
                   type="date"
@@ -446,8 +446,8 @@ export default function Onboarding() {
         {/* Step 2: Document Upload */}
         {step === 2 && (
           <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-            <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#1e293b' }}>📄 Upload Your Documents</h1>
-            <p style={{ color: '#64748b', marginBottom: '2rem' }}>Start by uploading at least one document. You can add more anytime.</p>
+            <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>📄 Upload Your Documents</h1>
+            <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Start by uploading at least one document. You can add more anytime.</p>
 
             {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
 
@@ -497,7 +497,7 @@ export default function Onboarding() {
 
             {documents.length > 0 && (
               <div style={{ marginBottom: '2rem' }}>
-                <h3 style={{ marginBottom: '1rem', color: '#1e293b' }}>✅ Uploaded Documents ({documents.length})</h3>
+                <h3 className="text-text" style={{ marginBottom: '1rem' }}>✅ Uploaded Documents ({documents.length})</h3>
                 <ul style={{ listStyle: 'none', padding: 0 }}>
                   {documents.map((doc) => (
                     <li key={doc.id} style={{ padding: '1rem', background: '#f0fdf4', borderRadius: '8px', marginBottom: '0.5rem', border: '1px solid #bbf7d0' }}>
@@ -524,7 +524,7 @@ export default function Onboarding() {
               </button>
             </div>
             {documents.length === 0 && (
-              <p style={{ textAlign: 'center', color: '#64748b', marginTop: '1rem', fontSize: '0.9rem' }}>Upload at least one document to continue</p>
+              <p className="text-text-muted text-center text-sm" style={{ marginTop: '1rem' }}>Upload at least one document to continue</p>
             )}
           </div>
         )}

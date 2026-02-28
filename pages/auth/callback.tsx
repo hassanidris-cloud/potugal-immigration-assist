@@ -67,10 +67,10 @@ export default function AuthCallback() {
     }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: '4rem', marginBottom: '1rem', animation: 'spin 2s linear infinite' }}>✨</div>
-        <h1 style={{ fontSize: '1.8rem', color: '#1e293b', marginBottom: '0.5rem' }}>
+        <h1 className="text-text" style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>
           Verifying your email...
         </h1>
-        <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
+        <p className="text-text-muted" style={{ fontSize: '1.05rem' }}>
           Please wait while we set up your account
         </p>
       </div>
