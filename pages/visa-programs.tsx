@@ -32,7 +32,7 @@ export default function VisaPrograms() {
               <Link href="/#faq" onClick={() => setNavOpen(false)} className="text-white/90 no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="text-white/90 no-underline font-medium">Contact</Link>
               <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
-              <Link href="/auth/signup" className="home-nav-signup" onClick={() => setNavOpen(false)} className="home-nav-signup no-underline">Sign Up</Link>
+              <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
             </div>
           </div>
         </nav>
