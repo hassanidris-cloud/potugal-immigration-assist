@@ -9,8 +9,30 @@ export default function AdminInvoices() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadInvoices()
+    checkAdmin()
   }, [])
+
+  const checkAdmin = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.replace('/auth/login')
+        return
+      }
+      const { data: profile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      if (profile?.role !== 'admin') {
+        router.replace('/dashboard')
+        return
+      }
+      await loadInvoices()
+    } catch {
+      router.replace('/dashboard')
+    }
+  }
 
   const loadInvoices = async () => {
     try {

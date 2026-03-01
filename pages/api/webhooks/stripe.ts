@@ -36,24 +36,9 @@ export default async function handler(
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
 
-      const subscription_id = session.metadata?.subscription_id
       const invoice_id = session.metadata?.invoice_id
 
       const supabase = getServiceSupabase()
-
-      // Update subscription if this is a subscription payment
-      if (subscription_id) {
-        await supabase
-          .from('subscriptions')
-          .update({
-            status: 'active',
-            stripe_session_id: session.id,
-            stripe_payment_intent_id: session.payment_intent as string,
-            paid_at: new Date().toISOString(),
-            expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
-          })
-          .eq('id', subscription_id)
-      }
 
       // Update invoice if this is a case-specific invoice payment
       if (invoice_id) {

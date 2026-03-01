@@ -15,12 +15,14 @@ export default function VisaPrograms() {
         <meta property="og:description" content="D2 Entrepreneur, D7 Passive Income, and D8 Digital Nomad visas. End-to-end support from documentation to AIMA appointment." />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-programs`} />}
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
       <div className="home-nav-spacer" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
         <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`}>
           <div className="home-nav-inner" style={{ paddingTop: '1rem', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-            <Link href="/" className="home-nav-logo" style={{ fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none', flexShrink: 0 }}>WINIT</Link>
+            <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
+              <img src="/logo.png" alt="WINIT" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+            </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />
               <span className="hamburger-line" />
@@ -29,7 +31,7 @@ export default function VisaPrograms() {
             <div className="home-nav-links">
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="text-white/90 no-underline font-medium">Why Portugal</Link>
               <Link href="/visa-programs" onClick={() => setNavOpen(false)} className="text-white/90 no-underline font-medium">Visa Programs</Link>
-              <Link href="/#faq" onClick={() => setNavOpen(false)} className="text-white/90 no-underline font-medium">FAQ</Link>
+              <Link href="/faq" onClick={() => setNavOpen(false)} className="text-white/90 no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="text-white/90 no-underline font-medium">Contact</Link>
               <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
               <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
@@ -183,7 +185,7 @@ export default function VisaPrograms() {
                 </div>
               </div>
 
-              <div style={{ marginTop: '3rem', background: '#e0f2fe', padding: '2rem', borderRadius: '12px', borderLeft: '4px solid #0066cc' }}>
+              <div className="visa-programs-info-box" style={{ marginTop: '3rem', padding: '2rem', borderRadius: '12px' }}>
                 <h4 className="text-primary" style={{ marginBottom: '0.5rem' }}>Stay Requirements</h4>
                 <p className="text-text-muted" style={{ lineHeight: '1.7', margin: 0 }}>
                   To keep the residency permit valid and lead to citizenship, you generally cannot be absent from Portugal for more than 6 consecutive months or 8 non-consecutive months within the permit&apos;s validity period.

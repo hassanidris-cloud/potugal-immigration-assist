@@ -9,7 +9,6 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [cases, setCases] = useState<any[]>([])
-  const [subscription, setSubscription] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -35,36 +34,6 @@ export default function Dashboard() {
         .single()
 
       setProfile(profileData)
-
-      // Check if user has active subscription or trial - redirect to signup if not
-      const { data: subscriptionData } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
-
-      if (profileData?.role !== 'admin') {
-        // Check if subscription is expired
-        if (subscriptionData && subscriptionData.expires_at) {
-          const expiresAt = new Date(subscriptionData.expires_at)
-          const now = new Date()
-          if (expiresAt < now) {
-            // Subscription expired, redirect to signup
-            router.push('/auth/signup')
-            return
-          }
-        }
-
-        if (!subscriptionData) {
-          router.push('/auth/signup')
-          return
-        }
-      }
-
-      setSubscription(subscriptionData)
 
       // Fetch cases
       const { data: casesData } = await supabase
@@ -174,51 +143,6 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Free Trial Banner */}
-      {profile?.role !== 'admin' && subscription && subscription.amount === 0 && subscription.expires_at && (
-        <div style={{
-          marginBottom: '2rem',
-          padding: '1.5rem',
-          background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-          borderRadius: '12px',
-          color: 'white',
-          boxShadow: '0 4px 12px rgba(251, 191, 36, 0.3)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.3rem' }}>
-              🎉 Free 14-Day Trial Active
-            </h3>
-            <p style={{ margin: 0, opacity: 0.95 }}>
-              Your trial ends on {new Date(subscription.expires_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-              {' '}({Math.max(0, Math.ceil((new Date(subscription.expires_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days remaining)
-            </p>
-          </div>
-          <Link
-            href="/auth/signup"
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'white',
-              color: '#f59e0b',
-              border: 'none',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: '600',
-              fontSize: '0.95rem',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            Upgrade Now
-          </Link>
-        </div>
-      )}
-
       {/* Welcome Section */}
       {profile && (
         <>
@@ -235,9 +159,6 @@ export default function Dashboard() {
             <h2 style={{ fontSize: '2.2rem', margin: '0 0 0.5rem 0' }}>
               👋 Welcome back, {profile.full_name || profile.email}!
             </h2>
-            <p style={{ opacity: 0.95, fontSize: '1.1rem', margin: 0 }}>
-              You're one step closer to your Portuguese adventure. Our specialist is here to help you every step of the way.
-            </p>
           </section>
 
           {/* Personalized Visa Tips */}
@@ -517,38 +438,16 @@ export default function Dashboard() {
           )}
         </section>
       ) : (
-        <section style={{ marginBottom: '3rem' }}>
-          <div style={{
-            padding: '2rem',
-            background: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            border: '2px solid #e2e8f0'
-          }}>
-            <h2 style={{ margin: 0, fontSize: '1.6rem', color: '#1e293b' }}>👑 Owner Dashboard</h2>
-            <p style={{ margin: '0.5rem 0 1rem 0', color: '#64748b' }}>Manage clients and view activity without creating a case.</p>
-            <Link
-              href="/admin/users"
-              style={{
-                display: 'inline-block',
-                padding: '0.75rem 1.5rem',
-                background: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
-                color: 'white',
-                textDecoration: 'none',
-                borderRadius: '8px',
-                fontWeight: '600'
-              }}
-            >
-              View All Clients
-            </Link>
-          </div>
+        <section style={{ marginBottom: '1rem' }}>
+          <p style={{ color: '#64748b', fontSize: '1rem' }}>Welcome back. Use your workspace below to manage client cases and contacts.</p>
         </section>
       )}
 
-      {/* Admin Section */}
+      {/* Specialist dashboard */}
       {profile?.role === 'admin' && (
         <section>
-          <h2 style={{ fontSize: '1.8rem', color: '#1e293b', marginBottom: '1.5rem' }}>⚙️ Admin Controls</h2>
+          <h2 style={{ fontSize: '1.8rem', color: '#1e293b', marginBottom: '0.5rem' }}>Your workspace</h2>
+          <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Manage client cases, view contacts, and send invoices.</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             <Link
               href="/admin/cases"
@@ -567,7 +466,7 @@ export default function Dashboard() {
               onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
               onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
             >
-              📊 All Cases
+              📋 Client cases
             </Link>
             <Link
               href="/admin/users"
@@ -586,26 +485,7 @@ export default function Dashboard() {
               onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
               onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
             >
-              👥 All Users
-            </Link>
-            <Link
-              href="/admin/test-mode"
-              style={{
-                padding: '1.5rem',
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
-                color: 'white',
-                textDecoration: 'none',
-                borderRadius: '12px',
-                textAlign: 'center',
-                fontWeight: '600',
-                fontSize: '1rem',
-                boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
-                transition: 'transform 0.2s',
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
-              onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
-            >
-              🧪 Test Mode
+              👥 Clients & contacts
             </Link>
             <Link
               href="/admin/invoices"

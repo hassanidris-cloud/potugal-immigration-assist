@@ -130,7 +130,7 @@ export default function Settings() {
                 <ul style={{ color: '#64748b', marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
                   <li>Your account and profile</li>
                   <li>All your cases and documents</li>
-                  <li>All invoices and subscriptions</li>
+                  <li>All invoices</li>
                   <li>All comments and appointments</li>
                 </ul>
                 

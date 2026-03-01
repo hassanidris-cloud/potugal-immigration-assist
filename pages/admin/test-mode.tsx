@@ -18,7 +18,7 @@ export default function AdminTestMode() {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
-        router.push('/auth/login')
+        router.replace('/auth/login')
         return
       }
 
@@ -29,14 +29,14 @@ export default function AdminTestMode() {
         .single()
 
       if (profile?.role !== 'admin') {
-        router.push('/dashboard')
+        router.replace('/dashboard')
         return
       }
 
       setUser(user)
     } catch (error) {
       console.error('Error checking admin:', error)
-      router.push('/dashboard')
+      router.replace('/dashboard')
     }
   }
 

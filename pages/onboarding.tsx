@@ -46,39 +46,7 @@ export default function Onboarding() {
       return
     }
 
-    // Check if user has active subscription or trial
-    const { data: subscriptionData } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    const now = new Date()
-    const isTrial = subscriptionData?.amount === 0
-    const trialExpired = isTrial && subscriptionData?.expires_at && new Date(subscriptionData.expires_at) < now
-    const isPaidActive = subscriptionData?.amount > 0 && subscriptionData?.status === 'active'
-
-    if (!subscriptionData) {
-      setAccessBlocked(true)
-      setBlockMessage('Payment is required to create your case. Please select a plan to continue.')
-      return
-    }
-
-    if (isTrial && trialExpired) {
-      setAccessBlocked(true)
-      setBlockMessage('Your 14-day trial has ended. Please complete payment to create or continue your case.')
-      return
-    }
-
-    if (!isTrial && !isPaidActive) {
-      setAccessBlocked(true)
-      setBlockMessage('Your subscription is inactive. Please complete payment to continue.')
-      return
-    }
-
+    // Package and payment are arranged with the owner via contact/WhatsApp after signup
     const { data: existingCases } = await supabase
       .from('cases')
       .select('id')
@@ -254,25 +222,10 @@ export default function Onboarding() {
                 marginBottom: '1.5rem'
               }}>
                 <strong>Access Locked:</strong> {blockMessage}
-                <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <div style={{ marginTop: '0.75rem' }}>
                   <button
                     type="button"
-                    onClick={() => router.push('/auth/signup')}
-                    style={{
-                      background: '#f97316',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.6rem 1rem',
-                      borderRadius: '8px',
-                      fontWeight: '600',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Choose a plan
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/admin/users')}
+                    onClick={() => router.push('/dashboard')}
                     style={{
                       background: '#10b981',
                       color: 'white',
@@ -283,7 +236,7 @@ export default function Onboarding() {
                       cursor: 'pointer'
                     }}
                   >
-                    Go to Admin
+                    Go to Dashboard
                   </button>
                 </div>
               </div>

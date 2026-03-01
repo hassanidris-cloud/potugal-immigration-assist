@@ -40,18 +40,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (existingUser) {
       console.log('User profile already exists, skipping creation')
-      // User already exists, just ensure subscription exists
-      const { data: existingSub } = await supabaseAdmin
-        .from('subscriptions')
-        .select('id')
-        .eq('user_id', userId)
-        .single()
-      
-      if (existingSub) {
-        return res.status(200).json({ success: true, message: 'User and subscription already exist' })
-      }
-      // Continue to create subscription below
-    } else if (checkError && checkError.code !== 'PGRST116') {
+      return res.status(200).json({ success: true, message: 'User already exists' })
+    }
+    if (checkError && checkError.code !== 'PGRST116') {
       // PGRST116 means no rows found, which is expected for new users
       throw checkError
     } else {
@@ -76,35 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('User profile created:', newUser)
     }
 
-    // Create a 14-day free trial subscription
-    const trialEndsAt = new Date()
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14)
-
-    console.log('Step 4: Creating subscription for user:', userId)
-
-    const { data: subInserted, error: trialError } = await supabaseAdmin
-      .from('subscriptions')
-      .insert({
-        user_id: userId,
-        plan: 'Premium',
-        amount: 0,
-        status: 'active',
-        expires_at: trialEndsAt.toISOString(),
-      })
-      .select()
-
-    if (trialError) {
-      console.error('Subscription creation error:', trialError)
-      // If it's a duplicate, that's OK
-      if (!trialError.message.includes('duplicate') && !trialError.message.includes('violates unique constraint')) {
-        throw trialError
-      }
-      console.log('Subscription already exists or duplicate, continuing')
-    } else {
-      console.log('Subscription created successfully:', subInserted)
-    }
-
-    res.status(200).json({ success: true, message: 'Profile and subscription created' })
+    res.status(200).json({ success: true, message: 'Profile created' })
   } catch (error: any) {
     console.error('Complete signup error:', error)
     res.status(500).json({ error: error.message || 'Signup failed' })

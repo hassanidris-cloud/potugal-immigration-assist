@@ -14,45 +14,6 @@ const PORTUGAL_IMAGES = [
 ]
 
 /* Gradient colors per slide: light (from image) → grey → dark. Grows with scroll. */
-/* Professional SVG icons for What You Get (stroke-based, inherit color) */
-const WHAT_YOU_GET_ICONS: Record<string, JSX.Element> = {
-  checklist: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M9 11l3 3L22 4" />
-      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-    </svg>
-  ),
-  secure: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0110 0v4" />
-    </svg>
-  ),
-  updates: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  ),
-  progress: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <line x1="18" y1="20" x2="18" y2="10" />
-      <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6" y1="20" x2="6" y2="14" />
-    </svg>
-  ),
-  communication: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-    </svg>
-  ),
-  payment: (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-      <line x1="1" y1="10" x2="23" y2="10" />
-    </svg>
-  ),
-}
-
 /* Icons for Which Visa quiz cards */
 const VISA_QUIZ_OPTIONS = [
   { id: 'd2' as const, label: 'I am an entrepreneur and want to register a branch or a new company in Portugal', icon: (
@@ -66,37 +27,23 @@ const VISA_QUIZ_OPTIONS = [
   ) },
 ]
 
-const FAQ_ITEMS = [
-  { q: 'Is this service legitimate and secure?', a: 'Yes. We work with licensed immigration lawyers, CPA accountants, and qualified realtors. We work under a formal contract with clearly defined terms and payment conditions. We use bank-level encryption for your documents, and your data is never shared with third parties except as required for your application.' },
-  { q: 'How long does the visa process take?', a: 'Typically 60–90 days from document submission to consulate decision. We help you prepare everything correctly the first time to avoid delays.' },
-  { q: 'What if I\'m not sure which visa I need?', a: 'Use our "Which visa is for you?" tool above, or sign up and our team will recommend the best option based on your situation.' },
-  { q: 'Can I bring my family?', a: 'Yes. D2, D7, and D8 programs support family reunification. We guide you through requirements for spouses and dependents.' },
-  { q: 'When do I pay?', a: 'You choose a plan at sign-up. Payment is secure (Stripe). No hidden fees—you see the total before you commit.' },
-]
-
 export default function Home() {
   const [slideIndex, setSlideIndex] = useState(0)
   const [paused, setPaused] = useState(false)
-  const [faqOpen, setFaqOpen] = useState<number | null>(null)
   const [visaChoice, setVisaChoice] = useState<'d2' | 'd7' | 'd8' | null>(null)
   const [stickyCtaVisible, setStickyCtaVisible] = useState(false)
   const [backToTopVisible, setBackToTopVisible] = useState(false)
   const [navOpen, setNavOpen] = useState(false)
-  const [featuresInView, setFeaturesInView] = useState(false)
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
   const [visaQuizCursor, setVisaQuizCursor] = useState({ x: 0, y: 0 })
   const [whatWeDoCursor, setWhatWeDoCursor] = useState({ x: 0, y: 0 })
   const [howStepsVisible, setHowStepsVisible] = useState(false)
   const [sectionRevealed, setSectionRevealed] = useState<Record<string, boolean>>({})
-  const featuresSectionRef = useRef<HTMLElement>(null)
-  const featuresRafRef = useRef<number | null>(null)
   const visaQuizRef = useRef<HTMLElement>(null)
   const whatWeDoRef = useRef<HTMLElement>(null)
   const howItWorksRef = useRef<HTMLElement>(null)
   const visaRevealRef = useRef<HTMLDivElement>(null)
   const whatWeDoRevealRef = useRef<HTMLDivElement>(null)
   const trustedRevealRef = useRef<HTMLDivElement>(null)
-  const faqRevealRef = useRef<HTMLDivElement>(null)
   const ctaRevealRef = useRef<HTMLDivElement>(null)
 
   const goTo = useCallback((index: number) => {
@@ -141,40 +88,6 @@ export default function Home() {
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [navOpen])
-
-  useEffect(() => {
-    const el = featuresSectionRef.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([e]) => setFeaturesInView(e.isIntersecting),
-      { threshold: 0, rootMargin: '80px 0px 80px 0px' }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
-
-  useEffect(() => {
-    const el = featuresSectionRef.current
-    if (!el || typeof window === 'undefined') return
-    if (!window.matchMedia('(pointer: fine)').matches) return
-    const onMove = (e: MouseEvent) => {
-      if (featuresRafRef.current != null) cancelAnimationFrame(featuresRafRef.current)
-      featuresRafRef.current = requestAnimationFrame(() => {
-        const rect = el.getBoundingClientRect()
-        const x = (e.clientX - rect.left) / rect.width - 0.5
-        const y = (e.clientY - rect.top) / rect.height - 0.5
-        setCursorPos({ x: x * 2, y: y * 2 })
-      })
-    }
-    const onLeave = () => setCursorPos({ x: 0, y: 0 })
-    el.addEventListener('mousemove', onMove, { passive: true })
-    el.addEventListener('mouseleave', onLeave)
-    return () => {
-      el.removeEventListener('mousemove', onMove)
-      el.removeEventListener('mouseleave', onLeave)
-      if (featuresRafRef.current != null) cancelAnimationFrame(featuresRafRef.current)
-    }
-  }, [])
 
   useEffect(() => {
     const el = visaQuizRef.current
@@ -230,7 +143,6 @@ export default function Home() {
       { ref: visaRevealRef, id: 'visa' },
       { ref: whatWeDoRevealRef, id: 'whatWeDo' },
       { ref: trustedRevealRef, id: 'trusted' },
-      { ref: faqRevealRef, id: 'faq' },
       { ref: ctaRevealRef, id: 'cta' },
     ]
     const obs = new IntersectionObserver(
@@ -266,7 +178,7 @@ export default function Home() {
         <meta name="twitter:title" content="WINIT — Move to Portugal with Confidence" />
         <meta name="twitter:description" content="Portugal immigration support: D2, D7, and D8 visa applications. Document checklist, expert help, and tracking." />
         {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -292,7 +204,9 @@ export default function Home() {
         {/* Top Bar with WINIT Branding + hamburger on mobile — fixed so it stays visible when scrolling */}
         <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`}>
           <div className="home-nav-inner">
-            <Link href="/" className="home-nav-logo" style={{ fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none', flexShrink: 0 }}>WINIT</Link>
+            <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
+              <img src="/logo.png" alt="WINIT" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+            </Link>
             <button
               type="button"
               className="home-nav-hamburger"
@@ -307,7 +221,7 @@ export default function Home() {
             <div className="home-nav-links">
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
               <Link href="/visa-programs" onClick={() => setNavOpen(false)} className="no-underline font-medium">Visa Programs</Link>
-              <a href="#faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</a>
+              <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
               <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
               <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
@@ -332,10 +246,6 @@ export default function Home() {
             ))}
           </div>
           <div className="hero-slideshow-overlay" aria-hidden />
-          <div className="hero-slideshow-arrows">
-            <button type="button" onClick={prev} aria-label="Previous image">‹</button>
-            <button type="button" onClick={next} aria-label="Next image">›</button>
-          </div>
           <div className="hero-slideshow-dots">
             {PORTUGAL_IMAGES.map((_, i) => (
               <button
@@ -355,11 +265,13 @@ export default function Home() {
           </div>
         </header>
 
+        {/* Connected background band: Which visa → What We Do → How it works */}
+        <div className="home-section-band">
         {/* Interactive: Which visa is for you? — 3D cards + tilt, scroll reveal */}
         <section
           id="check-eligibility"
           ref={visaQuizRef}
-          className="visa-quiz-section home-section home-section-padding section-bg-gradient"
+          className="visa-quiz-section home-section home-section-padding"
           style={{ padding: '4rem 0', scrollMarginTop: '5rem', position: 'relative' }}
         >
           <div className="home-container" style={{ position: 'relative', zIndex: 1 }}>
@@ -409,174 +321,93 @@ export default function Home() {
           </div>
         </section>
 
-        {/* What We Do — section 2: white for breathing space */}
-        <section className="what-we-do-section what-we-do-pro home-section-padding bg-white">
-          <div className="home-container what-we-do-pro-inner">
+        {/* How We Work With You — fused What We Do + How it works */}
+        <section ref={howItWorksRef} className="how-we-work-section home-section-padding" style={{ padding: '4rem 0', position: 'relative' }}>
+          <div className="home-container home-section-center" style={{ position: 'relative', zIndex: 1, maxWidth: '840px' }}>
             <div
               ref={whatWeDoRevealRef}
               data-reveal-id="whatWeDo"
               className={`scroll-reveal-box ${sectionRevealed.whatWeDo ? 'visible' : ''}`}
             >
-              <header className="what-we-do-pro-header reveal-stagger">
-                <h2 className="section-heading section-heading-no-underline what-we-do-pro-title">What We Do</h2>
-                <p className="what-we-do-pro-sub">End-to-end support for your Portugal residency journey</p>
-                <p className="what-we-do-pro-lead">
-                  We simplify the process: upload documents, track progress in one place, and get expert help when you need it.
-                </p>
+              <header className="how-we-work-header">
+                <h2 className="section-heading section-heading-no-underline section-heading-center">How We Work With You</h2>
+                <p className="how-we-work-sub">End-to-end support: choose your program, upload documents, get expert review, and reach approval—with one dashboard and a dedicated specialist.</p>
               </header>
 
-              <div className="what-we-do-feature-map reveal-stagger" aria-label="Our services">
-              <Link href="/visa-programs" className="what-we-do-feature-card">
-                <span className="what-we-do-feature-icon" aria-hidden>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></svg>
-                </span>
-                <h3 className="what-we-do-feature-title">Residency Visa Programs</h3>
-                <p className="what-we-do-feature-desc">D2 Entrepreneur, D7 Passive Income, and D8 Digital Nomad—with clear requirements and dedicated support.</p>
-                <span className="what-we-do-feature-link">View programs</span>
-              </Link>
-              <button type="button" className="what-we-do-feature-card" onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })}>
-                <span className="what-we-do-feature-icon" aria-hidden>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
-                </span>
-                <h3 className="what-we-do-feature-title">Expert Guidance</h3>
-                <p className="what-we-do-feature-desc">Work with a licensed immigration specialist who knows the process and keeps you on track.</p>
-                <span className="what-we-do-feature-link">FAQ & contact</span>
-              </button>
-              <Link href="/auth/signup" className="what-we-do-feature-card">
-                <span className="what-we-do-feature-icon" aria-hidden>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></svg>
-                </span>
-                <h3 className="what-we-do-feature-title">Progress Tracking</h3>
-                <p className="what-we-do-feature-desc">See exactly where you are in the process at any time, with a clear checklist and updates.</p>
-                <span className="what-we-do-feature-link">Get started</span>
-              </Link>
-            </div>
+              <div className="how-we-work-journey" aria-label="Your journey">
+                <div className={`how-we-work-step ${howStepsVisible ? 'how-step-visible' : ''}`}>
+                  <div className="how-we-work-step-num">1</div>
+                  <div className="how-we-work-step-body">
+                    <h3 className="how-we-work-step-title"><Link href="/auth/signup" className="how-step-cta-link">Sign Up →</Link></h3>
+                    <p className="how-we-work-step-desc">Pick your visa path (D2, D7, or D8). <strong>Residency Visa Programs</strong> — clear requirements, dedicated support. After you sign up, we’ll arrange your package and payment together.</p>
+                    <Link href="/visa-programs" className="how-we-work-pill">View programs</Link>
+                  </div>
+                </div>
+                <div className={`how-we-work-step ${howStepsVisible ? 'how-step-visible' : ''}`}>
+                  <div className="how-we-work-step-num">2</div>
+                  <div className="how-we-work-step-body">
+                    <h3 className="how-we-work-step-title">Upload Your Documents</h3>
+                    <p className="how-we-work-step-desc">Follow your checklist and upload everything in one place. <strong>Progress Tracking</strong> — see where you are at any time.</p>
+                    <Link href="/auth/signup" className="how-we-work-pill">Get started</Link>
+                  </div>
+                </div>
+                <div className={`how-we-work-step ${howStepsVisible ? 'how-step-visible' : ''}`}>
+                  <div className="how-we-work-step-num">3</div>
+                  <div className="how-we-work-step-body">
+                    <h3 className="how-we-work-step-title">We Review Everything</h3>
+                    <p className="how-we-work-step-desc">A licensed specialist checks your documents and tells you what’s missing. <strong>Expert Guidance</strong> — we keep you on track.</p>
+                    <Link href="/faq" className="how-we-work-pill">FAQ & contact</Link>
+                  </div>
+                </div>
+                <div className={`how-we-work-step how-we-work-step-last ${howStepsVisible ? 'how-step-visible' : ''}`}>
+                  <div className="how-we-work-step-num how-we-work-step-num-done">✓</div>
+                  <div className="how-we-work-step-body">
+                    <h3 className="how-we-work-step-title">Get Approved</h3>
+                    <p className="how-we-work-step-desc">We guide you through submission and stay with you until you have your visa.</p>
+                  </div>
+                </div>
+              </div>
 
               <div className="what-we-do-why-strip reveal-stagger">
-              <div className="what-we-do-why-item">
-                <span className="what-we-do-why-icon" aria-hidden>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                </span>
-                <span className="what-we-do-why-text"><strong>Less stressful</strong> — We handle the complicated stuff</span>
-              </div>
-              <div className="what-we-do-why-item">
-                <span className="what-we-do-why-icon" aria-hidden>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                </span>
-                <span className="what-we-do-why-text"><strong>Always updated</strong> — Real-time application status</span>
-              </div>
-              <div className="what-we-do-why-item">
-                <span className="what-we-do-why-icon" aria-hidden>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
-                </span>
-                <span className="what-we-do-why-text"><strong>Personal support</strong> — Direct access to your specialist</span>
-              </div>
-            </div>
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works — timeline + scroll-in, centered, no underline */}
-        <section ref={howItWorksRef} className="how-it-works-section home-section-padding section-bg-gradient" style={{ padding: '4rem 0', position: 'relative' }}>
-          <div className="home-container home-section-center" style={{ position: 'relative', zIndex: 1 }}>
-            <h2 className="section-heading section-heading-no-underline section-heading-center" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', marginBottom: '3rem' }}>How It Works</h2>
-            <div className="how-it-works-timeline">
-              <div className={`how-step-card ${howStepsVisible ? 'how-step-visible' : ''}`} >
-                <div style={{ position: 'relative' }}>
-                  <div className="how-step-num">1</div>
-                  <div className="how-step-connector" aria-hidden />
+                <div className="what-we-do-why-item">
+                  <span className="what-we-do-why-icon" aria-hidden>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                  </span>
+                  <span className="what-we-do-why-text"><strong>Less stressful</strong> — We handle the complicated stuff</span>
                 </div>
-                <div className="how-step-content">
-                  <h3><Link href="/auth/signup" className="how-step-cta-link">Sign Up & Choose Your Plan →</Link></h3>
-                  <p>Pick the package that fits your needs. Takes 2 minutes.</p>
+                <div className="what-we-do-why-item">
+                  <span className="what-we-do-why-icon" aria-hidden>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                  </span>
+                  <span className="what-we-do-why-text"><strong>Always updated</strong> — Real-time application status</span>
                 </div>
-              </div>
-              <div className={`how-step-card ${howStepsVisible ? 'how-step-visible' : ''}`} >
-                <div style={{ position: 'relative' }}>
-                  <div className="how-step-num">2</div>
-                  <div className="how-step-connector" aria-hidden />
-                </div>
-                <div className="how-step-content">
-                  <h3>Upload Your Documents</h3>
-                  <p>Follow our simple checklist and upload your papers securely.</p>
-                </div>
-              </div>
-              <div className={`how-step-card ${howStepsVisible ? 'how-step-visible' : ''}`} >
-                <div style={{ position: 'relative' }}>
-                  <div className="how-step-num">3</div>
-                  <div className="how-step-connector" aria-hidden />
-                </div>
-                <div className="how-step-content">
-                  <h3>We Review Everything</h3>
-                  <p>Our expert checks your documents and tells you if anything is missing.</p>
-                </div>
-              </div>
-              <div className={`how-step-card ${howStepsVisible ? 'how-step-visible' : ''}`} >
-                <div style={{ position: 'relative' }}>
-                  <div className="how-step-num">✓</div>
-                </div>
-                <div className="how-step-content">
-                  <h3>Get Approved</h3>
-                  <p>We guide you through submission and help until you get your visa.</p>
+                <div className="what-we-do-why-item">
+                  <span className="what-we-do-why-icon" aria-hidden>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
+                  </span>
+                  <span className="what-we-do-why-text"><strong>Personal support</strong> — Direct access to your specialist</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
+        </div>
 
-        {/* Features Section — scroll reveal + cursor tilt */}
+        {/* What You Get section */}
         <section
           id="what-you-get"
-          ref={featuresSectionRef}
           className="what-you-get-section home-section-padding bg-white"
           style={{
-            padding: '5rem 0',
+            padding: '2rem 0',
             position: 'relative',
             overflow: 'hidden',
           }}
         >
           <div className="what-you-get-glow" aria-hidden />
           <div className="home-container" style={{ position: 'relative', zIndex: 1 }}>
-            <p className="what-you-get-tagline text-center text-sm font-semibold tracking-widest uppercase mb-3" style={{ letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
-              Your journey, simplified
-            </p>
             <h2 className="what-you-get-title text-center font-bold" style={{ fontSize: '2.75rem', marginBottom: '0.5rem', color: 'var(--text)' }}>
               What You Get
             </h2>
-            <p className="text-text-muted text-center max-w-[520px] mx-auto" style={{ fontSize: '1.1rem', marginBottom: '3rem' }}>
-              <span className="what-you-get-hint-desktop">Scroll to discover — move your cursor over the cards to bring them to life.</span>
-              <span className="what-you-get-hint-mobile">Scroll to discover — tap the cards to explore.</span>
-            </p>
-
-            <div className="home-features-grid what-you-get-grid">
-              {[
-                { iconKey: 'checklist', title: 'Document Checklist', desc: 'Know exactly what papers you need for your visa type' },
-                { iconKey: 'secure', title: 'Secure Storage', desc: 'Your documents are encrypted and protected' },
-                { iconKey: 'updates', title: 'Live Updates', desc: 'Get notified when your specialist reviews documents' },
-                { iconKey: 'progress', title: 'Progress Tracking', desc: 'See where you are in the process at any time' },
-                { iconKey: 'communication', title: 'Direct Communication', desc: 'Message your specialist with questions anytime' },
-                { iconKey: 'payment', title: 'Easy Payment', desc: 'Secure online payment with credit card' },
-              ].map((item, i) => (
-                <div
-                  key={item.title}
-                  className={`what-you-get-card ${featuresInView ? 'visible' : ''}`}
-                  style={{
-                    transform: featuresInView
-                      ? `perspective(900px) rotateX(${cursorPos.y * 4}deg) rotateY(${cursorPos.x * 4}deg) translateY(0)`
-                      : 'perspective(900px) rotateX(0) rotateY(0) translateY(24px)',
-                    transition: 'transform 0.2s ease-out, opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease',
-                    transitionDelay: featuresInView ? `${i * 80}ms` : '0ms',
-                    opacity: 1,
-                  }}
-                >
-                  <div className="what-you-get-card-inner">
-                    <span className="what-you-get-icon" aria-hidden>{WHAT_YOU_GET_ICONS[item.iconKey]}</span>
-                    <h3 className="mb-2 text-xl font-semibold" style={{ color: 'var(--text)' }}>{item.title}</h3>
-                    <p className="text-text-muted leading-relaxed m-0 text-sm md:text-base">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -606,33 +437,6 @@ export default function Home() {
             <p className="text-text-muted text-base m-0">No reviews yet.</p>
             </div>
 
-            {/* FAQ — scroll reveal */}
-            <div
-              id="faq"
-              ref={faqRevealRef}
-              data-reveal-id="faq"
-              className={`scroll-reveal-box floating-box home-section-center ${sectionRevealed.faq ? 'visible' : ''}`}
-              style={{ scrollMarginTop: '5rem', marginTop: '3rem', padding: '2.5rem' }}
-            >
-              <h2 className="section-heading section-heading-center" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2rem)', marginBottom: '1.5rem' }}>Frequently asked questions</h2>
-              <div className="faq-list faq-list-center">
-                {FAQ_ITEMS.map((item, i) => (
-                  <div key={i} className="faq-item">
-                    <button
-                      type="button"
-                      className="faq-question"
-                      onClick={() => setFaqOpen(faqOpen === i ? null : i)}
-                      aria-expanded={faqOpen === i}
-                    >
-                      {item.q}
-                      <span className="faq-icon">{faqOpen === i ? '−' : '+'}</span>
-                    </button>
-                    {faqOpen === i && <div className="faq-answer">{item.a}</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* CTA Section – welcoming close, scroll reveal */}
             <div
               ref={ctaRevealRef}
@@ -654,7 +458,7 @@ export default function Home() {
               <Link href="/auth/signup" className="home-cta-button">
                 Start my application — it’s free to begin
               </Link>
-              <p className="home-cta-trust">🔒 Secure & confidential · No commitment until you choose a plan</p>
+              <p className="home-cta-trust">🔒 Secure & confidential · Package and payment arranged after you contact us</p>
             </div>
             </div>
           </div>
@@ -681,7 +485,9 @@ export default function Home() {
         {/* Footer */}
         <footer className="home-footer">
           <div className="home-container">
-            <div className="font-bold text-primary mb-4 text-2xl">WINIT</div>
+            <div className="mb-4">
+              <img src="/logo.png" alt="WINIT" width={70} height={41} style={{ height: 40, width: 'auto' }} />
+            </div>
             <p className="text-text-muted mb-2">Licensed immigration support · Your data is secure and confidential</p>
             <p className="text-text-muted mb-2">
               For official requirements, see <a href="https://www.aima.gov.pt" target="_blank" rel="noopener noreferrer" className="text-accent underline">AIMA</a> and your consulate.

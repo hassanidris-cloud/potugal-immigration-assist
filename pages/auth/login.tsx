@@ -16,14 +16,25 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) throw error
 
-      router.push('/dashboard')
+      // Redirect admins to admin area, others to contact
+      const { data: profile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user!.id)
+        .single()
+
+      if (profile?.role === 'admin') {
+        router.push('/dashboard')
+      } else {
+        router.push('/contact')
+      }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password')
     } finally {

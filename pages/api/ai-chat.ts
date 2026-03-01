@@ -54,30 +54,39 @@ export default async function handler(
     content: String(m.content || '').slice(0, 4000),
   }))
 
+  const rateLimitMessage = 'The AI service is busy. Please wait a minute and try again.'
+
   try {
     if (geminiKey) {
       const contents = buildGeminiContents(trimmed)
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents,
-            generationConfig: {
-              maxOutputTokens: 800,
-              temperature: 0.6,
-            },
-          }),
-        }
-      )
+      const callGemini = async (): Promise<Response> =>
+        fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+              contents,
+              generationConfig: {
+                maxOutputTokens: 800,
+                temperature: 0.6,
+              },
+            }),
+          }
+        )
+      let response = await callGemini()
+      if (response.status === 429) {
+        await new Promise((r) => setTimeout(r, 2500))
+        response = await callGemini()
+      }
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
         const errMsg = data.error?.message || data.message || 'AI request failed'
-        console.error('Gemini API error', response.status, errMsg)
+        console.error('Gemini API error', response.status, errMsg, data)
+        const isRateLimit = response.status === 429 || /quota|rate|limit|resourceExhausted/i.test(String(errMsg))
         return res.status(response.status >= 500 ? 502 : 400).json({
-          error: response.status === 429 ? 'Too many requests. Please wait a moment and try again.' : errMsg,
+          error: isRateLimit ? rateLimitMessage : errMsg,
         })
       }
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text
@@ -94,25 +103,32 @@ export default async function handler(
         content: m.content,
       })),
     ]
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${openaiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: apiMessages,
-        max_tokens: 800,
-        temperature: 0.6,
-      }),
-    })
+    const callOpenAI = async (): Promise<Response> =>
+      fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${openaiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: apiMessages,
+          max_tokens: 800,
+          temperature: 0.6,
+        }),
+      })
+    let response = await callOpenAI()
+    if (response.status === 429) {
+      await new Promise((r) => setTimeout(r, 2500))
+      response = await callOpenAI()
+    }
     const data = await response.json().catch(() => ({}))
     if (!response.ok) {
       const errMsg = data.error?.message || data.message || 'AI request failed'
       console.error('OpenAI API error', response.status, errMsg)
+      const isRateLimit = response.status === 429 || /rate|limit/i.test(String(errMsg))
       return res.status(response.status >= 500 ? 502 : 400).json({
-        error: response.status === 429 ? 'Too many requests. Please wait a moment and try again.' : errMsg,
+        error: isRateLimit ? rateLimitMessage : errMsg,
       })
     }
     const content = data.choices?.[0]?.message?.content

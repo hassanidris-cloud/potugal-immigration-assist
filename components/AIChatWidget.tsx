@@ -143,7 +143,7 @@ export default function AIChatWidget() {
               </button>
             </div>
             <p className="ai-chat-disclaimer">
-              For official requirements, see <a href="https://www.aima.gov.pt" target="_blank" rel="noopener noreferrer">AIMA</a> and your consulate. Need a plan? <Link href="/auth/signup">Sign up</Link> or <Link href="/contact">contact us</Link>.
+              For official requirements, see <a href="https://www.aima.gov.pt" target="_blank" rel="noopener noreferrer">AIMA</a> and your consulate. <Link href="/auth/signup">Sign up</Link> or <Link href="/contact">contact us</Link> to get started—we’ll arrange your package and payment together.
             </p>
           </div>
         )}

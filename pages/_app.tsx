@@ -9,7 +9,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ErrorBoundary>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
-        <meta name="theme-color" content="#1F2937" />
+        <meta name="theme-color" content="#000000" />
         <meta name="description" content="WINIT — Portugal immigration support. D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking." />
         <meta name="robots" content="index, follow" />
         <meta name="format-detection" content="telephone=no" />

@@ -6,22 +6,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========== Professional clarity — one blue, white, dark text only ========== */
+/* ========== Logo colors: blue, green, yellow, black ========== */
 :root {
-  --nav-bg: #1F2937;         /* Deep blue-gray: nav/footer. White text only. */
-  --primary: #2563EB;        /* Professional blue: buttons and links only */
-  --primary-dark: #1D4ED8;   /* Button hover */
-  --primary-light: #1D4ED8;
-  --accent: #2563EB;        /* Same as primary — one blue only */
-  --secondary: #F3F4F6;      /* Section divider (alternate sections only) */
-  --background: #FFFFFF;     /* Pure white */
+  --nav-bg: #000000;         /* Logo black: nav/footer */
+  --primary: #2563eb;        /* Logo blue: buttons, main links */
+  --primary-dark: #1d4ed8;   /* Darker blue: hover */
+  --primary-light: #3b82f6; /* Lighter blue: gradients */
+  --accent: #2563eb;         /* Same as primary */
+  --logo-green: #22c55e;     /* Logo green: secondary accent, success */
+  --logo-yellow: #eab308;    /* Logo yellow: highlights, badges */
+  --secondary: #f0fdf4;      /* Very light green tint: section divider */
+  --background: #FFFFFF;
   --card: #FFFFFF;
-  --text: #111827;           /* Main headings */
-  --text-muted: #374151;     /* Paragraph text. Never lighter. */
-  --border: #E5E7EB;
+  --text: #0f172a;           /* Headings */
+  --text-muted: #374151;     /* Body text */
+  --border: #e5e7eb;
   /* Status */
-  --success: #059669;
-  --warning: #d97706;
+  --success: #22c55e;
+  --warning: #eab308;
   --error: #dc2626;
   /* Typography & radius */
   --font-sans: 'DM Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -210,7 +212,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .btn-primary {
-  background: #2563EB;
+  background: var(--primary);
   color: white;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
@@ -399,6 +401,32 @@ h1, h2, h3, h4, h5, h6,
   background: rgba(243, 244, 246, 0.92);
 }
 
+/* Single connected background from Which visa through How it works */
+.home-section-band {
+  background: rgba(243, 244, 246, 0.92);
+}
+
+@media (max-width: 639px) {
+  .home-section-band {
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
+  }
+  .home-section-band .home-container {
+    padding-left: max(1.25rem, env(safe-area-inset-left, 0px) + 0.75rem);
+    padding-right: max(1.25rem, env(safe-area-inset-right, 0px) + 0.75rem);
+  }
+}
+
+.home-section-band .visa-quiz-section::before,
+.home-section-band .how-it-works-section::before {
+  display: none;
+}
+
+.home-section-band .what-we-do-section.section-bg-gradient.what-we-do-pro,
+.home-section-band .what-we-do-pro {
+  background: transparent;
+}
+
 /* Section headings – with colored underline accent */
 .section-heading {
   font-family: var(--font-display);
@@ -577,14 +605,14 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .hero-cta-primary {
-  background: #2563EB;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--logo-green) 100%);
   color: #fff;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   border-radius: 8px;
 }
 
 .hero-cta-primary:hover {
-  background: #1D4ED8;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #16a34a 100%);
   box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
   transform: translateY(-2px);
 }
@@ -599,9 +627,9 @@ h1, h2, h3, h4, h5, h6,
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Trust bar — navy authority, gold accent */
+/* Trust bar — logo blue */
 .trust-bar {
-  background: var(--primary);
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 50%, var(--logo-green) 100%);
   color: white;
   padding: 2rem;
 }
@@ -969,7 +997,7 @@ h1, h2, h3, h4, h5, h6,
 
 .visa-result-btn {
   padding: 0.75rem 1.5rem;
-  background: #2563EB;
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -983,7 +1011,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .visa-result-btn:hover {
-  background: #1D4ED8;
+  background: var(--primary-dark);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
@@ -1004,6 +1032,11 @@ h1, h2, h3, h4, h5, h6,
   scroll-margin-top: 90px;
 }
 
+.visa-programs-info-box {
+  background: var(--secondary);
+  border-left: 4px solid var(--logo-green);
+}
+
 /* ========== What We Do — professional feature map ========== */
 .what-we-do-section {
   position: relative;
@@ -1013,6 +1046,7 @@ h1, h2, h3, h4, h5, h6,
   padding: 4.5rem 0;
   background: #FFFFFF;
 }
+
 
 .what-we-do-pro-inner {
   position: relative;
@@ -1224,7 +1258,233 @@ button.what-we-do-feature-card {
   font-weight: 600;
 }
 
-/* ========== How It Works — timeline + 3D steps ========== */
+/* ========== How We Work With You — fused What We Do + How it works ========== */
+.how-we-work-section {
+  position: relative;
+}
+
+.how-we-work-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.how-we-work-header .section-heading {
+  margin-bottom: 0.75rem;
+}
+
+.how-we-work-sub {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.how-we-work-journey {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.how-we-work-step {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  padding-bottom: 1.75rem;
+  position: relative;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.how-we-work-step.how-step-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+  .how-we-work-step.how-step-visible:nth-child(1) { transition-delay: 0ms; }
+.how-we-work-step.how-step-visible:nth-child(2) { transition-delay: 80ms; }
+.how-we-work-step.how-step-visible:nth-child(3) { transition-delay: 160ms; }
+.how-we-work-step.how-step-visible:nth-child(4) { transition-delay: 240ms; }
+
+@media (max-width: 639px) {
+  .how-we-work-step {
+    transition-duration: 0.35s;
+  }
+  .how-we-work-step.how-step-visible:nth-child(2) { transition-delay: 40ms; }
+  .how-we-work-step.how-step-visible:nth-child(3) { transition-delay: 80ms; }
+  .how-we-work-step.how-step-visible:nth-child(4) { transition-delay: 120ms; }
+}
+
+.how-we-work-step-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--logo-green) 100%);
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.how-we-work-step-num-done {
+  background: var(--logo-green);
+  font-size: 1.35rem;
+}
+
+.how-we-work-step-body {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.how-we-work-step:hover .how-we-work-step-body {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  transform: translateX(4px);
+}
+
+.how-we-work-step-title {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--text);
+}
+
+.how-we-work-step-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.how-we-work-step-desc {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem 0;
+}
+
+.how-we-work-step-desc strong {
+  color: var(--text);
+}
+
+.how-we-work-pill {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.1);
+  transition: background 0.2s, color 0.2s;
+}
+
+.how-we-work-pill:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.how-we-work-step-last {
+  padding-bottom: 0;
+}
+
+.how-we-work-step-last .how-we-work-step-body {
+  margin-bottom: 0;
+}
+
+.how-we-work-section .what-we-do-why-strip {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 639px) {
+  .how-we-work-section {
+    padding: 2.5rem 0 !important;
+  }
+  .how-we-work-header {
+    margin-bottom: 1.75rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+  .how-we-work-header .section-heading {
+    font-size: clamp(1.4rem, 5vw, 1.75rem);
+    line-height: 1.25;
+  }
+  .how-we-work-sub {
+    font-size: 1rem;
+    line-height: 1.6;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+  .how-we-work-step {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-bottom: 1.5rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .how-we-work-step-num {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+  .how-we-work-step-body {
+    padding: 1rem 1.25rem;
+    min-height: 44px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .how-we-work-step-title {
+    font-size: 1.1rem;
+  }
+  .how-we-work-step-desc {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  .how-we-work-pill {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .how-we-work-section .what-we-do-why-strip {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    padding-left: max(1rem, env(safe-area-inset-left, 0px) + 0.5rem);
+    padding-right: max(1rem, env(safe-area-inset-right, 0px) + 0.5rem);
+    padding-bottom: 1rem;
+  }
+  .how-we-work-section .what-we-do-why-item {
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .how-we-work-step .how-step-cta-link {
+    min-height: 48px;
+    padding: 0.75rem 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+
+@media (max-width: 439px) {
+  .how-we-work-step-body {
+    padding: 1rem;
+  }
+}
+
+/* ========== How It Works (legacy / other pages) — timeline + 3D steps ========== */
 .how-it-works-section {
   position: relative;
   overflow: hidden;
@@ -1272,7 +1532,7 @@ button.what-we-do-feature-card {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #2563EB;
+  background: var(--primary);
   color: #fff;
   font-size: 1.35rem;
   font-weight: 700;
@@ -1328,7 +1588,7 @@ button.what-we-do-feature-card {
 
 .how-step-cta-link {
   display: inline-block;
-  background: #2563EB;
+  background: var(--primary);
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
   font-weight: 700;
@@ -1339,7 +1599,7 @@ button.what-we-do-feature-card {
 }
 
 .how-step-cta-link:hover {
-  background: #1D4ED8;
+  background: var(--primary-dark);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
@@ -1760,7 +2020,7 @@ button.what-we-do-feature-card {
 }
 
 .home-cta-button {
-  background: #2563EB;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--logo-green) 100%);
   color: #fff;
   padding: 1rem 2.25rem;
   font-size: 1.1rem;
@@ -1773,7 +2033,7 @@ button.what-we-do-feature-card {
 }
 
 .home-cta-button:hover {
-  background: #1D4ED8;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #16a34a 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
@@ -1900,7 +2160,7 @@ button.what-we-do-feature-card {
 }
 
 .back-to-top:hover {
-  background: #334155;
+  background: var(--nav-bg);
   color: white;
 }
 
@@ -2420,21 +2680,21 @@ button.what-we-do-feature-card {
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   min-height: 48px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--logo-green) 100%);
   color: white;
   border: none;
   border-radius: var(--radius-lg);
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(26, 35, 126, 0.3);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .ai-chat-fab:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(26, 35, 126, 0.35);
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.35);
 }
 
 .ai-chat-fab:focus {
@@ -2556,7 +2816,7 @@ button.what-we-do-feature-card {
 }
 
 .ai-chat-bubble-user .ai-chat-bubble-inner {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--logo-green) 100%);
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -2630,7 +2890,7 @@ button.what-we-do-feature-card {
 .ai-chat-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.2);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 .ai-chat-input::placeholder {

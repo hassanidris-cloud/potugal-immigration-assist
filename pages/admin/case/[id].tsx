@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
+import CaseChat from '../../../components/CaseChat'
 
 export default function AdminCaseReview() {
   const router = useRouter()
@@ -9,12 +10,39 @@ export default function AdminCaseReview() {
   const [caseData, setCaseData] = useState<any>(null)
   const [documents, setDocuments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [accessOk, setAccessOk] = useState(false)
 
   useEffect(() => {
-    if (id) {
+    checkAdmin()
+  }, [])
+
+  useEffect(() => {
+    if (accessOk && id) {
       loadCaseData()
     }
-  }, [id])
+  }, [accessOk, id])
+
+  const checkAdmin = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.replace('/auth/login')
+        return
+      }
+      const { data: profile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      if (profile?.role !== 'admin') {
+        router.replace('/dashboard')
+        return
+      }
+      setAccessOk(true)
+    } catch {
+      router.replace('/dashboard')
+    }
+  }
 
   const loadCaseData = async () => {
     try {
@@ -63,18 +91,18 @@ export default function AdminCaseReview() {
     }
   }
 
-  if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>
+  if (!accessOk || loading) return <div style={{ padding: '2rem' }}>Loading...</div>
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <header style={{ marginBottom: '2rem' }}>
-        <Link href="/admin/cases" style={{ color: '#0070f3' }}>← Back to All Cases</Link>
-        <h1 style={{ marginTop: '1rem' }}>Case Review</h1>
+        <Link href="/admin/cases" style={{ color: '#0070f3' }}>← Back to client cases</Link>
+        <h1 style={{ marginTop: '1rem' }}>Case details</h1>
       </header>
 
       {caseData && (
-        <section style={{ marginBottom: '2rem', padding: '1.5rem', background: '#f9f9f9', borderRadius: '5px' }}>
-          <h2>Case Details</h2>
+        <section style={{ marginBottom: '2rem', padding: '1.5rem', background: '#f9f9f9', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '0.75rem' }}>Client & application</h2>
           <p><strong>Client:</strong> {caseData.users?.full_name} ({caseData.users?.email})</p>
           <p><strong>Phone:</strong> {caseData.users?.phone}</p>
           <p><strong>Case Type:</strong> {caseData.case_type}</p>
@@ -138,6 +166,17 @@ export default function AdminCaseReview() {
           </div>
         )}
       </section>
+
+      {caseData && (
+        <section style={{ marginTop: '2rem' }}>
+          <CaseChat
+            caseId={caseData.id}
+            caseUserId={caseData.user_id}
+            isSpecialist={true}
+            title="Chat with client"
+          />
+        </section>
+      )}
     </div>
   )
 }

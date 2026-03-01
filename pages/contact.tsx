@@ -46,13 +46,16 @@ export default function Contact() {
       <div style={{ minHeight: '100vh', fontFamily: 'sans-serif' }}>
         <nav style={{ background: '#1e293b', padding: '1rem 2rem' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Link href="/" style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none' }}>WINIT</Link>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
+              <img src="/logo.png" alt="WINIT" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+            </Link>
             <Link href="/" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>Back to home</Link>
           </div>
         </nav>
         <main style={{ maxWidth: '560px', margin: '0 auto', padding: '3rem 2rem' }}>
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#1e293b' }}>Contact us</h1>
-          <p style={{ color: '#64748b', marginBottom: '2rem' }}>Have a question? Send us a message and we’ll get back to you.</p>
+          <p style={{ color: '#64748b', marginBottom: '0.5rem' }}>Have a question? Send us a message and we’ll get back to you.</p>
+          <p style={{ color: '#475569', marginBottom: '2rem', fontSize: '0.95rem' }}>If you’ve just signed up, use this form or reach us on WhatsApp to arrange your package and payment.</p>
           {submitted ? (
             <div style={{ background: '#ecfdf5', padding: '1.5rem', borderRadius: '12px', color: '#065f46', marginBottom: '2rem' }}>
               Thanks for your message. We’ll reply to your email as soon as we can.

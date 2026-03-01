@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
 import { getVisaPersonalization } from '../../../lib/visaPersonalization'
+import CaseChat from '../../../components/CaseChat'
 
 export default function CaseChecklist() {
   const router = useRouter()
@@ -468,6 +469,17 @@ export default function CaseChecklist() {
             Return to Dashboard
           </Link>
         </div>
+
+        {caseData && id && (
+          <div style={{ marginTop: '2rem' }}>
+            <CaseChat
+              caseId={id as string}
+              caseUserId={caseData.user_id}
+              isSpecialist={false}
+              title="Message your specialist"
+            />
+          </div>
+        )}
       </div>
     </div>
   )

@@ -17,7 +17,7 @@ export default function AdminCases() {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
-        router.push('/auth/login')
+        router.replace('/auth/login')
         return
       }
 
@@ -28,14 +28,14 @@ export default function AdminCases() {
         .single()
 
       if (profile?.role !== 'admin') {
-        router.push('/dashboard')
+        router.replace('/dashboard')
         return
       }
 
       loadCases()
     } catch (error) {
       console.error('Error checking admin:', error)
-      router.push('/dashboard')
+      router.replace('/dashboard')
     }
   }
 
@@ -63,28 +63,12 @@ export default function AdminCases() {
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <header style={{ marginBottom: '2rem' }}>
         <Link href="/dashboard" style={{ color: '#0070f3' }}>← Back to Dashboard</Link>
-        <h1 style={{ marginTop: '1rem' }}>Admin: All Cases</h1>
+        <h1 style={{ marginTop: '1rem' }}>Client cases</h1>
+        <p style={{ color: '#64748b', marginTop: '0.5rem' }}>Review applications and chat with clients.</p>
       </header>
 
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-        <Link
-          href="/admin/test-mode"
-          style={{
-            padding: '0.75rem 1.5rem',
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '6px',
-            fontWeight: '600',
-            fontSize: '0.9rem',
-          }}
-        >
-          🧪 Test Mode
-        </Link>
-      </div>
-
       <section>
-        <h2>Cases ({cases.length})</h2>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>All cases ({cases.length})</h2>
         {cases.length === 0 ? (
           <p>No cases found.</p>
         ) : (
@@ -118,7 +102,7 @@ export default function AdminCases() {
                   </td>
                   <td style={{ padding: '0.75rem' }}>{new Date(c.created_at).toLocaleDateString()}</td>
                   <td style={{ padding: '0.75rem' }}>
-                    <Link href={`/admin/case/${c.id}`} style={{ color: '#0070f3' }}>Review</Link>
+                    <Link href={`/admin/case/${c.id}`} style={{ color: '#0070f3' }}>Open</Link>
                   </td>
                 </tr>
               ))}
