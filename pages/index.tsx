@@ -108,7 +108,9 @@ export default function Home() {
 
   useEffect(() => {
     if (paused) return
-    const t = setInterval(() => setSlideIndex((i) => (i + 1) % PORTUGAL_IMAGES.length), 5000)
+    const isPhone = typeof window !== 'undefined' && (window.innerWidth <= 639 || !window.matchMedia('(pointer: fine)').matches)
+    const interval = isPhone ? 6000 : 5000
+    const t = setInterval(() => setSlideIndex((i) => (i + 1) % PORTUGAL_IMAGES.length), interval)
     return () => clearInterval(t)
   }, [paused])
 
@@ -153,7 +155,8 @@ export default function Home() {
 
   useEffect(() => {
     const el = featuresSectionRef.current
-    if (!el) return
+    if (!el || typeof window === 'undefined') return
+    if (!window.matchMedia('(pointer: fine)').matches) return
     const onMove = (e: MouseEvent) => {
       if (featuresRafRef.current != null) cancelAnimationFrame(featuresRafRef.current)
       featuresRafRef.current = requestAnimationFrame(() => {
@@ -175,7 +178,8 @@ export default function Home() {
 
   useEffect(() => {
     const el = visaQuizRef.current
-    if (!el) return
+    if (!el || typeof window === 'undefined') return
+    if (!window.matchMedia('(pointer: fine)').matches) return
     const onMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect()
       const x = (e.clientX - rect.left) / rect.width - 0.5
@@ -193,7 +197,8 @@ export default function Home() {
 
   useEffect(() => {
     const el = whatWeDoRef.current
-    if (!el) return
+    if (!el || typeof window === 'undefined') return
+    if (!window.matchMedia('(pointer: fine)').matches) return
     const onMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect()
       const x = (e.clientX - rect.left) / rect.width - 0.5
@@ -539,7 +544,8 @@ export default function Home() {
               What You Get
             </h2>
             <p className="text-text-muted text-center max-w-[520px] mx-auto" style={{ fontSize: '1.1rem', marginBottom: '3rem' }}>
-              Scroll to discover — move your cursor over the cards to bring them to life.
+              <span className="what-you-get-hint-desktop">Scroll to discover — move your cursor over the cards to bring them to life.</span>
+              <span className="what-you-get-hint-mobile">Scroll to discover — tap the cards to explore.</span>
             </p>
 
             <div className="home-features-grid what-you-get-grid">
