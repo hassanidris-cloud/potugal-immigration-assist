@@ -38,7 +38,7 @@ export default function Dashboard() {
 
       // Clients must be marked paid by admin to use the dashboard
       if (profileData?.role !== 'admin' && !profileData?.paid_at) {
-        router.replace('/')
+        router.replace('/account-pending')
         return
       }
 

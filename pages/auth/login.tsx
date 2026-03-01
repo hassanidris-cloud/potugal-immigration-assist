@@ -35,7 +35,7 @@ export default function Login() {
       } else if (profile?.paid_at) {
         router.push('/dashboard')
       } else {
-        router.push('/')
+        router.push('/account-pending')
       }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password')
