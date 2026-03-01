@@ -533,7 +533,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {profile?.role === 'admin' ? (
+      {profile?.role === 'admin' && (
         <section style={{ marginBottom: '1rem' }}>
           <p style={{ color: '#64748b', fontSize: '1rem' }}>Welcome back. Use your workspace below to manage client cases and contacts.</p>
         </section>
