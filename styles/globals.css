@@ -258,6 +258,7 @@ h1, h2, h3, h4, h5, h6,
   position: absolute;
   inset: 0;
   opacity: 0;
+  z-index: 0;
   transition: opacity 1.2s ease-in-out;
   background-size: cover;
   background-position: center;
@@ -272,7 +273,7 @@ h1, h2, h3, h4, h5, h6,
 
 .hero-slide.active {
   opacity: 1;
-  z-index: 0;
+  z-index: 1;
 }
 
 .hero-slideshow-overlay {

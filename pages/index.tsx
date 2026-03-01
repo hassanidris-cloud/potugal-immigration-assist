@@ -29,7 +29,6 @@ const VISA_QUIZ_OPTIONS = [
 
 export default function Home() {
   const [slideIndex, setSlideIndex] = useState(0)
-  const [paused, setPaused] = useState(false)
   const [visaChoice, setVisaChoice] = useState<'d2' | 'd7' | 'd8' | null>(null)
   const [stickyCtaVisible, setStickyCtaVisible] = useState(false)
   const [backToTopVisible, setBackToTopVisible] = useState(false)
@@ -54,12 +53,11 @@ export default function Home() {
   const prev = useCallback(() => goTo(slideIndex - 1), [slideIndex, goTo])
 
   useEffect(() => {
-    if (paused) return
     const isPhone = typeof window !== 'undefined' && (window.innerWidth <= 639 || !window.matchMedia('(pointer: fine)').matches)
-    const interval = isPhone ? 6000 : 5000
-    const t = setInterval(() => setSlideIndex((i) => (i + 1) % PORTUGAL_IMAGES.length), interval)
+    const intervalMs = isPhone ? 6000 : 5000
+    const t = setInterval(() => setSlideIndex((i) => (i + 1) % PORTUGAL_IMAGES.length), intervalMs)
     return () => clearInterval(t)
-  }, [paused])
+  }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -230,11 +228,7 @@ export default function Home() {
         </nav>
 
         {/* Hero: image slideshow with light overlay, dark text, blue button */}
-        <header
-          className="home-hero-wrap home-hero-slideshow"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
+        <header className="home-hero-wrap home-hero-slideshow">
           <div className="hero-slideshow">
             {PORTUGAL_IMAGES.map((src, i) => (
               <div
