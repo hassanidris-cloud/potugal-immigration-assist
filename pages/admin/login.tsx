@@ -9,6 +9,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const redirected = router.query.message === 'admin'
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault()
@@ -30,7 +31,7 @@ export default function AdminLogin() {
         .single()
 
       if (profile?.role === 'admin') {
-        router.push('/dashboard')
+        router.push('/dashboard') // Admin panel (workspace)
       } else {
         setError('This login is for administrators only.')
         await supabase.auth.signOut()
@@ -69,9 +70,23 @@ export default function AdminLogin() {
             Admin sign in
           </h1>
           <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
-            Use your admin account to access the dashboard
+            Use your admin account to access the specialist panel
           </p>
         </div>
+
+        {redirected && (
+          <div style={{
+            padding: '0.75rem',
+            marginBottom: '1rem',
+            background: '#fef3c7',
+            border: '1px solid #fcd34d',
+            borderRadius: '8px',
+            color: '#92400e',
+            fontSize: '0.875rem',
+          }}>
+            Please sign in here with your admin credentials to access the panel.
+          </div>
+        )}
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {error && (
@@ -163,8 +178,12 @@ export default function AdminLogin() {
         </form>
 
         <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <Link href="/auth/login" style={{ color: '#64748b', fontSize: '0.875rem', textDecoration: 'none' }}>
+            ← Client login
+          </Link>
+          <span style={{ color: '#cbd5e1', margin: '0 0.5rem' }}>·</span>
           <Link href="/" style={{ color: '#64748b', fontSize: '0.875rem', textDecoration: 'none' }}>
-            ← Back to home
+            Back to home
           </Link>
         </div>
       </div>

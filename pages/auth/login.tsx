@@ -23,16 +23,20 @@ export default function Login() {
 
       if (error) throw error
 
-      // Redirect admins to dashboard; clients go to dashboard only if paid, else homepage
       const { data: profile } = await supabase
         .from('users')
         .select('role, paid_at')
         .eq('id', user!.id)
         .single()
 
+      // Admins must use the admin login page
       if (profile?.role === 'admin') {
-        router.push('/dashboard')
-      } else if (profile?.paid_at) {
+        await supabase.auth.signOut()
+        router.push('/admin/login?message=admin')
+        return
+      }
+
+      if (profile?.paid_at) {
         router.push('/dashboard')
       } else {
         router.push('/account-pending')
