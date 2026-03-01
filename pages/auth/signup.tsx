@@ -17,6 +17,7 @@ export default function Signup() {
   const [loading, setLoading] = useState(false)
   const [showCountryDropdown, setShowCountryDropdown] = useState(false)
   const [verificationSent, setVerificationSent] = useState(false)
+  const [emailSendFailed, setEmailSendFailed] = useState(false)
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault()
@@ -38,11 +39,15 @@ export default function Signup() {
         }
       })
 
-      // If we have a user (even with an error), email confirmation may have been sent
+      const authMsg = (authError?.message || '').toLowerCase()
+      const isEmailSendError = authMsg.includes('sending') && (authMsg.includes('confirmation') || authMsg.includes('email'))
+
+      // If we have a user (even with an error), email confirmation may have been sent or attempted
       if (authData?.user) {
         const needsConfirmation = (authData.user.identities && authData.user.identities.length === 0) ||
           authData.user.email_confirmed_at === null
-        if (needsConfirmation || authError?.message?.toLowerCase().includes('confirm')) {
+        if (needsConfirmation || authMsg.includes('confirm') || isEmailSendError) {
+          setEmailSendFailed(!!isEmailSendError)
           setVerificationSent(true)
           setLoading(false)
           return
@@ -71,10 +76,14 @@ export default function Signup() {
       }
 
       if (authError) {
-        // Friendly message for "already registered" – they may need to confirm or log in
         const msg = authError.message || ''
         if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('registered') || msg.toLowerCase().includes('exists')) {
           setError('This email is already registered. Check your inbox for a verification link, or try signing in.')
+          setLoading(false)
+          return
+        }
+        if (isEmailSendError) {
+          setError('Your account was created but we couldn\'t send the verification email right now. Use "Resend verification email" below to get a new link.')
           setLoading(false)
           return
         }
@@ -110,10 +119,18 @@ export default function Signup() {
         }}>
           <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>📧</div>
           <h1 style={{ fontSize: '2rem', margin: '0 0 1rem 0', color: '#1e293b' }}>Check Your Email</h1>
-          <p style={{ color: '#64748b', fontSize: '1.05rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-            We've sent a verification link to <strong>{email}</strong>. 
+          <p style={{ color: '#64748b', fontSize: '1.05rem', lineHeight: '1.6', marginBottom: emailSendFailed ? '1rem' : '2rem' }}>
+            We've sent a verification link to <strong>{email}</strong>.
             Please check your inbox and click the link to verify your account.
           </p>
+          {emailSendFailed && (
+            <div style={{ color: '#b45309', fontSize: '0.95rem', marginBottom: '2rem', padding: '1rem', background: '#fffbeb', borderRadius: '8px' }}>
+              <p style={{ margin: '0 0 0.75rem 0' }}>The verification email could not be sent right now.</p>
+              <Link href="/auth/resend-verification" style={{ color: '#b45309', fontWeight: '600', textDecoration: 'underline' }}>
+                Request a new verification email →
+              </Link>
+            </div>
+          )}
           <div style={{ 
             padding: '1rem',
             background: '#f0f9ff',
