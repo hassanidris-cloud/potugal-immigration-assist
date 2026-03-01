@@ -40,7 +40,7 @@ export default function VisaPrograms() {
         <main>
           <section className="home-section-padding" style={{ padding: '5rem 0', background: 'linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%)' }}>
             <div className="home-container">
-              <h1 id="residency-programs" className="section-heading" style={{ textAlign: 'center', fontSize: 'clamp(1.9rem, 4vw, 2.5rem)', marginBottom: '1rem', scrollMarginTop: '90px' }}>
+              <h1 id="residency-programs" className="section-heading section-heading-no-underline section-heading-center" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.5rem)', marginBottom: '1rem', scrollMarginTop: '90px' }}>
                 Types of Residency Programs
               </h1>
               <p className="text-text-muted text-center" style={{ fontSize: '1.2rem', marginBottom: '3rem' }}>
@@ -49,7 +49,8 @@ export default function VisaPrograms() {
 
               <div className="home-residency-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
                 <div id="visa-d2" className="visa-card" style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '2px solid #e2e8f0', scrollMarginTop: '90px' }}>
-                  <h2 className="text-primary" style={{ fontSize: '1.6rem', marginBottom: '0.5rem' }}>D2 Visa Program (Entrepreneur Visa)</h2>
+                  <p className="visa-card-label" style={{ margin: 0, marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--primary)' }}>D2 Visa</p>
+                  <h2 className="text-primary" style={{ fontSize: '1.6rem', marginBottom: '0.5rem' }}>Entrepreneur Visa</h2>
                   <p className="text-text-muted" style={{ lineHeight: '1.7', marginBottom: '1.5rem' }}>
                     Portugal D2 Visa is for non-EU/EEA/Swiss citizens who want to start a business, invest in an existing one, or work as independent professionals in Portugal.
                   </p>
@@ -98,7 +99,8 @@ export default function VisaPrograms() {
                 </div>
 
                 <div id="visa-d7" className="visa-card" style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '2px solid #e2e8f0', scrollMarginTop: '90px' }}>
-                  <h2 className="text-primary" style={{ fontSize: '1.6rem', marginBottom: '0.5rem' }}>D7 Visa Program (Passive Income)</h2>
+                  <p className="visa-card-label" style={{ margin: 0, marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--primary)' }}>D7 Visa</p>
+                  <h2 className="text-primary" style={{ fontSize: '1.6rem', marginBottom: '0.5rem' }}>Passive Income</h2>
                   <p className="text-text-muted" style={{ lineHeight: '1.7', marginBottom: '1.5rem' }}>
                     The Portugal D7 Visa is for non-EU/EEA/Swiss citizens with stable recurring income from outside Portugal.
                   </p>
@@ -143,7 +145,8 @@ export default function VisaPrograms() {
                 </div>
 
                 <div id="visa-d8" className="visa-card" style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '2px solid #e2e8f0', scrollMarginTop: '90px' }}>
-                  <h2 className="text-primary" style={{ fontSize: '1.6rem', marginBottom: '0.5rem' }}>D8 Visa Program (Digital Nomad)</h2>
+                  <p className="visa-card-label" style={{ margin: 0, marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--primary)' }}>D8 Visa</p>
+                  <h2 className="text-primary" style={{ fontSize: '1.6rem', marginBottom: '0.5rem' }}>Digital Nomad</h2>
                   <p className="text-text-muted" style={{ lineHeight: '1.7', marginBottom: '1.5rem' }}>
                     The Portugal D8 Visa is for remote workers or freelancers with clients outside Portugal.
                   </p>
