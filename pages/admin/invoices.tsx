@@ -6,6 +6,7 @@ import Link from 'next/link'
 export default function AdminInvoices() {
   const router = useRouter()
   const [invoices, setInvoices] = useState<any[]>([])
+  const [clientInvoices, setClientInvoices] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function AdminInvoices() {
         return
       }
       await loadInvoices()
+      await loadClientInvoices()
     } catch {
       router.replace('/dashboard')
     }
@@ -49,6 +51,25 @@ export default function AdminInvoices() {
       console.error('Error loading invoices:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadClientInvoices = async () => {
+    try {
+      const { data } = await supabase
+        .from('user_invoices')
+        .select(`
+          id,
+          user_id,
+          file_name,
+          file_path,
+          uploaded_at,
+          users:user_id (full_name, email)
+        `)
+        .order('uploaded_at', { ascending: false })
+      setClientInvoices(data || [])
+    } catch (error) {
+      console.error('Error loading client invoices:', error)
     }
   }
 
@@ -75,6 +96,23 @@ export default function AdminInvoices() {
     }
   }
 
+  const handleDownloadClientInvoice = async (invoiceId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) return
+      const res = await fetch(`/api/invoices/download?id=${invoiceId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Download failed')
+      window.open(data.url, '_blank')
+    } catch (err: any) {
+      console.error(err)
+      alert(err.message || 'Download failed')
+    }
+  }
+
   if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>
 
   return (
@@ -82,10 +120,75 @@ export default function AdminInvoices() {
       <header style={{ marginBottom: '2rem' }}>
         <Link href="/dashboard" style={{ color: '#0070f3' }}>← Back to Dashboard</Link>
         <h1 style={{ marginTop: '1rem' }}>Invoices</h1>
+        <p style={{ color: '#64748b', marginTop: '0.5rem' }}>Case invoices and client PDF invoices.</p>
       </header>
 
+      {/* Client PDF invoices (uploaded per client) */}
+      <section style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '1.35rem', marginBottom: '1rem' }}>Client PDF invoices ({clientInvoices.length})</h2>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1rem' }}>Invoices uploaded for each client. Clients can view and download these from their dashboard.</p>
+        {clientInvoices.length === 0 ? (
+          <p style={{ color: '#64748b' }}>No client PDF invoices yet. Upload from Clients & contacts → Invoice per client.</p>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f9f9f9', textAlign: 'left' }}>
+                <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Client</th>
+                <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>File</th>
+                <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Uploaded</th>
+                <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {clientInvoices.map((inv) => (
+                <tr key={inv.id} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '0.75rem' }}>
+                    {(inv.users as any)?.full_name || (inv.users as any)?.email || inv.user_id}
+                  </td>
+                  <td style={{ padding: '0.75rem' }}>{inv.file_name}</td>
+                  <td style={{ padding: '0.75rem' }}>
+                    {inv.uploaded_at ? new Date(inv.uploaded_at).toLocaleString() : '—'}
+                  </td>
+                  <td style={{ padding: '0.75rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadClientInvoice(inv.id)}
+                      style={{
+                        padding: '0.4rem 0.75rem',
+                        marginRight: '0.5rem',
+                        background: '#0066cc',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                      }}
+                    >
+                      Download
+                    </button>
+                    <Link
+                      href={`/admin/client/${inv.user_id}`}
+                      style={{
+                        padding: '0.4rem 0.75rem',
+                        background: '#64748b',
+                        color: 'white',
+                        textDecoration: 'none',
+                        borderRadius: '6px',
+                        fontSize: '0.85rem',
+                      }}
+                    >
+                      Client invoice
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
       <section>
-        <h2>All Invoices ({invoices.length})</h2>
+        <h2 style={{ fontSize: '1.35rem', marginBottom: '1rem' }}>Case invoices ({invoices.length})</h2>
         {invoices.length === 0 ? (
           <p>No invoices found.</p>
         ) : (

@@ -7,6 +7,7 @@ export default function AdminUsers() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [users, setUsers] = useState<any[]>([])
+  const [markingId, setMarkingId] = useState<string | null>(null)
 
   useEffect(() => {
     checkAdmin()
@@ -55,15 +56,30 @@ export default function AdminUsers() {
   }
 
   const markPaid = async (userId: string) => {
+    setMarkingId(userId)
     try {
-      const { error } = await supabase
-        .from('users')
-        .update({ paid_at: new Date().toISOString() })
-        .eq('id', userId)
-      if (error) throw error
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) {
+        alert('Session expired. Please sign in again.')
+        return
+      }
+      const res = await fetch('/api/admin/mark-paid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ userId }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || 'Failed to mark as paid')
+        return
+      }
       await loadUsers()
     } catch (e) {
       console.error('Mark paid error:', e)
+      alert('Something went wrong. Please try again.')
+    } finally {
+      setMarkingId(null)
     }
   }
 
@@ -129,19 +145,20 @@ export default function AdminUsers() {
                     {u.role !== 'admin' && !u.paid_at && (
                       <button
                         type="button"
+                        disabled={markingId === u.id}
                         onClick={() => markPaid(u.id)}
                         style={{
                           padding: '0.4rem 0.75rem',
-                          background: '#059669',
+                          background: markingId === u.id ? '#94a3b8' : '#059669',
                           color: 'white',
                           border: 'none',
                           borderRadius: '6px',
                           fontWeight: '600',
-                          cursor: 'pointer',
+                          cursor: markingId === u.id ? 'not-allowed' : 'pointer',
                           fontSize: '0.85rem'
                         }}
                       >
-                        Mark as paid
+                        {markingId === u.id ? 'Updating…' : 'Mark as paid'}
                       </button>
                     )}
                   </td>
