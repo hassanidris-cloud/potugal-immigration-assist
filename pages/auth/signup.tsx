@@ -38,18 +38,17 @@ export default function Signup() {
         }
       })
 
-      if (authError) throw authError
-
-      if (authData.user) {
-        // Check if email confirmation is required
-        if (authData.user.identities && authData.user.identities.length === 0) {
-          // Email confirmation required
+      // If we have a user (even with an error), email confirmation may have been sent
+      if (authData?.user) {
+        const needsConfirmation = (authData.user.identities && authData.user.identities.length === 0) ||
+          authData.user.email_confirmed_at === null
+        if (needsConfirmation || authError?.message?.toLowerCase().includes('confirm')) {
           setVerificationSent(true)
           setLoading(false)
           return
         }
 
-        // Create user profile via API route (bypasses RLS)
+        // No confirmation needed – create profile
         const response = await fetch('/api/auth/complete-signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -66,12 +65,23 @@ export default function Signup() {
         const data = await response.json()
         if (!response.ok) throw new Error(data.error || 'Failed to create profile')
 
-        // Show verification message
         setVerificationSent(true)
         setLoading(false)
+        return
+      }
+
+      if (authError) {
+        // Friendly message for "already registered" – they may need to confirm or log in
+        const msg = authError.message || ''
+        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('registered') || msg.toLowerCase().includes('exists')) {
+          setError('This email is already registered. Check your inbox for a verification link, or try signing in.')
+          setLoading(false)
+          return
+        }
+        throw authError
       }
     } catch (err: any) {
-      setError(err.message || 'Signup failed')
+      setError(err?.message || 'Signup failed')
     } finally {
       setLoading(false)
     }

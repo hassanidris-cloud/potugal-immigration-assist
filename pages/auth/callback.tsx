@@ -11,71 +11,78 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Supabase can return tokens in hash (#) or query (?)
-        const hashParams = new URLSearchParams(
-          typeof window !== 'undefined' ? window.location.hash.substring(1) : ''
-        )
-        const queryParams = new URLSearchParams(
-          typeof window !== 'undefined' ? window.location.search : ''
-        )
-        const access_token = hashParams.get('access_token') || queryParams.get('access_token')
-        const refresh_token = hashParams.get('refresh_token') || queryParams.get('refresh_token')
-        const type = hashParams.get('type') || queryParams.get('type')
-        const errorParam = hashParams.get('error_description') || queryParams.get('error_description') || hashParams.get('error') || queryParams.get('error')
+        if (typeof window === 'undefined') return
 
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const queryParams = new URLSearchParams(window.location.search)
+
+        const errorParam = hashParams.get('error_description') || queryParams.get('error_description') || hashParams.get('error') || queryParams.get('error')
         if (errorParam) {
           setError(errorParam)
           setStatus('error')
           return
         }
 
-        if (access_token) {
-          // Set the session so the client has the user
-          const { error: sessionError } = await supabase.auth.setSession({
-            access_token,
-            refresh_token: refresh_token || '',
-          })
-          if (sessionError) {
-            setError(sessionError.message || 'Invalid confirmation link')
+        // PKCE flow: Supabase may redirect with ?code= instead of #access_token
+        const code = queryParams.get('code')
+        if (code) {
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+          if (exchangeError) {
+            setError(exchangeError.message || 'Invalid or expired confirmation link')
             setStatus('error')
             return
           }
-
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user) {
-            // Create user profile if it doesn't exist
-            const { data: existingProfile } = await supabase
-              .from('users')
-              .select('id')
-              .eq('id', user.id)
-              .single()
-
-            if (!existingProfile) {
-              const res = await fetch('/api/auth/complete-signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  userId: user.id,
-                  email: user.email,
-                  fullName: user.user_metadata?.full_name || '',
-                  phone: user.user_metadata?.phone || null,
-                }),
-              })
-              if (!res.ok) {
-                const data = await res.json().catch(() => ({}))
-                setError(data.error || 'Failed to create profile')
-                setStatus('error')
-                return
-              }
+        } else {
+          // Implicit flow: tokens in hash or query
+          const access_token = hashParams.get('access_token') || queryParams.get('access_token')
+          const refresh_token = hashParams.get('refresh_token') || queryParams.get('refresh_token')
+          if (access_token) {
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token,
+              refresh_token: refresh_token || '',
+            })
+            if (sessionError) {
+              setError(sessionError.message || 'Invalid or expired confirmation link')
+              setStatus('error')
+              return
             }
-
-            setStatus('success')
-            router.push('/auth/login?verified=1')
-            return
           }
         }
 
-        // No tokens or not signup – send to login
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          // Create user profile if it doesn't exist
+          const { data: existingProfile } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', user.id)
+            .single()
+
+          if (!existingProfile) {
+            const res = await fetch('/api/auth/complete-signup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: user.id,
+                email: user.email,
+                fullName: user.user_metadata?.full_name || '',
+                phone: user.user_metadata?.phone || null,
+              }),
+            })
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({}))
+              setError(data.error || 'Failed to create profile')
+              setStatus('error')
+              return
+            }
+          }
+
+          setStatus('success')
+          router.push('/auth/login?verified=1')
+          return
+        }
+
+        // No session after handling – send to login
         router.push('/auth/login')
       } catch (err: any) {
         console.error('Callback error:', err)
