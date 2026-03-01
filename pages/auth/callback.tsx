@@ -70,10 +70,20 @@ export default function AuthCallback() {
               }),
             })
             if (!res.ok) {
-              const data = await res.json().catch(() => ({}))
-              setError(data.error || 'Failed to create profile')
-              setStatus('error')
-              return
+              // Fallback: create profile from client (RLS allows "insert own profile")
+              const { error: insertError } = await supabase.from('users').insert({
+                id: user.id,
+                email: user.email ?? '',
+                full_name: user.user_metadata?.full_name || null,
+                phone: user.user_metadata?.phone || null,
+                role: 'client',
+              })
+              if (insertError) {
+                const data = await res.json().catch(() => ({}))
+                setError(data.error || insertError.message || 'Failed to create profile')
+                setStatus('error')
+                return
+              }
             }
           }
 

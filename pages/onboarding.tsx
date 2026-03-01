@@ -46,7 +46,14 @@ export default function Onboarding() {
       return
     }
 
-    // Package and payment are arranged with the owner via contact/WhatsApp after signup
+    // Client must be marked paid by admin before they can create a case
+    if (profileData && !profileData.paid_at) {
+      setAccessBlocked(true)
+      setBlockMessage('Your account is pending payment confirmation. The specialist will enable your access after payment—you can log in and check back soon.')
+      return
+    }
+
+    // Paid user: check for existing case
     const { data: existingCases } = await supabase
       .from('cases')
       .select('id')
@@ -225,7 +232,7 @@ export default function Onboarding() {
                 <div style={{ marginTop: '0.75rem' }}>
                   <button
                     type="button"
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => router.push('/')}
                     style={{
                       background: '#10b981',
                       color: 'white',
@@ -236,7 +243,7 @@ export default function Onboarding() {
                       cursor: 'pointer'
                     }}
                   >
-                    Go to Dashboard
+                    Back to home
                   </button>
                 </div>
               </div>

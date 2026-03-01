@@ -54,6 +54,19 @@ export default function AdminUsers() {
     }
   }
 
+  const markPaid = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ paid_at: new Date().toISOString() })
+        .eq('id', userId)
+      if (error) throw error
+      await loadUsers()
+    } catch (e) {
+      console.error('Mark paid error:', e)
+    }
+  }
+
   if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>
 
   return (
@@ -72,7 +85,10 @@ export default function AdminUsers() {
               <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Email</th>
               <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Phone</th>
               <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Role</th>
+              <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Paid</th>
               <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Joined</th>
+              <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Invoice</th>
+              <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -82,7 +98,53 @@ export default function AdminUsers() {
                   <td style={{ padding: '0.75rem' }}>{u.email}</td>
                   <td style={{ padding: '0.75rem' }}>{u.phone || '—'}</td>
                   <td style={{ padding: '0.75rem', textTransform: 'capitalize' }}>{u.role || 'client'}</td>
+                  <td style={{ padding: '0.75rem' }}>
+                    {u.paid_at ? (
+                      <span style={{ color: '#059669', fontWeight: '600' }}>✓ Yes</span>
+                    ) : (
+                      <span style={{ color: '#64748b' }}>No</span>
+                    )}
+                  </td>
                   <td style={{ padding: '0.75rem' }}>{u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</td>
+                  <td style={{ padding: '0.75rem' }}>
+                    {u.role !== 'admin' && (
+                      <Link
+                        href={`/admin/client/${u.id}`}
+                        style={{
+                          padding: '0.4rem 0.75rem',
+                          background: '#0066cc',
+                          color: 'white',
+                          textDecoration: 'none',
+                          borderRadius: '6px',
+                          fontWeight: '600',
+                          fontSize: '0.85rem',
+                          display: 'inline-block',
+                        }}
+                      >
+                        Invoice
+                      </Link>
+                    )}
+                  </td>
+                  <td style={{ padding: '0.75rem' }}>
+                    {u.role !== 'admin' && !u.paid_at && (
+                      <button
+                        type="button"
+                        onClick={() => markPaid(u.id)}
+                        style={{
+                          padding: '0.4rem 0.75rem',
+                          background: '#059669',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem'
+                        }}
+                      >
+                        Mark as paid
+                      </button>
+                    )}
+                  </td>
                 </tr>
             ))}
           </tbody>

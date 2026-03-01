@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [cases, setCases] = useState<any[]>([])
+  const [invoices, setInvoices] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -35,6 +36,12 @@ export default function Dashboard() {
 
       setProfile(profileData)
 
+      // Clients must be marked paid by admin to use the dashboard
+      if (profileData?.role !== 'admin' && !profileData?.paid_at) {
+        router.replace('/')
+        return
+      }
+
       // Fetch cases
       const { data: casesData } = await supabase
         .from('cases')
@@ -43,6 +50,16 @@ export default function Dashboard() {
         .order('created_at', { ascending: false })
 
       setCases(casesData ? casesData.slice(0, 1) : [])
+
+      // Fetch client invoices (for non-admin)
+      if (profileData?.role !== 'admin') {
+        const { data: invData } = await supabase
+          .from('user_invoices')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('uploaded_at', { ascending: false })
+        setInvoices(invData || [])
+      }
     } catch (error) {
       console.error('Error loading dashboard:', error)
     } finally {
@@ -437,7 +454,86 @@ export default function Dashboard() {
             </div>
           )}
         </section>
-      ) : (
+      ) : null}
+
+      {/* Invoices (client only) */}
+      {profile?.role !== 'admin' && (
+        <section style={{ marginBottom: '3rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ margin: 0, fontSize: '1.8rem', color: '#1e293b' }}>🧾 Your invoices</h2>
+            <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.95rem' }}>View and download invoices from your specialist.</p>
+          </div>
+          {invoices.length === 0 ? (
+            <div
+              style={{
+                padding: '2rem',
+                background: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '2px dashed #e2e8f0',
+                color: '#64748b',
+              }}
+            >
+              No invoices yet. Your specialist will add them when available.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {invoices.map((inv) => (
+                <div
+                  key={inv.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '1rem 1.25rem',
+                    background: 'white',
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    border: '2px solid #e2e8f0',
+                  }}
+                >
+                  <span style={{ fontWeight: '600', color: '#1e293b' }}>{inv.file_name}</span>
+                  <span style={{ color: '#64748b', fontSize: '0.9rem' }}>
+                    {inv.uploaded_at ? new Date(inv.uploaded_at).toLocaleDateString() : ''}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const { data: { session } } = await supabase.auth.getSession()
+                        const token = session?.access_token
+                        if (!token) return
+                        const res = await fetch(`/api/invoices/download?id=${inv.id}`, {
+                          headers: { Authorization: `Bearer ${token}` },
+                        })
+                        const data = await res.json()
+                        if (!res.ok) throw new Error(data.error || 'Download failed')
+                        window.open(data.url, '_blank')
+                      } catch (err: any) {
+                        alert(err.message || 'Download failed')
+                      }
+                    }}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    Download
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {profile?.role === 'admin' ? (
         <section style={{ marginBottom: '1rem' }}>
           <p style={{ color: '#64748b', fontSize: '1rem' }}>Welcome back. Use your workspace below to manage client cases and contacts.</p>
         </section>

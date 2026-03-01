@@ -65,6 +65,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         throw userError
       }
       console.log('User profile created:', newUser)
+      // Mirror role into Auth app_metadata so it shows in Supabase Authentication → Users
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
+        app_metadata: { role: 'client' },
+      })
     }
 
     res.status(200).json({ success: true, message: 'Profile created' })

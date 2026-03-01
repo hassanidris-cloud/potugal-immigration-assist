@@ -53,7 +53,7 @@ export default function Signup() {
           return
         }
 
-        // No confirmation needed – create profile
+        // No confirmation needed – create profile (API or client fallback)
         const response = await fetch('/api/auth/complete-signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -67,8 +67,18 @@ export default function Signup() {
           }),
         })
 
-        const data = await response.json()
-        if (!response.ok) throw new Error(data.error || 'Failed to create profile')
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          // Fallback: create profile from client (RLS allows "insert own profile")
+          const { error: insertError } = await supabase.from('users').insert({
+            id: authData.user.id,
+            email,
+            full_name: fullName || null,
+            phone: phone ? `${phoneCountry} ${phone}` : null,
+            role: 'client',
+          })
+          if (insertError) throw new Error(data.error || insertError.message || 'Failed to create profile')
+        }
 
         setVerificationSent(true)
         setLoading(false)

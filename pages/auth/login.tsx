@@ -23,17 +23,19 @@ export default function Login() {
 
       if (error) throw error
 
-      // Redirect admins to admin area, others to contact
+      // Redirect admins to dashboard; clients go to dashboard only if paid, else homepage
       const { data: profile } = await supabase
         .from('users')
-        .select('role')
+        .select('role, paid_at')
         .eq('id', user!.id)
         .single()
 
       if (profile?.role === 'admin') {
         router.push('/dashboard')
+      } else if (profile?.paid_at) {
+        router.push('/dashboard')
       } else {
-        router.push('/contact')
+        router.push('/')
       }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password')
