@@ -28,6 +28,7 @@
   /* Typography & radius */
   --font-sans: 'DM Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'DM Sans', 'Plus Jakarta Sans', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 12px;
@@ -35,6 +36,8 @@
   --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.06);
   --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.06);
   --shadow-elevated: 0 10px 24px rgba(0, 0, 0, 0.08);
+  /* Same overlay for all section background images */
+  --section-overlay: linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.85) 100%);
 }
 
 html {
@@ -83,10 +86,23 @@ a:hover {
   color: var(--primary-dark);
 }
 
-/* Headings: dark only */
-h1, h2, h3, h4, h5, h6,
+/* Main section headings only (before each box): serif and centered */
+.section-heading,
+.section-heading-sub,
+.home-hero-title,
+.home-cta-title {
+  font-family: var(--font-serif);
+  text-align: center;
+}
+
+/* Headings: ensure visible (override if previously hidden) */
 .section-heading,
 .what-we-do-feature-title,
+.home-hero-title,
+.home-cta-title,
+.how-we-work-step-title {
+  display: block;
+}
 .what-you-get-hint-mobile {
   display: none;
 }
@@ -341,6 +357,8 @@ h1, h2, h3, h4, h5, h6,
 .home-content-layer {
   position: relative;
   z-index: 1;
+  /* Reserve space so footer isn't hidden behind sticky CTA bar */
+  padding-bottom: 56px;
 }
 
 /* Slight transparency so wrapper gradient (from hero image) shows through as you scroll */
@@ -428,21 +446,23 @@ h1, h2, h3, h4, h5, h6,
   background: transparent;
 }
 
-/* Section headings – with colored underline accent */
+/* Section headings – serif, centered, with colored underline accent */
 .section-heading {
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text);
   position: relative;
-  display: inline-block;
+  display: block;
+  text-align: center;
   padding-bottom: 0.35em;
 }
 
 .section-heading::after {
   content: '';
   position: absolute;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 0;
   width: 3rem;
   height: 4px;
@@ -465,9 +485,11 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .section-heading-sub {
+  font-family: var(--font-serif);
   font-size: 1.125rem;
   color: var(--text-muted);
   font-weight: 500;
+  text-align: center;
 }
 
 /* Strong padding inside sections (24–40px) */
@@ -523,6 +545,565 @@ h1, h2, h3, h4, h5, h6,
 .floating-box:hover {
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
+
+/* Defesa Legal–style layout */
+.defesa-nav {
+  background: #1e293b;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.defesa-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.9rem, 4.5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+}
+.defesa-hero-sub {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,0.92);
+  max-width: 36rem;
+  margin: 0 auto 1.5rem;
+  line-height: 1.65;
+}
+.hero-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.defesa-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+@media (max-width: 767px) {
+  .defesa-stats { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; padding: 1.5rem 1rem; }
+}
+.defesa-stat-num { font-size: 2rem; font-weight: 700; color: #1e293b; display: block; }
+.defesa-stat-label { font-size: 0.9rem; color: #64748b; margin-top: 0.25rem; }
+.defesa-section-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+.defesa-section-sub {
+  font-size: 1rem;
+  color: #64748b;
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+.defesa-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.defesa-service-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem 1.25rem;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+.defesa-service-card:hover {
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.1);
+  transform: translateY(-3px);
+  border-left-color: var(--logo-green);
+}
+.defesa-service-card h3 { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 0 0 0.5rem 0; display: block; }
+.defesa-service-card p { font-size: 0.9rem; color: #64748b; line-height: 1.5; margin: 0 0 1rem 0; }
+.defesa-service-card a { font-size: 0.9rem; font-weight: 600; color: #2563eb; }
+.defesa-who-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+@media (max-width: 767px) { .defesa-who-grid { grid-template-columns: 1fr; } }
+.defesa-who-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+.defesa-who-card h3 { font-size: 1.05rem; font-weight: 600; color: #1e293b; margin: 0 0 0.5rem 0; display: block; }
+.defesa-who-card p { font-size: 0.9rem; color: #64748b; line-height: 1.5; margin: 0; }
+.defesa-why-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 2rem;
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: left;
+}
+@media (max-width: 639px) { .defesa-why-grid { grid-template-columns: 1fr; } }
+.defesa-why-item { display: flex; gap: 0.75rem; align-items: flex-start; }
+.defesa-why-item strong { color: #1e293b; font-size: 0.95rem; display: block; margin-bottom: 0.2rem; }
+.defesa-why-item span { color: #64748b; font-size: 0.9rem; line-height: 1.5; }
+.defesa-footer-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: left;
+}
+@media (max-width: 639px) { .defesa-footer-inner { grid-template-columns: 1fr; text-align: center; } }
+.defesa-footer-links { list-style: none; padding: 0; margin: 0; }
+.defesa-footer-links a { color: rgba(255,255,255,0.9); }
+.defesa-footer-links a:hover { color: #fff; }
+.defesa-cta-box {
+  background: #f1f5f9;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+.defesa-cta-box h2,
+.defesa-cta-box .section-heading { font-family: var(--font-serif); font-size: clamp(1.5rem, 3vw, 1.75rem); color: #1e293b; margin: 0 0 0.5rem 0; display: block; }
+.defesa-cta-box p { color: #64748b; margin: 0 0 1.5rem 0; font-size: 1rem; line-height: 1.6; }
+.defesa-cta-box .hero-cta-group { margin-bottom: 1rem; }
+.defesa-cta-box .home-cta-trust { font-size: 0.9rem; color: #64748b; margin: 1rem 0 0; }
+.defesa-cta-box-elevated {
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Final CTA section (Ready to start your Portugal journey) – ensure box is visible and readable */
+.final-cta-section .section-with-bg-inner {
+  position: relative;
+  z-index: 1;
+}
+.final-cta-section .defesa-cta-box {
+  padding: 2.5rem 2rem;
+}
+.final-cta-section .defesa-cta-box .section-heading {
+  color: #0f172a;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+}
+.final-cta-section .defesa-cta-box p {
+  color: #475569;
+}
+.final-cta-section .defesa-cta-box .hero-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.final-cta-section .defesa-cta-box .home-cta-trust {
+  color: #64748b;
+}
+
+.hero-cta-secondary-dark {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.hero-cta-secondary-dark:hover {
+  background: var(--primary);
+  color: #fff;
+}
+/* On light cards (e.g. final CTA), use solid background so button is visible */
+.final-cta-card .hero-cta-secondary-dark {
+  background: #f1f5f9;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.final-cta-card .hero-cta-secondary-dark:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Why Portugal teaser strip (home) */
+.why-portugal-teaser .section-with-bg-inner {
+  text-align: center;
+}
+.why-portugal-teaser-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 1rem 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+.why-portugal-teaser-link {
+  display: inline-block;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.6rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.why-portugal-teaser-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* ========== D2 Visa page: typography, visibility, cards ========== */
+.visa-d2-page {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.visa-d2-page .d2-hero-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 3px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.35);
+  margin-bottom: 1.25rem;
+}
+.visa-d2-page .d2-hero-sub {
+  font-size: 1.25rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.98);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  max-width: 720px;
+  font-weight: 500;
+}
+.visa-d2-page .d2-section-label {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.6rem;
+  display: block;
+}
+.visa-d2-page .d2-section-label.d2-section-label-light {
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+}
+.visa-d2-page .d2-heading {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
+  color: var(--text);
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-align: center;
+}
+.visa-d2-page .d2-heading-light {
+  font-family: var(--font-serif);
+  color: #fff;
+  text-shadow: 0 3px 20px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.3);
+  text-align: center;
+}
+.visa-d2-page .d2-body {
+  font-size: 1.08rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+.visa-d2-page .d2-body-light {
+  color: rgba(255,255,255,0.97);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  font-size: 1.06rem;
+}
+.visa-d2-page .d2-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.6rem 1.6rem 1.6rem 1.85rem;
+  box-shadow: 0 10px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(37,99,235,0.08);
+  border-left: 5px solid var(--primary);
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.visa-d2-page .d2-card:hover {
+  box-shadow: 0 16px 40px rgba(37,99,235,0.15), 0 0 0 1px rgba(37,99,235,0.2);
+  transform: translateY(-3px);
+}
+.visa-d2-page .d2-card h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--primary);
+  margin: 0 0 0.6rem 0;
+  letter-spacing: -0.01em;
+}
+.visa-d2-page .d2-step-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--primary) 0%, var(--logo-green) 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+}
+.visa-d2-page .d2-cta-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, #1d8f4a 100%);
+  color: #fff !important;
+  padding: 1.1rem 2.25rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border-radius: 14px;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 0 8px 28px rgba(37,99,235,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.02em;
+}
+.visa-d2-page .d2-cta-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(37,99,235,0.5);
+}
+.visa-d2-page .d2-cta-secondary {
+  background: rgba(255,255,255,0.95);
+  color: var(--primary) !important;
+  padding: 1rem 2rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.9);
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.visa-d2-page .d2-cta-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  background: #fff;
+}
+.visa-d2-page .d2-faq-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+.visa-d2-page .d2-why-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,252,255,0.98) 100%);
+  border: 2px solid rgba(37,99,235,0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 28px rgba(37,99,235,0.08);
+  transition: box-shadow 0.25s, border-color 0.25s;
+}
+.visa-d2-page .d2-why-card:hover {
+  border-color: rgba(37,99,235,0.4);
+  box-shadow: 0 12px 36px rgba(37,99,235,0.12);
+}
+.visa-d2-page .section-with-bg::before {
+  background: var(--section-overlay);
+}
+.visa-d2-page .d2-cta-section .section-with-bg-inner {
+  padding: 2rem 1rem;
+}
+.visa-d2-page .d2-cta-section .d2-heading-light {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+/* Investment section: key advantage highlight */
+.visa-d2-page .d2-key-advantage {
+  background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.05) 100%);
+  border-left: 5px solid var(--logo-green);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(34,197,94,0.08);
+}
+.visa-d2-page .d2-key-advantage-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #15803d;
+  margin-bottom: 0.5rem;
+}
+/* Investment section uses same overlay as all sections */
+/* Investment: narrow column for ~7–8 words per line */
+.visa-d2-page .d2-investment-section .section-with-bg-inner {
+  max-width: 32em;
+}
+.visa-d2-page .d2-investment-section .d2-heading {
+  font-size: clamp(1.35rem, 2.5vw, 1.65rem);
+}
+/* Key advantage: light green background for visibility */
+.visa-d2-page .d2-investment-section .d2-key-advantage {
+  background: rgba(34,197,94,0.2);
+  border-left: 4px solid var(--logo-green);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(34,197,94,0.12);
+}
+.visa-d2-page .d2-investment-section .d2-key-advantage-label {
+  color: #15803d;
+}
+.visa-d2-page .d2-investment-section .d2-key-advantage .d2-body {
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+/* Investment items: icon + text, compact, narrow lines */
+.visa-d2-page .d2-investment-section .d2-investment-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+.visa-d2-page .d2-investment-section .d2-investment-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.visa-d2-page .d2-investment-section .d2-investment-item .d2-investment-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--logo-green);
+}
+.visa-d2-page .d2-investment-section .d2-investment-item h3 {
+  color: rgba(255, 255, 255, 0.98);
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem 0;
+}
+.visa-d2-page .d2-investment-section .d2-investment-item .d2-body {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  max-width: 32em;
+}
+.visa-d2-page .d2-investment-section .d2-section-label,
+.visa-d2-page .d2-investment-section .d2-heading {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Overview: standalone section (no full-bleed image), clearly distinct from Investment */
+.visa-d2-page .d2-overview-section {
+  padding: 4.5rem 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.visa-d2-page .d2-overview-section.section-with-bg {
+  background-color: transparent;
+}
+.visa-d2-page .d2-overview-section .home-container,
+.visa-d2-page .d2-overview-section .section-with-bg-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.visa-d2-page .d2-overview-section .d2-section-label {
+  color: var(--logo-green);
+}
+
+/* Section with background image + overlay; same opacity/color for all sections */
+.section-with-bg {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.section-with-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--section-overlay);
+  z-index: 0;
+}
+.section-with-bg .section-with-bg-inner {
+  position: relative;
+  z-index: 1;
+}
+/* Text on overlay: light for readability (cards keep their own background) */
+.section-with-bg .defesa-section-title,
+.section-with-bg .defesa-section-sub,
+.section-with-bg .defesa-stat-num,
+.section-with-bg .defesa-stat-label,
+.section-with-bg .how-we-work-header .section-heading,
+.section-with-bg .how-we-work-sub,
+.section-with-bg .how-we-work-step-title,
+.section-with-bg .how-we-work-step-desc,
+.section-with-bg .what-we-do-why-text,
+.section-with-bg .how-hero-eyebrow,
+.section-with-bg .how-hero-title {
+  color: #fff;
+}
+.section-with-bg .how-hero-sub {
+  color: rgba(255, 255, 255, 0.92);
+}
+.section-with-bg .defesa-section-sub,
+.section-with-bg .how-we-work-sub,
+.section-with-bg .how-hero-sub,
+.section-with-bg .how-we-work-step-desc {
+  color: rgba(255, 255, 255, 0.92);
+}
+.section-with-bg .what-we-do-why-text strong {
+  color: #fff;
+}
+.section-with-bg .defesa-why-item strong,
+.section-with-bg .defesa-why-item span {
+  color: rgba(255, 255, 255, 0.95);
+}
+.section-with-bg .defesa-why-item span {
+  color: rgba(255, 255, 255, 0.88);
+}
+/* Site-wide fade-in on scroll: add class "fade-in-on-scroll" and data-fade-in to section content */
+.fade-in-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fade-in-on-scroll.fade-in-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reveal on scroll: content fades and slides up when in viewport */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-on-scroll.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-on-scroll .reveal-stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-on-scroll.reveal-visible .reveal-stagger-item { opacity: 1; transform: translateY(0); }
+.reveal-on-scroll.reveal-visible .reveal-stagger-item:nth-child(1) { transition-delay: 0.05s; }
+.reveal-on-scroll.reveal-visible .reveal-stagger-item:nth-child(2) { transition-delay: 0.12s; }
+.reveal-on-scroll.reveal-visible .reveal-stagger-item:nth-child(3) { transition-delay: 0.19s; }
+.reveal-on-scroll.reveal-visible .reveal-stagger-item:nth-child(4) { transition-delay: 0.26s; }
+.reveal-on-scroll.reveal-visible .reveal-stagger-item:nth-child(5) { transition-delay: 0.33s; }
+.reveal-on-scroll.reveal-visible .reveal-stagger-item:nth-child(6) { transition-delay: 0.4s; }
 
 .hero-slideshow-dots {
   position: absolute;
@@ -606,15 +1187,17 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .hero-cta-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--logo-green) 100%);
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  background: #fff;
+  color: var(--text);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
 }
 
 .hero-cta-primary:hover {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, #16a34a 100%);
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+  background: #f8fafc;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
 
@@ -1390,6 +1973,14 @@ button.what-we-do-feature-card {
   background: var(--primary);
   color: #fff;
 }
+.section-with-bg .how-we-work-pill {
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.18);
+}
+.section-with-bg .how-we-work-pill:hover {
+  background: #fff;
+  color: var(--primary);
+}
 
 .how-we-work-step-last {
   padding-bottom: 0;
@@ -1397,6 +1988,255 @@ button.what-we-do-feature-card {
 
 .how-we-work-step-last .how-we-work-step-body {
   margin-bottom: 0;
+}
+
+/* ========== How We Work — redesigned (hero, timeline, benefits, CTA) ========== */
+.how-hero-eyebrow {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem 0;
+}
+.how-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+}
+.how-hero-sub {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.how-steps-heading {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.how-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.how-timeline-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  padding-bottom: 2rem;
+}
+.how-timeline-step:last-child {
+  padding-bottom: 0;
+}
+.how-timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.how-timeline-num {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+}
+.how-timeline-num-done {
+  background: var(--logo-green);
+  font-size: 1.35rem;
+}
+.how-timeline-line {
+  display: block;
+  width: 2px;
+  flex: 1;
+  min-height: 24px;
+  margin-top: 8px;
+  background: linear-gradient(180deg, var(--primary) 0%, rgba(37, 99, 235, 0.2) 100%);
+  border-radius: 1px;
+}
+.how-timeline-card {
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.how-timeline-step:hover .how-timeline-card {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  transform: translateX(4px);
+}
+.how-timeline-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.5rem 0;
+}
+.how-timeline-title-link {
+  color: var(--primary);
+  text-decoration: none;
+}
+.how-timeline-title-link:hover {
+  text-decoration: underline;
+}
+.how-timeline-desc {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem 0;
+}
+.how-timeline-pill {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.1);
+  transition: background 0.2s, color 0.2s;
+}
+.how-timeline-pill:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.how-benefits-heading {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+.how-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.how-benefits-card {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.how-benefits-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border-color: rgba(37, 99, 235, 0.25);
+}
+.how-benefits-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+.how-benefits-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.how-benefits-label {
+  display: block;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+.how-benefits-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.how-cta-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.75rem 0;
+}
+.how-cta-lead {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 1.5rem 0;
+}
+.how-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.how-cta-buttons .hero-cta {
+  min-width: 140px;
+}
+
+@media (max-width: 767px) {
+  .how-timeline-step {
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+  }
+  .how-timeline-card {
+    padding: 1rem 1.25rem;
+    border-left-width: 3px;
+  }
+  .how-benefits-grid {
+    grid-template-columns: 1fr;
+  }
+  .how-benefits-card {
+    padding: 1.25rem;
+  }
+}
+@media (max-width: 639px) {
+  .how-timeline-step {
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+  }
+  .how-timeline-num {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+  .how-timeline-line {
+    min-height: 16px;
+    margin-top: 4px;
+  }
+  .how-timeline-card {
+    padding: 1rem 1.15rem;
+  }
+  .how-timeline-title {
+    font-size: 1.1rem;
+  }
+  .how-timeline-desc {
+    font-size: 0.95rem;
+  }
+  .how-timeline-pill {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 
 .how-we-work-section .what-we-do-why-strip {
@@ -1691,6 +2531,15 @@ button.what-we-do-feature-card {
   }
 }
 
+/* FAQ – content box on section-with-bg so text stays readable */
+.faq-content-box {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  padding: 2rem 2rem 2.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
 /* FAQ */
 .faq-list {
   max-width: 640px;
@@ -1732,7 +2581,18 @@ button.what-we-do-feature-card {
 }
 
 .home-nav .home-nav-logo,
-.home-nav .home-nav-links a {
+.home-nav .home-nav-links a,
+.home-nav .home-nav-links button {
+  color: #fff;
+}
+.home-nav-logo-text {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+nav .home-nav-logo-text {
   color: #fff;
 }
 
@@ -1743,6 +2603,20 @@ button.what-we-do-feature-card {
 .home-nav-signup {
   color: #fff;
   font-weight: 700;
+}
+
+/* Services nav item – more visible (pill + weight) */
+.home-nav .home-nav-services {
+  color: #fff;
+  font-weight: 700;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.2s, color 0.2s;
+}
+.home-nav .home-nav-services:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 /* Reserve space so content is not hidden under the fixed nav */
@@ -1842,7 +2716,8 @@ button.what-we-do-feature-card {
   }
 
   .home-nav-links a,
-  .home-nav-links .home-nav-signup {
+  .home-nav-links .home-nav-signup,
+  .home-nav-links .home-nav-services {
     display: flex;
     align-items: center;
     padding: 1rem 1.25rem;
@@ -1905,16 +2780,85 @@ button.what-we-do-feature-card {
   margin: 0 1.25rem 1rem;
 }
 
-/* Licensed & trusted block */
-.home-trusted-block {
-  padding: 2.5rem 0;
-  margin-bottom: 0.5rem;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+/* Licensed & trusted + What Clients Say — Defesa-style (white text on overlay) */
+.home-trusted-section .section-with-bg-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.home-trusted-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2rem;
+  margin-bottom: 2.5rem;
+}
+.home-trusted-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+}
+.home-trusted-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.25);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.home-trusted-reviews-title {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem !important;
 }
 
-.home-trusted-block.text-center {
+/* Final CTA card — matches defesa content box, elevated on dark bg */
+.final-cta-section .section-with-bg-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.final-cta-card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px;
+  padding: 2.5rem 2.25rem;
+  max-width: 560px;
   text-align: center;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.4);
+  border-left: 4px solid var(--primary);
+}
+.final-cta-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.25;
+}
+.final-cta-lead {
+  color: #475569;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+.final-cta-card .hero-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.final-cta-trust {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 1rem 0 0 0;
 }
 
 /* Testimonials */
@@ -2051,7 +2995,7 @@ button.what-we-do-feature-card {
   color: #fff;
   padding: 2.5rem 0;
   text-align: center;
-  margin-top: 4rem;
+  margin-top: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -2069,7 +3013,7 @@ button.what-we-do-feature-card {
   color: #fff;
 }
 
-/* Sticky CTA bar — deep blue-gray, white text only */
+/* Sticky CTA bar — flush bottom, no gap */
 .sticky-cta-bar {
   position: fixed;
   bottom: 0;
@@ -2077,32 +3021,38 @@ button.what-we-do-feature-card {
   right: 0;
   background: var(--nav-bg);
   color: #fff;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  z-index: 100;
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  z-index: 99;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   transform: translateY(100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.25s ease;
 }
 
 .sticky-cta-bar.visible {
   transform: translateY(0);
 }
 
+.sticky-cta-bar span {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+}
+
 .sticky-cta-bar a {
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
+  font-size: 0.95rem;
 }
 
 .sticky-cta-bar a:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   text-decoration: underline;
 }
 
@@ -2110,6 +3060,531 @@ button.what-we-do-feature-card {
 .why-portugal-block-image {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
+}
+
+/* Visa programs page – content box + cards */
+.visa-programs-content-box {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px;
+  padding: 2.5rem 2rem 3rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  max-width: 900px;
+  margin: 0 auto;
+}
+.visa-programs-intro {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin: 0 auto 2.5rem;
+  max-width: 560px;
+  line-height: 1.6;
+}
+.visa-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.visa-program-card {
+  display: block;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 2px solid #e2e8f0;
+  border-left: 4px solid var(--primary);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+}
+.visa-program-card:hover {
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.12);
+  transform: translateY(-4px);
+  border-left-color: var(--logo-green);
+  border-color: rgba(37, 99, 235, 0.25);
+}
+.visa-program-card-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+.visa-program-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--text);
+}
+.visa-program-card-desc {
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
+}
+.visa-program-card-cta {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.visa-programs-helper {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin: 0 0 2rem 0;
+}
+.visa-programs-helper-link {
+  color: var(--primary);
+  font-weight: 600;
+}
+.visa-programs-helper-link:hover {
+  text-decoration: underline;
+}
+.visa-programs-note {
+  padding: 1.5rem;
+  background: rgba(37, 99, 235, 0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+}
+.visa-programs-note-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--text);
+  font-weight: 600;
+}
+.visa-programs-note-text {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+/* Contact page – redesigned layout and styling */
+.contact-page {
+  background: #f8fafc;
+}
+
+.contact-hero {
+  position: relative;
+  padding: 5rem 2rem;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.contact-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.88) 50%, rgba(15, 23, 42, 0.94) 100%);
+  z-index: 0;
+}
+.contact-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.contact-hero-eyebrow {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.contact-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.contact-hero-sub {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.contact-main {
+  padding: 3.5rem 2rem 4rem;
+}
+.contact-main-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .contact-main-inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+.contact-info-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+.contact-info-lead {
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0 0 2rem 0;
+}
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+.contact-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+a.contact-info-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+}
+.contact-info-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+  border-radius: 12px;
+}
+.contact-info-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+.contact-info-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+a.contact-info-item .contact-info-value {
+  color: var(--primary);
+}
+
+.contact-eligibility-card {
+  padding: 1.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(34, 197, 94, 0.06) 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+}
+.contact-eligibility-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.15);
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+}
+.contact-eligibility-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+.contact-eligibility-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #475569;
+  margin: 0;
+}
+
+.contact-form-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.07), 0 8px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.contact-form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.35rem 0;
+}
+.contact-form-lead {
+  color: #475569;
+  font-size: 0.95rem;
+  margin: 0 0 1.75rem 0;
+  line-height: 1.5;
+}
+.contact-success-card {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.contact-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--logo-green);
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+.contact-success-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+.contact-success-text {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+}
+.contact-error-card {
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #fecaca;
+}
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.contact-field-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+.contact-field-optional {
+  font-weight: 400;
+  color: #64748b;
+}
+.contact-field-input {
+  padding: 0.85rem 1.1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.contact-field-input::placeholder {
+  color: #94a3b8;
+}
+.contact-field-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+.contact-field-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+.contact-form-btn {
+  padding: 1rem 1.5rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  margin-top: 0.25rem;
+}
+.contact-form-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+.contact-form-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.contact-cta-strip {
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  padding: 2.5rem 2rem;
+}
+.contact-cta-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.contact-cta-divider {
+  width: 1px;
+  height: 40px;
+  background: #e2e8f0;
+}
+@media (max-width: 600px) {
+  .contact-cta-divider {
+    width: 100%;
+    height: 1px;
+  }
+}
+.contact-cta-item {
+  text-align: center;
+}
+.contact-cta-heading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin: 0 0 0.5rem 0;
+}
+.contact-cta-link {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.contact-cta-link:hover {
+  text-decoration: underline;
+}
+.contact-cta-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.contact-cta-sep {
+  color: #64748b;
+  font-weight: 400;
+}
+.contact-back {
+  text-align: center;
+  padding: 2rem 0 3rem;
+  margin: 0;
+}
+
+/* Services page – Defesa-style layout (D2, D7, D8 only) */
+.services-hero .section-with-bg-inner,
+.services-section .section-with-bg-inner {
+  position: relative;
+  z-index: 1;
+}
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.service-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.service-card:hover {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+.service-card-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--logo-yellow);
+  color: #0f172a;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.service-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.3;
+}
+.service-card-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.25rem 0;
+}
+.service-card-link {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.service-card-link:hover {
+  text-decoration: underline;
+}
+.services-helper {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  margin: 0;
+}
+.services-helper-link {
+  color: #93c5fd;
+  font-weight: 600;
+}
+.services-helper-link:hover {
+  text-decoration: underline;
+}
+.services-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Visa selector – premium feel */

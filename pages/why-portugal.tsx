@@ -6,6 +6,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 
 export default function WhyPortugal() {
   const [navOpen, setNavOpen] = useState(false)
+  const [servicesOpen, setServicesOpen] = useState(false)
   return (
     <>
       <Head>
@@ -17,7 +18,8 @@ export default function WhyPortugal() {
         <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`}>
           <div className="home-nav-inner" style={{ paddingTop: '1rem', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-              <img src="/logo.png" alt="WINIT" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+              <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+              <span className="home-nav-logo-text">WINIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />
@@ -26,7 +28,18 @@ export default function WhyPortugal() {
             </button>
             <div className="home-nav-links">
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
-              <Link href="/visa-programs" onClick={() => setNavOpen(false)} className="no-underline font-medium">Visa Programs</Link>
+              <div style={{ position: 'relative' }}>
+                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="no-underline font-medium" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Services ▾</button>
+                {(servicesOpen || navOpen) && (
+                  <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
+                    <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
+                    <Link href="/visa-d7" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D7 Passive Income</Link>
+                    <Link href="/visa-d8" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D8 Digital Nomad</Link>
+                    <Link href="/services" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff', borderTop: '1px solid rgba(255,255,255,0.1)' }}>All Services</Link>
+                  </div>
+                )}
+              </div>
+              <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
               <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
@@ -37,7 +50,7 @@ export default function WhyPortugal() {
 
         <main>
           <section className="home-section why-portugal home-section-padding" style={{ padding: '4rem 0' }}>
-            <div className="home-container">
+            <div className="home-container fade-in-on-scroll" data-fade-in>
               <h1 className="section-heading" style={{ textAlign: 'center', fontSize: 'clamp(1.9rem, 4vw, 2.5rem)', marginBottom: '0.5rem' }}>Why Portugal?</h1>
               <p className="section-heading-sub" style={{ textAlign: 'center', marginBottom: '3rem' }}>
                 One of the world’s most welcoming countries for new residents
@@ -45,7 +58,7 @@ export default function WhyPortugal() {
 
               <div className="why-portugal-blocks">
                 <div className="why-portugal-block">
-                  <div className="why-portugal-block-image" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80)' }} />
+                  <div className="why-portugal-block-image" style={{ backgroundImage: 'url(/images/nick-karvounis-7xiADv3VZ0k-unsplash.jpg)' }} />
                   <div className="why-portugal-block-content">
                     <span className="why-portugal-block-label">The Lifestyle</span>
                     <h2 className="text-text" style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>300 Days of Possibility</h2>
@@ -56,7 +69,7 @@ export default function WhyPortugal() {
                 </div>
 
                 <div className="why-portugal-block why-portugal-block-reverse">
-                  <div className="why-portugal-block-image" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80&v=1)' }} />
+                  <div className="why-portugal-block-image" style={{ backgroundImage: 'url(/images/nick-karvounis-Prb-sjOUBFs-unsplash.jpg)' }} />
                   <div className="why-portugal-block-content">
                     <span className="why-portugal-block-label">The Safety</span>
                     <h2 className="text-text" style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>Europe’s Quiet Sanctuary</h2>
@@ -67,7 +80,7 @@ export default function WhyPortugal() {
                 </div>
 
                 <div className="why-portugal-block">
-                  <div className="why-portugal-block-image" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80&v=2)' }} />
+                  <div className="why-portugal-block-image" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80)' }} />
                   <div className="why-portugal-block-content">
                     <span className="why-portugal-block-label">The Digital Hub</span>
                     <h2 className="text-text" style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>Where Tradition Meets Tech</h2>
@@ -80,7 +93,7 @@ export default function WhyPortugal() {
                 <div className="why-portugal-block why-portugal-block-reverse">
                   <div className="why-portugal-block-image">
                     <img
-                      src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&q=80"
+                      src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80"
                       alt="Luxury hotel in Portugal"
                     />
                   </div>

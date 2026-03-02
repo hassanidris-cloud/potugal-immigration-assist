@@ -5,7 +5,10 @@ const BASE = process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL || 'https:
 const PUBLIC_PATHS = [
   '',
   '/why-portugal',
-  '/visa-programs',
+  '/services',
+  '/visa-d2',
+  '/visa-d7',
+  '/visa-d8',
   '/contact',
   '/auth/login',
   '/auth/signup',

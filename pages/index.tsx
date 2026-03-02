@@ -1,49 +1,40 @@
 import Link from 'next/link'
 import Head from 'next/head'
+import type { CSSProperties } from 'react'
 import { useState, useEffect, useCallback, useRef } from 'react'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 
+// Hero slideshow: 2 local from public/images + 4 Portugal nature (Unsplash, no empty slots)
 const PORTUGAL_IMAGES = [
-  'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=1920&q=80', // Lisbon
-  'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1920&q=80', // Algarve coast
-  'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1920&q=80', // Porto
-  'https://images.unsplash.com/photo-1567270671170-fdc10a5bf831?w=1920&q=80', // Lisbon streets
-  'https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=1920&q=80',   // Portugal coast
+  '/images/rui-sousa-dHyZit2MPAs-unsplash.jpg',
+  '/images/daniel-sessler-g3O3xWspoN4-unsplash.jpg',
+  'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1920&q=80', // Porto / Northern Portugal
   'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=1920&q=80', // Douro Valley nature
+  'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1920&q=80', // Algarve coast
+  'https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=1920&q=80',   // Portugal coast / cliffs
 ]
+// Section backgrounds: each section has its own unique image (local or new Unsplash)
+const SECTION_BG_IMAGES = {
+  whyPortugalTeaser: 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=1920&q=80',
+  stats: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80',
+  services: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=1920&q=80',
+  whoWeHelp: 'https://images.unsplash.com/photo-1523531294919-4fcdb0648f1e?w=1920&q=80',
+  howWeWork: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1920&q=80',
+  whyChoose: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1920&q=80',
+  licensed: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=80',
+  finalCta: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80',
+}
 
-/* Gradient colors per slide: light (from image) → grey → dark. Grows with scroll. */
-/* Icons for Which Visa quiz cards */
-const VISA_QUIZ_OPTIONS = [
-  { id: 'd2' as const, label: 'I am an entrepreneur and want to register a branch or a new company in Portugal', icon: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></svg>
-  ) },
-  { id: 'd7' as const, label: 'I have passive income (pension, rentals, investments)', icon: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
-  ) },
-  { id: 'd8' as const, label: 'I work remotely for a company or clients abroad', icon: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
-  ) },
-]
+const WHO_CARD_STYLE: CSSProperties = { background: 'rgba(255,255,255,0.95)', borderColor: 'rgba(255,255,255,0.3)' }
 
 export default function Home() {
   const [slideIndex, setSlideIndex] = useState(0)
-  const [visaChoice, setVisaChoice] = useState<'d2' | 'd7' | 'd8' | null>(null)
   const [stickyCtaVisible, setStickyCtaVisible] = useState(false)
   const [backToTopVisible, setBackToTopVisible] = useState(false)
   const [navOpen, setNavOpen] = useState(false)
-  const [visaQuizCursor, setVisaQuizCursor] = useState({ x: 0, y: 0 })
-  const [whatWeDoCursor, setWhatWeDoCursor] = useState({ x: 0, y: 0 })
-  const [howStepsVisible, setHowStepsVisible] = useState(false)
   const [sectionRevealed, setSectionRevealed] = useState<Record<string, boolean>>({})
-  const visaQuizRef = useRef<HTMLElement>(null)
-  const whatWeDoRef = useRef<HTMLElement>(null)
-  const howItWorksRef = useRef<HTMLElement>(null)
-  const visaRevealRef = useRef<HTMLDivElement>(null)
-  const whatWeDoRevealRef = useRef<HTMLDivElement>(null)
-  const trustedRevealRef = useRef<HTMLDivElement>(null)
-  const ctaRevealRef = useRef<HTMLDivElement>(null)
+  const [servicesOpen, setServicesOpen] = useState(false)
 
   const goTo = useCallback((index: number) => {
     setSlideIndex((index + PORTUGAL_IMAGES.length) % PORTUGAL_IMAGES.length)
@@ -88,61 +79,7 @@ export default function Home() {
   }, [navOpen])
 
   useEffect(() => {
-    const el = visaQuizRef.current
-    if (!el || typeof window === 'undefined') return
-    if (!window.matchMedia('(pointer: fine)').matches) return
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width - 0.5
-      const y = (e.clientY - rect.top) / rect.height - 0.5
-      setVisaQuizCursor({ x: x * 2, y: y * 2 })
-    }
-    const onLeave = () => setVisaQuizCursor({ x: 0, y: 0 })
-    el.addEventListener('mousemove', onMove, { passive: true })
-    el.addEventListener('mouseleave', onLeave)
-    return () => {
-      el.removeEventListener('mousemove', onMove)
-      el.removeEventListener('mouseleave', onLeave)
-    }
-  }, [])
-
-  useEffect(() => {
-    const el = whatWeDoRef.current
-    if (!el || typeof window === 'undefined') return
-    if (!window.matchMedia('(pointer: fine)').matches) return
-    const onMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width - 0.5
-      const y = (e.clientY - rect.top) / rect.height - 0.5
-      setWhatWeDoCursor({ x: x * 2, y: y * 2 })
-    }
-    const onLeave = () => setWhatWeDoCursor({ x: 0, y: 0 })
-    el.addEventListener('mousemove', onMove, { passive: true })
-    el.addEventListener('mouseleave', onLeave)
-    return () => {
-      el.removeEventListener('mousemove', onMove)
-      el.removeEventListener('mouseleave', onLeave)
-    }
-  }, [])
-
-  useEffect(() => {
-    const el = howItWorksRef.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([e]) => setHowStepsVisible(e.isIntersecting),
-      { threshold: 0.2, rootMargin: '0px 0px -40px 0px' }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
-
-  useEffect(() => {
-    const refs: { ref: React.RefObject<HTMLDivElement | null>; id: string }[] = [
-      { ref: visaRevealRef, id: 'visa' },
-      { ref: whatWeDoRevealRef, id: 'whatWeDo' },
-      { ref: trustedRevealRef, id: 'trusted' },
-      { ref: ctaRevealRef, id: 'cta' },
-    ]
+    const refs: { ref: React.RefObject<HTMLDivElement | null>; id: string }[] = []
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -157,6 +94,25 @@ export default function Home() {
     const timer = setTimeout(() => {
       refs.forEach(({ ref: r }) => { if (r.current) obs.observe(r.current) })
     }, 100)
+    return () => { clearTimeout(timer); obs.disconnect() }
+  }, [])
+
+  // Reveal on scroll: any element with data-reveal-on-scroll gets .reveal-visible when in view
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal-visible')
+          }
+        })
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    )
+    const timer = setTimeout(() => {
+      document.querySelectorAll('[data-reveal-on-scroll]').forEach((el) => obs.observe(el))
+    }, 200)
     return () => { clearTimeout(timer); obs.disconnect() }
   }, [])
 
@@ -189,7 +145,7 @@ export default function Home() {
               ...(BASE_URL && {
                 potentialAction: {
                   '@type': 'SearchAction',
-                  target: { '@type': 'EntryPoint', urlTemplate: `${BASE_URL}/visa-programs?q={search_term_string}` },
+                  target: { '@type': 'EntryPoint', urlTemplate: `${BASE_URL}/services?q={search_term_string}` },
                   'query-input': 'required name=search_term_string',
                 },
               }),
@@ -199,11 +155,12 @@ export default function Home() {
       </Head>
       <div className="home-nav-spacer min-h-screen overflow-x-hidden font-sans" style={{ background: '#FFFFFF' }}>
         <div className="home-content-layer">
-        {/* Top Bar with WINIT Branding + hamburger on mobile — fixed so it stays visible when scrolling */}
-        <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`}>
+        {/* Defesa Legal–style nav: Services dropdown, About, How We Work, FAQ, Contact */}
+        <nav className={`home-nav defesa-nav ${navOpen ? 'nav-open' : ''}`}>
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-              <img src="/logo.png" alt="WINIT" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+              <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+              <span className="home-nav-logo-text">WINIT</span>
             </Link>
             <button
               type="button"
@@ -217,10 +174,40 @@ export default function Home() {
               <span className="hamburger-line" />
             </button>
             <div className="home-nav-links">
+              <div style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => setServicesOpen((o) => !o)}
+                  className="no-underline font-medium"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                >
+                  Services ▾
+                </button>
+                {(servicesOpen || navOpen) && (
+                  <div
+                    style={{
+                      position: navOpen ? 'static' : 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: '0.25rem',
+                      background: 'rgba(30,41,59,0.98)',
+                      borderRadius: '8px',
+                      padding: '0.5rem 0',
+                      minWidth: '180px',
+                      boxShadow: '0 10px 24px rgba(0,0,0,0.2)',
+                    }}
+                  >
+                    <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
+                    <Link href="/visa-d7" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D7 Passive Income</Link>
+                    <Link href="/visa-d8" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D8 Digital Nomad</Link>
+                    <Link href="/services" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff', borderTop: '1px solid rgba(255,255,255,0.1)' }}>All Services</Link>
+                  </div>
+                )}
+              </div>
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
-              <Link href="/visa-programs" onClick={() => setNavOpen(false)} className="no-underline font-medium">Visa Programs</Link>
+              <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
-              <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
+              <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact Us</Link>
               <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
               <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
             </div>
@@ -251,217 +238,131 @@ export default function Home() {
               />
             ))}
           </div>
-          <div className="home-container home-hero-inner home-hero-clean-inner">
-            <p className="home-hero-eyebrow">Portugal immigration · WINIT</p>
-            <h1 className="home-hero-title">Move to Portugal with Confidence</h1>
-            <p className="home-hero-subtitle">We handle the paperwork—you focus on your new life.</p>
-            <Link href="/auth/signup" className="hero-cta hero-cta-primary">Start your application</Link>
+          <div className="home-container home-hero-inner home-hero-clean-inner fade-in-on-scroll" data-fade-in>
+            <p className="home-hero-eyebrow" style={{ color: 'rgba(255,255,255,0.85)', marginBottom: '0.5rem' }}>WINIT Immigration</p>
+            <h1 className="defesa-hero-title">Portugal Immigration &amp; Residency</h1>
+            <p className="defesa-hero-sub">Expert guidance on D2, D7, and D8 visas. We handle the legal complexities so you can focus on your new life in Portugal.</p>
+            <div className="hero-cta-group">
+              <Link href="/contact" className="hero-cta hero-cta-primary">Free Eligibility Assessment</Link>
+              <Link href="/services" className="hero-cta hero-cta-secondary">View All Services</Link>
+            </div>
           </div>
         </header>
 
-        {/* Connected background band: Which visa → What We Do → How it works */}
-        <div className="home-section-band">
-        {/* Interactive: Which visa is for you? — 3D cards + tilt, scroll reveal */}
-        <section
-          id="check-eligibility"
-          ref={visaQuizRef}
-          className="visa-quiz-section home-section home-section-padding"
-          style={{ padding: '4rem 0', scrollMarginTop: '5rem', position: 'relative' }}
-        >
-          <div className="home-container" style={{ position: 'relative', zIndex: 1 }}>
-            <div
-              ref={visaRevealRef}
-              data-reveal-id="visa"
-              className={`scroll-reveal-box home-section-center ${sectionRevealed.visa ? 'visible' : ''}`}
-            >
-              <h2 className="section-heading section-heading-no-underline section-heading-center reveal-stagger" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)', marginBottom: '0.5rem' }}>Which visa is for you?</h2>
-              <p className="section-heading-sub reveal-stagger text-center" style={{ marginBottom: '2.5rem' }}>Choose the option that best describes you — we'll recommend the right program</p>
-              <div className="visa-quiz-grid reveal-stagger">
-              {VISA_QUIZ_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  className={`visa-quiz-card ${visaChoice === opt.id ? 'visa-quiz-card-active' : ''}`}
-                  onClick={() => setVisaChoice(visaChoice === opt.id ? null : opt.id)}
-                  style={{
-                    transform: `perspective(1200px) rotateX(${visaQuizCursor.y * 3}deg) rotateY(${visaQuizCursor.x * 3}deg)`,
-                    transition: 'transform 0.2s ease-out, box-shadow 0.3s ease, border-color 0.3s ease',
-                  }}
-                >
-                  <div className="visa-quiz-card-inner">
-                    <span className="visa-quiz-icon" aria-hidden>{opt.icon}</span>
-                    <span>{opt.label}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-              {visaChoice && (
-                <div className="visa-result-glass">
-                <p className="text-text mb-3 font-semibold">
-                    {visaChoice === 'd2' && 'D2 (Entrepreneur) visa is likely the best fit.'}
-                    {visaChoice === 'd7' && 'D7 (Passive Income) visa is likely the best fit.'}
-                    {visaChoice === 'd8' && 'D8 (Digital Nomad) visa is likely the best fit.'}
-                  </p>
-                  <p className="text-text-muted mb-4 text-sm md:text-base">
-                    See full details below, or{' '}
-                    <Link href="/auth/signup" className="text-primary font-semibold">start your application</Link> and we’ll guide you.
-                  </p>
-                  <Link href={`/visa-programs#visa-${visaChoice}`} className="visa-result-btn">
-                  View visa details →
-                </Link>
-                </div>
-              )}
+        {/* Why Portugal — teaser strip */}
+        <section className="section-with-bg home-section-padding why-portugal-teaser" style={{ padding: '3.5rem 0', backgroundImage: `url(${SECTION_BG_IMAGES.whyPortugalTeaser})` }}>
+          <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
+            <p className="why-portugal-teaser-text">
+              Sun, safety, and a gateway to Europe. See why thousands choose Portugal for residency.
+            </p>
+            <Link href="/why-portugal" className="why-portugal-teaser-link">Why Portugal →</Link>
+          </div>
+        </section>
+
+        {/* Stats bar — background image + text reveals on scroll */}
+        <section className="section-with-bg" style={{ padding: '4rem 0', backgroundImage: `url(${SECTION_BG_IMAGES.stats})` }}>
+          <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
+            <div className="defesa-stats reveal-on-scroll" data-reveal-on-scroll style={{ color: '#fff' }}>
+              <div className="reveal-stagger-item"><span className="defesa-stat-num" style={{ color: '#fff' }}>10+</span><span className="defesa-stat-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Years of Experience</span></div>
+              <div className="reveal-stagger-item"><span className="defesa-stat-num" style={{ color: '#fff' }}>500+</span><span className="defesa-stat-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Successful Cases</span></div>
+              <div className="reveal-stagger-item"><span className="defesa-stat-num" style={{ color: '#fff' }}>30+</span><span className="defesa-stat-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Countries Represented</span></div>
+              <div className="reveal-stagger-item"><span className="defesa-stat-num" style={{ color: '#fff' }}>98%</span><span className="defesa-stat-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Client Satisfaction</span></div>
             </div>
           </div>
         </section>
 
-        {/* How We Work With You — fused What We Do + How it works */}
-        <section ref={howItWorksRef} className="how-we-work-section home-section-padding" style={{ padding: '4rem 0', position: 'relative' }}>
-          <div className="home-container home-section-center" style={{ position: 'relative', zIndex: 1, maxWidth: '840px' }}>
-            <div
-              ref={whatWeDoRevealRef}
-              data-reveal-id="whatWeDo"
-              className={`scroll-reveal-box ${sectionRevealed.whatWeDo ? 'visible' : ''}`}
-            >
-              <header className="how-we-work-header">
-                <h2 className="section-heading section-heading-no-underline section-heading-center">How We Work With You</h2>
-                <p className="how-we-work-sub">End-to-end support: choose your program, upload documents, get expert review, and reach approval—with one dashboard and a dedicated specialist.</p>
-              </header>
-
-              <div className="how-we-work-journey" aria-label="Your journey">
-                <div className={`how-we-work-step ${howStepsVisible ? 'how-step-visible' : ''}`}>
-                  <div className="how-we-work-step-num">1</div>
-                  <div className="how-we-work-step-body">
-                    <h3 className="how-we-work-step-title"><Link href="/auth/signup" className="how-step-cta-link">Sign Up →</Link></h3>
-                    <p className="how-we-work-step-desc">Pick your visa path (D2, D7, or D8). <strong>Residency Visa Programs</strong> — clear requirements, dedicated support. After you sign up, we’ll arrange your package and payment together.</p>
-                    <Link href="/visa-programs" className="how-we-work-pill">View programs</Link>
-                  </div>
-                </div>
-                <div className={`how-we-work-step ${howStepsVisible ? 'how-step-visible' : ''}`}>
-                  <div className="how-we-work-step-num">2</div>
-                  <div className="how-we-work-step-body">
-                    <h3 className="how-we-work-step-title">Upload Your Documents</h3>
-                    <p className="how-we-work-step-desc">Follow your checklist and upload everything in one place. <strong>Progress Tracking</strong> — see where you are at any time.</p>
-                    <Link href="/auth/signup" className="how-we-work-pill">Get started</Link>
-                  </div>
-                </div>
-                <div className={`how-we-work-step ${howStepsVisible ? 'how-step-visible' : ''}`}>
-                  <div className="how-we-work-step-num">3</div>
-                  <div className="how-we-work-step-body">
-                    <h3 className="how-we-work-step-title">We Review Everything</h3>
-                    <p className="how-we-work-step-desc">A licensed specialist checks your documents and tells you what’s missing. <strong>Expert Guidance</strong> — we keep you on track.</p>
-                    <Link href="/faq" className="how-we-work-pill">FAQ & contact</Link>
-                  </div>
-                </div>
-                <div className={`how-we-work-step how-we-work-step-last ${howStepsVisible ? 'how-step-visible' : ''}`}>
-                  <div className="how-we-work-step-num how-we-work-step-num-done">✓</div>
-                  <div className="how-we-work-step-body">
-                    <h3 className="how-we-work-step-title">Get Approved</h3>
-                    <p className="how-we-work-step-desc">We guide you through submission and stay with you until you have your visa.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="what-we-do-why-strip reveal-stagger">
-                <div className="what-we-do-why-item">
-                  <span className="what-we-do-why-icon" aria-hidden>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                  </span>
-                  <span className="what-we-do-why-text"><strong>Less stressful</strong> — We handle the complicated stuff</span>
-                </div>
-                <div className="what-we-do-why-item">
-                  <span className="what-we-do-why-icon" aria-hidden>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                  </span>
-                  <span className="what-we-do-why-text"><strong>Always updated</strong> — Real-time application status</span>
-                </div>
-                <div className="what-we-do-why-item">
-                  <span className="what-we-do-why-icon" aria-hidden>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
-                  </span>
-                  <span className="what-we-do-why-text"><strong>Personal support</strong> — Direct access to your specialist</span>
-                </div>
+        {/* Our Core Services — background image + content reveals on scroll */}
+        <section className="section-with-bg" style={{ padding: '4rem 0', backgroundImage: `url(${SECTION_BG_IMAGES.services})` }}>
+          <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
+            <div className="reveal-on-scroll" data-reveal-on-scroll>
+              <h2 className="defesa-section-title">Our Core Immigration Services</h2>
+              <p className="defesa-section-sub">Comprehensive support for international clients seeking residency in Portugal.</p>
+              <div className="defesa-services-grid">
+                <div className="defesa-service-card reveal-stagger-item"><h3>D2 Entrepreneur Visa</h3><p>Register a branch or new company in Portugal. Ideal for entrepreneurs and business owners.</p><Link href="/visa-d2">Learn more →</Link></div>
+                <div className="defesa-service-card reveal-stagger-item"><h3>D7 Passive Income Visa</h3><p>Ideal for retirees and anyone with stable passive income (pension, rentals, investments). Live in Portugal without active employment.</p><Link href="/visa-d7">Learn more →</Link></div>
+                <div className="defesa-service-card reveal-stagger-item"><h3>D8 Digital Nomad Visa</h3><p>Work remotely for a company or clients abroad. For freelancers and remote employees.</p><Link href="/visa-d8">Learn more →</Link></div>
               </div>
             </div>
           </div>
         </section>
+
+        {/* Who We Help — background image + content reveals on scroll */}
+        <div role="region" aria-label="Who We Help" className="section-with-bg" style={{ padding: '4rem 0', backgroundImage: 'url(' + SECTION_BG_IMAGES.whoWeHelp + ')' }}>
+          <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
+            <div className="reveal-on-scroll" data-reveal-on-scroll>
+              <h2 className="defesa-section-title" style={{ color: '#fff' }}>Who We Help</h2>
+              <p className="defesa-section-sub" style={{ color: 'rgba(255,255,255,0.9)' }}>From initial consultation to final approval, we provide personalized guidance for your situation.</p>
+              <div className="defesa-who-grid">
+                <div className="defesa-who-card reveal-stagger-item" style={WHO_CARD_STYLE}><h3>Investors &amp; Entrepreneurs</h3><p>Business owners and entrepreneurs looking to establish in Portugal with the D2 visa.</p></div>
+                <div className="defesa-who-card reveal-stagger-item" style={WHO_CARD_STYLE}><h3>Remote Workers &amp; Digital Nomads</h3><p>Freelancers and employees of foreign companies wanting to live and work legally from Portugal with the D8 visa.</p></div>
+                <div className="defesa-who-card reveal-stagger-item" style={WHO_CARD_STYLE}><h3>Retirees &amp; Families</h3><p>Pensioners with passive income seeking the D7 visa, and families relocating to Portugal.</p></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* What You Get section */}
-        <section
-          id="what-you-get"
-          className="what-you-get-section home-section-padding bg-white"
-          style={{
-            padding: '2rem 0',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          <div className="what-you-get-glow" aria-hidden />
-          <div className="home-container" style={{ position: 'relative', zIndex: 1 }}>
-            <h2 className="what-you-get-title text-center font-bold" style={{ fontSize: '2.75rem', marginBottom: '0.5rem', color: 'var(--text)' }}>
-              What You Get
-            </h2>
+        {/* Why Choose Us — background image + content reveals on scroll */}
+        <section className="section-with-bg" style={{ padding: '4rem 0', backgroundImage: `url(${SECTION_BG_IMAGES.whyChoose})` }}>
+          <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
+            <div className="reveal-on-scroll" data-reveal-on-scroll>
+              <h2 className="defesa-section-title">Why Work With Us?</h2>
+              <p className="defesa-section-sub">We provide distinct advantages for your Portugal residency application.</p>
+              <div className="defesa-why-grid">
+                <div className="defesa-why-item reveal-stagger-item"><span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>✓</span><div><strong>Direct support</strong><span>We represent you directly—no middlemen. One point of contact from start to approval.</span></div></div>
+                <div className="defesa-why-item reveal-stagger-item"><span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>✓</span><div><strong>Expert guidance</strong><span>Deep knowledge of Portuguese immigration requirements and real-time updates.</span></div></div>
+                <div className="defesa-why-item reveal-stagger-item"><span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>✓</span><div><strong>Clear communication</strong><span>Fluent in English and Portuguese. Clear communication with you and accurate submissions.</span></div></div>
+                <div className="defesa-why-item reveal-stagger-item"><span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>✓</span><div><strong>End-to-end accountability</strong><span>From consultation through approval and renewals—no handoffs.</span></div></div>
+                <div className="defesa-why-item reveal-stagger-item"><span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>✓</span><div><strong>Confidentiality</strong><span>Your data is secure and confidential. Bank-level encryption for documents.</span></div></div>
+                <div className="defesa-why-item reveal-stagger-item"><span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>✓</span><div><strong>One dashboard</strong><span>Track your checklist, upload documents, and stay in touch with your specialist.</span></div></div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Licensed & trusted + Reviews (light section) — scroll reveal */}
-        <section className="home-section-padding section-bg-gradient" style={{ padding: '4rem 0' }}>
-          <div className="home-container">
-            <div
-              ref={trustedRevealRef}
-              data-reveal-id="trusted"
-              className={`scroll-reveal-box floating-box home-section-center ${sectionRevealed.trusted ? 'visible' : ''}`}
-            >
-            {/* Licensed & trusted */}
-            <div className="home-trusted-block text-center">
-              <h2 className="section-heading section-heading-center" style={{ fontSize: 'clamp(1.5rem, 3vw, 1.75rem)', marginBottom: '1.25rem' }}>Licensed & trusted</h2>
-              <p className="text-text-muted max-w-[560px] mx-auto" style={{ marginBottom: '1.5rem' }}>
-                We work with licensed immigration specialists. Your data is secure and confidential.
-              </p>
-              <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 list-none p-0 m-0">
-                <li className="text-text-muted flex items-center justify-center gap-2 text-base">✓ Licensed immigration support</li>
-                <li className="text-text-muted flex items-center justify-center gap-2 text-base">✓ Secure & confidential</li>
-                <li className="text-text-muted flex items-center justify-center gap-2 text-base">✓ Bank-level encryption for documents</li>
-              </ul>
+        {/* Licensed & trusted + What Clients Say — Defesa-style, same as Who We Help / Why Choose Us */}
+        <section className="section-with-bg home-section-padding home-trusted-section" style={{ padding: '4rem 0', backgroundImage: `url(${SECTION_BG_IMAGES.licensed})` }}>
+          <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
+            <h2 className="defesa-section-title" style={{ color: '#fff' }}>Licensed &amp; trusted</h2>
+            <p className="defesa-section-sub" style={{ color: 'rgba(255,255,255,0.9)' }}>We work with licensed immigration specialists. Your data is secure and confidential.</p>
+            <div className="home-trusted-list">
+              <div className="home-trusted-item">
+                <span className="home-trusted-icon" aria-hidden>✓</span>
+                <span>Licensed immigration support</span>
+              </div>
+              <div className="home-trusted-item">
+                <span className="home-trusted-icon" aria-hidden>✓</span>
+                <span>Secure &amp; confidential</span>
+              </div>
+              <div className="home-trusted-item">
+                <span className="home-trusted-icon" aria-hidden>✓</span>
+                <span>Bank-level encryption for documents</span>
+              </div>
             </div>
 
-            {/* Reviews */}
-            <h2 className="section-heading section-heading-center" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2rem)', marginBottom: '2rem' }}>Reviews</h2>
-            <p className="text-text-muted text-base m-0">No reviews yet.</p>
-            </div>
+            <h2 className="defesa-section-title home-trusted-reviews-title" style={{ color: '#fff' }}>What Clients Say</h2>
+            <p className="defesa-section-sub" style={{ color: 'rgba(255,255,255,0.85)', marginBottom: 0 }}>We&apos;re building our success stories. Get in touch to start yours.</p>
+          </div>
+        </section>
 
-            {/* CTA Section – welcoming close, scroll reveal */}
-            <div
-              ref={ctaRevealRef}
-              data-reveal-id="cta"
-              className={`scroll-reveal-box ${sectionRevealed.cta ? 'visible' : ''}`}
-              style={{ marginTop: '3rem' }}
-            >
-            <div className="home-cta-block">
-              <p className="home-cta-eyebrow">Your new chapter awaits</p>
-              <h2 className="home-cta-title">We’d love to help you get there.</h2>
-              <p className="home-cta-lead">
-                Join hundreds of families and professionals who chose Portugal. From your first checklist to your consulate appointment, we’re with you—every step of the way.
-              </p>
-              <ul className="home-cta-benefits" aria-hidden>
-                <li>Personal checklist for your visa type</li>
-                <li>Dedicated specialist contact</li>
-                <li>Secure, simple process</li>
-              </ul>
-              <Link href="/auth/signup" className="home-cta-button">
-                Start my application — it’s free to begin
-              </Link>
-              <p className="home-cta-trust">🔒 Secure & confidential · Package and payment arranged after you contact us</p>
-            </div>
+        {/* Final CTA — Ready to Start Your Portugal Journey */}
+        <section className="section-with-bg home-section-padding final-cta-section" style={{ padding: '5rem 0', backgroundImage: `url(${SECTION_BG_IMAGES.finalCta})` }}>
+          <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
+            <div className="final-cta-card">
+              <h2 className="final-cta-title">Ready to Start Your Portugal Journey?</h2>
+              <p className="final-cta-lead">Request a free eligibility assessment. We&apos;ll evaluate your situation and advise if we can prepare a formal proposal for your case.</p>
+              <div className="hero-cta-group">
+                <Link href="/contact" className="hero-cta hero-cta-primary">Free Eligibility Assessment</Link>
+                <Link href="/contact" className="hero-cta hero-cta-secondary hero-cta-secondary-dark">Contact Us</Link>
+              </div>
+              <p className="final-cta-trust">🔒 Secure &amp; confidential</p>
             </div>
           </div>
         </section>
 
       {/* Sticky "Check Your Eligibility" bar (follows on scroll) */}
       <div className={`sticky-cta-bar ${stickyCtaVisible ? 'visible' : ''}`}>
-        <span style={{ fontSize: '0.95rem' }}>Check your eligibility</span>
-        <a href="#check-eligibility">Check Your Eligibility →</a>
+        <span style={{ fontSize: '0.95rem' }}>Explore services</span>
+        <a href="/services">View services →</a>
       </div>
 
       {/* Back to top (side button, appears after scroll) */}
@@ -476,24 +377,38 @@ export default function Home() {
         </svg>
       </button>
 
-        {/* Footer */}
+        {/* Footer — Defesa-style two columns */}
         <footer className="home-footer">
           <div className="home-container">
-            <div className="mb-4">
-              <img src="/logo.png" alt="WINIT" width={70} height={41} style={{ height: 40, width: 'auto' }} />
+            <div className="defesa-footer-inner">
+              <div>
+                <div className="mb-4" style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src="/logo.png" alt="" width={70} height={41} style={{ height: 40, width: 'auto' }} />
+                  <span className="home-nav-logo-text" style={{ color: 'rgba(255,255,255,0.95)', marginLeft: '0.5rem' }}>WINIT</span>
+                </div>
+                <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', lineHeight: 1.6, margin: '0 0 1rem 0' }}>
+                  Portugal immigration support. D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking.
+                </p>
+                <p style={{ margin: 0 }}>
+                  <Link href="/contact" style={{ color: 'rgba(255,255,255,0.95)', fontWeight: 600 }}>Contact Us</Link>
+                </p>
+              </div>
+              <div>
+                <p style={{ color: 'rgba(255,255,255,0.95)', fontWeight: 600, margin: '0 0 0.75rem 0' }}>Services &amp; Company</p>
+                <ul className="defesa-footer-links">
+                  <li style={{ marginBottom: '0.35rem' }}><Link href="/services">Services</Link></li>
+                  <li style={{ marginBottom: '0.35rem' }}><Link href="/why-portugal">Why Portugal</Link></li>
+                  <li style={{ marginBottom: '0.35rem' }}><Link href="/faq">FAQ</Link></li>
+                  <li style={{ marginBottom: '0.35rem' }}><Link href="/contact">Contact</Link></li>
+                  <li style={{ marginBottom: '0.35rem' }}><Link href="/privacy">Privacy</Link></li>
+                  <li style={{ marginBottom: '0.35rem' }}><Link href="/terms">Terms</Link></li>
+                  <li style={{ marginBottom: '0.35rem' }}><Link href="/cookies">Cookies</Link></li>
+                </ul>
+              </div>
             </div>
-            <p className="text-text-muted mb-2">Licensed immigration support · Your data is secure and confidential</p>
-            <p className="text-text-muted mb-2">
-              For official requirements, see <a href="https://www.aima.gov.pt" target="_blank" rel="noopener noreferrer" className="text-accent underline">AIMA</a> and your consulate.
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              Terms of Service · Privacy Policy · © {new Date().getFullYear()} WINIT. All rights reserved.
             </p>
-            <p className="mb-2">
-              <Link href="/privacy" className="mr-4">Privacy</Link>
-              <Link href="/terms" className="mr-4">Terms</Link>
-              <Link href="/contact" className="mr-4">Contact</Link>
-              <Link href="/cookies">Cookies</Link>
-            </p>
-            <p className="text-text-muted">© 2026 WINIT Portugal Immigration Platform. All rights reserved.</p>
-            <p className="text-text-muted text-sm mt-2">Empowering your immigration journey</p>
           </div>
         </footer>
         </div>

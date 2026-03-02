@@ -3,10 +3,12 @@ import Head from 'next/head'
 import '../styles/globals.css'
 import ErrorBoundary from '../components/ErrorBoundary'
 import AIChatWidget from '../components/AIChatWidget'
+import FadeInScroll from '../components/FadeInScroll'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ErrorBoundary>
+      <FadeInScroll />
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <meta name="theme-color" content="#000000" />
