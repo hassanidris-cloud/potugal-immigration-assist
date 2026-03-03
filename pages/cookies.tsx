@@ -8,7 +8,7 @@ export default function Cookies() {
         <title>Cookie Policy — WINIT Portugal Immigration</title>
         <meta name="description" content="How WINIT uses cookies on its website." />
       </Head>
-      <div style={{ minHeight: '100vh', fontFamily: 'sans-serif' }}>
+      <div className="policy-page" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
         <nav style={{ background: '#1e293b', padding: '1rem 2rem' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
@@ -18,7 +18,7 @@ export default function Cookies() {
             <Link href="/" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>Back to home</Link>
           </div>
         </nav>
-        <main style={{ maxWidth: '720px', margin: '0 auto', padding: '3rem 2rem' }}>
+        <main className="policy-main">
           <h1 style={{ fontSize: '2rem', marginBottom: '1.5rem', color: '#1e293b' }}>Cookie Policy</h1>
           <p style={{ color: '#64748b', marginBottom: '2rem' }}>Last updated: 2026</p>
           <section style={{ marginBottom: '2rem' }}>

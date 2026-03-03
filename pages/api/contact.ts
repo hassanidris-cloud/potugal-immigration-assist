@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const CONTACT_EMAIL = 'idris@winit.biz'
+// Who receives assessment/contact form submissions. Without a verified domain, Resend only allows sending to the account email (e.g. hassan_idris@icloud.com). After verifying winit.biz at resend.com/domains, you can use idris@winit.biz.
+const DEFAULT_CONTACT_EMAIL = 'idris@winit.biz'
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,9 +26,17 @@ export default async function handler(
 
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    console.error('RESEND_API_KEY is not set')
+    console.error('Contact form: RESEND_API_KEY is not set. Add it in Vercel → Project → Settings → Environment Variables.')
     return res.status(500).json({
-      error: 'Email is not configured. Please set RESEND_API_KEY in your environment.',
+      error: 'Sorry, the contact form is temporarily unavailable. Please email us directly at idris@winit.biz.',
+    })
+  }
+
+  const toEmail = (process.env.CONTACT_TO_EMAIL || DEFAULT_CONTACT_EMAIL).trim()
+  if (!toEmail) {
+    console.error('Contact form: CONTACT_TO_EMAIL is empty')
+    return res.status(500).json({
+      error: 'Sorry, the contact form is temporarily unavailable. Please email us directly.',
     })
   }
 
@@ -51,7 +60,7 @@ export default async function handler(
       },
       body: JSON.stringify({
         from,
-        to: [CONTACT_EMAIL],
+        to: [toEmail],
         reply_to: email.trim(),
         subject,
         html,

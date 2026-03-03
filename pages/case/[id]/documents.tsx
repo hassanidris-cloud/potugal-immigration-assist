@@ -1,7 +1,9 @@
 import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
+import CaseChatWidget from '../../../components/CaseChatWidget'
 
 export default function CaseDocuments() {
   const router = useRouter()
@@ -108,7 +110,12 @@ export default function CaseDocuments() {
   if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+    <>
+      <Head>
+        <title>Documents — WINIT Portugal Immigration</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
+    <div className="case-page-wrap" style={{ fontFamily: 'var(--font-sans, sans-serif)' }}>
       <header style={{ marginBottom: '2rem' }}>
         <Link href="/dashboard" style={{ color: '#0070f3' }}>← Back to Dashboard</Link>
         <h1 style={{ marginTop: '1rem' }}>Case Documents</h1>
@@ -196,6 +203,15 @@ export default function CaseDocuments() {
       <section style={{ marginTop: '2rem' }}>
         <Link href={`/case/${id}/checklist`} style={{ color: '#0070f3' }}>View Checklist</Link>
       </section>
+
+      {caseData && id && (
+        <CaseChatWidget
+          caseId={id as string}
+          caseUserId={caseData.user_id}
+          title="Message your specialist"
+        />
+      )}
     </div>
+    </>
   )
 }

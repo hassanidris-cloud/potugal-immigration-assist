@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
 import { getVisaPersonalization } from '../../../lib/visaPersonalization'
-import CaseChat from '../../../components/CaseChat'
+import CaseChatWidget from '../../../components/CaseChatWidget'
 
 export default function CaseChecklist() {
   const router = useRouter()
@@ -38,7 +39,7 @@ export default function CaseChecklist() {
         .eq('case_id', id)
         .order('order_index')
 
-      setChecklist(checklistData || [])
+      const items = checklistData || []
 
       // Fetch documents
       const { data: documentsData } = await supabase
@@ -46,7 +47,26 @@ export default function CaseChecklist() {
         .select('*')
         .eq('case_id', id)
 
-      setDocuments(documentsData || [])
+      const docs = documentsData || []
+      setDocuments(docs)
+
+      // Sync: mark item completed in DB when a matching document was uploaded (progress from uploads)
+      for (const item of items) {
+        if (item.completed) continue
+        if (!itemHasMatchingDocument(item, docs)) continue
+        await supabase
+          .from('case_checklist')
+          .update({ completed: true, completed_at: new Date().toISOString() })
+          .eq('id', item.id)
+      }
+
+      // Re-fetch checklist after sync so UI shows updated completed state
+      const { data: refreshed } = await supabase
+        .from('case_checklist')
+        .select('*')
+        .eq('case_id', id)
+        .order('order_index')
+      setChecklist(refreshed || items)
     } catch (error) {
       console.error('Error loading checklist:', error)
     } finally {
@@ -54,14 +74,25 @@ export default function CaseChecklist() {
     }
   }
 
-  const toggleChecklistItem = async (itemId: string, itemTitle: string, completed: boolean) => {
+  /** True if at least one uploaded document matches this checklist item (by title). */
+  function itemHasMatchingDocument(item: { title: string }, docs: { title: string }[]): boolean {
+    const titleLower = item.title.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
+    const firstWord = titleLower.split(/\s+/)[0] || ''
+    const firstWords = titleLower.split(/\s+/).slice(0, 3).join(' ')
+    return docs.some(doc => {
+      const d = doc.title.toLowerCase()
+      return d.includes(firstWords) || (firstWord.length >= 2 && d.includes(firstWord))
+    })
+  }
+
+  const toggleChecklistItem = async (itemId: string, itemTitle: string, currentlyCompleted: boolean, item?: { title: string }) => {
     try {
-      // If trying to check (not uncheck), verify document is uploaded
-      if (!completed) {
-        const hasDocument = documents.some(doc => 
-          doc.title.toLowerCase().includes(itemTitle.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase())
-        )
-        
+      if (!currentlyCompleted) {
+        const hasDocument = item
+          ? itemHasMatchingDocument(item, documents)
+          : documents.some(doc =>
+              doc.title.toLowerCase().includes(itemTitle.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase())
+            )
         if (!hasDocument) {
           alert(`⚠️ Please upload the "${itemTitle}" document before marking it as complete.\n\nGo to Upload Documents section to add this file.`)
           return
@@ -71,14 +102,12 @@ export default function CaseChecklist() {
       const { error } = await supabase
         .from('case_checklist')
         .update({
-          completed: !completed,
-          completed_at: !completed ? new Date().toISOString() : null,
+          completed: !currentlyCompleted,
+          completed_at: !currentlyCompleted ? new Date().toISOString() : null,
         })
         .eq('id', itemId)
 
       if (error) throw error
-
-      // Reload checklist
       loadChecklist()
     } catch (error) {
       console.error('Error updating checklist:', error)
@@ -112,6 +141,7 @@ export default function CaseChecklist() {
           required: template.required,
           order_index: template.order_index,
           completed: false,
+          ...(template.phase != null && { phase: template.phase }),
         }))
 
         await supabase.from('case_checklist').insert(checklistItems)
@@ -129,16 +159,103 @@ export default function CaseChecklist() {
   if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>
   if (!caseData) return <div style={{ padding: '2rem' }}>Case not found</div>
 
-  const completedCount = checklist.filter(item => item.completed).length
   const totalCount = checklist.length
+  const effectiveCompleted = (item: typeof checklist[0]) =>
+    item.completed || itemHasMatchingDocument(item, documents)
+  const completedCount = checklist.filter(effectiveCompleted).length
   const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
   const visaInfo = getVisaPersonalization(caseData?.visa_type || '')
   const requiredItems = checklist.filter(item => item.required !== false)
   const optionalItems = checklist.filter(item => item.required === false)
-  const requiredCompleted = requiredItems.filter(item => item.completed).length
+  const requiredCompleted = requiredItems.filter(effectiveCompleted).length
+
+  const hasPhases = checklist.some(item => item.phase)
+  const byPhase = hasPhases
+    ? checklist.reduce<Record<string, typeof checklist>>((acc, item) => {
+        const phase = item.phase || 'Other'
+        if (!acc[phase]) acc[phase] = []
+        acc[phase].push(item)
+        return acc
+      }, {})
+    : null
+
+  function renderChecklistItem(item: typeof checklist[0], isCompleted: boolean, isRequired: boolean) {
+    const hasDocument = itemHasMatchingDocument(item, documents)
+    return (
+      <div
+        key={item.id}
+        style={{
+          background: 'white',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+          border: isCompleted ? '2px solid #10b981' : '2px solid #e2e8f0',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '1rem',
+          transition: 'all 0.3s',
+          opacity: isRequired ? 1 : 0.95,
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={isCompleted}
+          onChange={() => toggleChecklistItem(item.id, item.title, isCompleted, item)}
+          style={{
+            width: '24px',
+            height: '24px',
+            marginTop: '0.25rem',
+            cursor: 'pointer',
+            accentColor: isRequired ? '#10b981' : '#3b82f6',
+          }}
+        />
+        <div style={{ flex: 1 }}>
+          <h3
+            style={{
+              margin: '0 0 0.5rem 0',
+              fontSize: '1.1rem',
+              textDecoration: isCompleted ? 'line-through' : 'none',
+              color: isCompleted ? '#94a3b8' : '#1e293b',
+            }}
+          >
+            {item.title}
+            {!isRequired && <span style={{ fontSize: '0.8rem', color: '#94a3b8', marginLeft: '0.35rem' }}>(Optional)</span>}
+          </h3>
+          {item.description && (
+            <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+              {item.description}
+            </p>
+          )}
+          <div style={{ marginTop: '0.5rem' }}>
+            {hasDocument ? (
+              <span style={{ fontSize: '0.8rem', color: '#059669', background: '#d1fae5', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                📎 Document uploaded
+              </span>
+            ) : (
+              <span style={{ fontSize: '0.8rem', color: isRequired ? '#dc2626' : '#f59e0b', background: isRequired ? '#fee2e2' : '#fef3c7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                📤 {isRequired ? 'Upload required' : 'Not yet uploaded'}
+              </span>
+            )}
+          </div>
+          {item.completed_at && isCompleted && (
+            <div style={{ marginTop: '0.5rem' }}>
+              <span style={{ fontSize: '0.8rem', color: '#10b981', background: '#dcfce7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                ✓ Completed {new Date(item.completed_at).toLocaleDateString()}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
+    <>
+      <Head>
+        <title>Checklist — WINIT Portugal Immigration</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
+    <div className="case-page-wrap" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', fontFamily: 'var(--font-sans, sans-serif)' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         {/* Header */}
         <header style={{ marginBottom: '2rem' }}>
@@ -193,7 +310,7 @@ export default function CaseChecklist() {
               }} />
             </div>
             <p style={{ margin: '0.5rem 0 0', color: '#64748b', fontSize: '0.9rem' }}>
-              {completedCount} of {totalCount} items completed • {requiredCompleted} of {requiredItems.length} required items ✓
+              {completedCount} of {totalCount} items completed (uploads count automatically) • {requiredCompleted} of {requiredItems.length} required ✓
             </p>
           </div>
 
@@ -234,189 +351,40 @@ export default function CaseChecklist() {
             </div>
           ) : (
             <>
-              {/* Required Items */}
-              {requiredItems.length > 0 && (
-                <div style={{ marginBottom: '2rem' }}>
-                  <h2 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span>⭐</span> Required Documents
-                  </h2>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {requiredItems.map((item) => {
-                      const hasDocument = documents.some(doc => 
-                        doc.title.toLowerCase().includes(item.title.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase())
-                      )
-                      
-                      return (
-                        <div key={item.id} style={{ 
-                          background: 'white', 
-                          padding: '1.5rem', 
-                          borderRadius: '12px', 
-                          boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-                          border: item.completed ? '2px solid #10b981' : '2px solid #e2e8f0',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '1rem',
-                          transition: 'all 0.3s'
-                        }}>
-                          <input
-                            type="checkbox"
-                            checked={item.completed}
-                            onChange={() => toggleChecklistItem(item.id, item.title, item.completed)}
-                            style={{ 
-                              width: '24px', 
-                              height: '24px', 
-                              marginTop: '0.25rem', 
-                              cursor: 'pointer',
-                              accentColor: '#10b981'
-                            }}
-                          />
-                          <div style={{ flex: 1 }}>
-                            <h3 style={{ 
-                              margin: '0 0 0.5rem 0', 
-                              fontSize: '1.1rem',
-                              textDecoration: item.completed ? 'line-through' : 'none', 
-                              color: item.completed ? '#94a3b8' : '#1e293b' 
-                            }}>
-                              {item.title}
-                            </h3>
-                            {item.description && (
-                              <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
-                                {item.description}
-                              </p>
-                            )}
-                            
-                            {/* Document upload status */}
-                            <div style={{ marginTop: '0.5rem' }}>
-                              {hasDocument ? (
-                                <span style={{ 
-                                  fontSize: '0.8rem', 
-                                  color: '#059669', 
-                                  background: '#d1fae5', 
-                                  padding: '0.25rem 0.75rem', 
-                                  borderRadius: '12px',
-                                  fontWeight: '600'
-                                }}>
-                                  📎 Document Uploaded
-                                </span>
-                              ) : (
-                                <span style={{ 
-                                  fontSize: '0.8rem', 
-                                  color: '#dc2626', 
-                                  background: '#fee2e2', 
-                                  padding: '0.25rem 0.75rem', 
-                                  borderRadius: '12px',
-                                  fontWeight: '600'
-                                }}>
-                                  📤 Upload Required
-                                </span>
-                              )}
-                            </div>
-                            
-                            {item.completed_at && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
-                                <span style={{ 
-                                  fontSize: '0.8rem', 
-                                  color: '#10b981', 
-                                  background: '#dcfce7', 
-                                  padding: '0.25rem 0.75rem', 
-                                  borderRadius: '12px',
-                                  fontWeight: '600'
-                                }}>
-                                  ✓ Completed {new Date(item.completed_at).toLocaleDateString()}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
+              {hasPhases && byPhase ? (
+                Object.entries(byPhase).map(([phaseName, phaseItems]) => (
+                  <div key={phaseName} style={{ marginBottom: '2rem' }}>
+                    <h2 style={{ fontSize: '1.35rem', color: '#1e293b', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {phaseName}
+                    </h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {phaseItems.map((item) => renderChecklistItem(item, effectiveCompleted(item), item.required !== false))}
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* Optional Items */}
-              {optionalItems.length > 0 && (
-                <div>
-                  <h2 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span>💼</span> Optional Documents (Recommended)
-                  </h2>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {optionalItems.map((item) => {
-                      const hasDocument = documents.some(doc => 
-                        doc.title.toLowerCase().includes(item.title.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase())
-                      )
-                      
-                      return (
-                        <div key={item.id} style={{ 
-                          background: 'white', 
-                          padding: '1.5rem', 
-                          borderRadius: '12px', 
-                          boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-                          border: item.completed ? '2px solid #3b82f6' : '2px solid #e2e8f0',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '1rem',
-                          opacity: 0.9
-                        }}>
-                          <input
-                            type="checkbox"
-                            checked={item.completed}
-                            onChange={() => toggleChecklistItem(item.id, item.title, item.completed)}
-                            style={{ 
-                              width: '24px', 
-                              height: '24px', 
-                              marginTop: '0.25rem', 
-                              cursor: 'pointer',
-                              accentColor: '#3b82f6'
-                            }}
-                          />
-                          <div style={{ flex: 1 }}>
-                            <h3 style={{ 
-                              margin: '0 0 0.5rem 0', 
-                              fontSize: '1.1rem',
-                              textDecoration: item.completed ? 'line-through' : 'none', 
-                              color: item.completed ? '#94a3b8' : '#475569' 
-                            }}>
-                              {item.title} <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>(Optional)</span>
-                            </h3>
-                            {item.description && (
-                              <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
-                                {item.description}
-                              </p>
-                            )}
-                            
-                            {/* Document upload status */}
-                            <div style={{ marginTop: '0.5rem' }}>
-                              {hasDocument ? (
-                                <span style={{ 
-                                  fontSize: '0.8rem', 
-                                  color: '#059669', 
-                                  background: '#d1fae5', 
-                                  padding: '0.25rem 0.75rem', 
-                                  borderRadius: '12px',
-                                  fontWeight: '600'
-                                }}>
-                                  📎 Document Uploaded
-                                </span>
-                              ) : (
-                                <span style={{ 
-                                  fontSize: '0.8rem', 
-                                  color: '#f59e0b', 
-                                  background: '#fef3c7', 
-                                  padding: '0.25rem 0.75rem', 
-                                  borderRadius: '12px',
-                                  fontWeight: '600'
-                                }}>
-                                  📤 Not Yet Uploaded
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
+                ))
+              ) : (
+                <>
+                  {requiredItems.length > 0 && (
+                    <div style={{ marginBottom: '2rem' }}>
+                      <h2 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>⭐</span> Required Documents
+                      </h2>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {requiredItems.map((item) => renderChecklistItem(item, effectiveCompleted(item), true))}
+                      </div>
+                    </div>
+                  )}
+                  {optionalItems.length > 0 && (
+                    <div>
+                      <h2 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>💼</span> Optional Documents (Recommended)
+                      </h2>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {optionalItems.map((item) => renderChecklistItem(item, effectiveCompleted(item), false))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -471,16 +439,14 @@ export default function CaseChecklist() {
         </div>
 
         {caseData && id && (
-          <div style={{ marginTop: '2rem' }}>
-            <CaseChat
-              caseId={id as string}
-              caseUserId={caseData.user_id}
-              isSpecialist={false}
-              title="Message your specialist"
-            />
-          </div>
+          <CaseChatWidget
+            caseId={id as string}
+            caseUserId={caseData.user_id}
+            title="Message your specialist"
+          />
         )}
       </div>
     </div>
+    </>
   )
 }

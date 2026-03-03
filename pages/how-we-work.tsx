@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import Head from 'next/head'
 import { useState } from 'react'
+import AuthNavLinks from '../components/AuthNavLinks'
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 const HOW_WE_WORK_BG = 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1920&q=80'
 
 const STEPS = [
@@ -50,6 +52,12 @@ export default function HowWeWork() {
       <Head>
         <title>How We Work — WINIT Portugal Immigration</title>
         <meta name="description" content="See how WINIT supports you from sign-up to visa approval: choose your program, upload documents, get expert review, and reach approval with one dashboard." />
+        {BASE_URL && <link rel="canonical" href={`${BASE_URL}/how-we-work`} />}
+        <meta property="og:title" content="How We Work — WINIT Portugal Immigration" />
+        <meta property="og:description" content="See how WINIT supports you from sign-up to visa approval: choose your program, upload documents, get expert review, and reach approval with one dashboard." />
+        <meta property="og:type" content="website" />
+        {BASE_URL && <meta property="og:url" content={`${BASE_URL}/how-we-work`} />}
+        {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
       <div className="home-nav-spacer how-we-work-page" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
@@ -67,7 +75,7 @@ export default function HowWeWork() {
             <div className="home-nav-links">
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
               <div style={{ position: 'relative' }}>
-                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="no-underline font-medium" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Services ▾</button>
+                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="home-nav-link-btn no-underline font-medium">Services ▾</button>
                 {(servicesOpen || navOpen) && (
                   <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
                     <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
@@ -80,26 +88,36 @@ export default function HowWeWork() {
               <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact Us</Link>
-              <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
-              <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
+              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
             </div>
           </div>
         </nav>
 
         <main>
           {/* Hero */}
-          <section className="how-hero section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${HOW_WE_WORK_BG})` }}>
-            <div className="section-with-bg-inner home-container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '720px', margin: '0 auto' }}>
+          <section className="how-hero section-with-bg how-hero-bg" style={{ backgroundImage: `url(${HOW_WE_WORK_BG})` }}>
+            <div className="section-with-bg-inner home-container how-hero-inner" style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '720px', margin: '0 auto' }}>
               <p className="how-hero-eyebrow">Your journey</p>
               <h1 className="how-hero-title">How We Work With You</h1>
               <p className="how-hero-sub">End-to-end support: choose your program, upload documents, get expert review, and reach approval—with one dashboard and a dedicated specialist.</p>
+              <p className="how-hero-tagline">From first click to visa—we&apos;re with you.</p>
+              <div className="how-hero-dots" aria-hidden />
+            </div>
+          </section>
+
+          {/* Bridge strip */}
+          <section className="how-bridge">
+            <div className="how-bridge-inner">
+              <span className="how-bridge-icon" aria-hidden>✓</span>
+              <p className="how-bridge-text">Four steps · One dashboard · One dedicated specialist</p>
             </div>
           </section>
 
           {/* Steps — timeline with connector */}
-          <section className="how-steps-section" style={{ padding: '3rem 0', background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)' }}>
-            <div className="home-container" style={{ maxWidth: '780px', margin: '0 auto', padding: '0 2rem' }}>
+          <section className="how-steps-section how-steps-section-bg">
+            <div className="home-container" style={{ maxWidth: '780px', margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 1 }}>
               <h2 className="how-steps-heading">Four simple steps</h2>
+              <p className="how-steps-sub">Clear, transparent, and designed around you.</p>
               <div className="how-timeline">
                 {STEPS.map((step, i) => (
                   <div key={step.num} className="how-timeline-step">
@@ -129,9 +147,10 @@ export default function HowWeWork() {
           </section>
 
           {/* Benefits strip */}
-          <section className="how-benefits-section" style={{ padding: '3rem 0', background: '#fff' }}>
+          <section className="how-benefits-section">
             <div className="home-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 2rem' }}>
               <h2 className="how-benefits-heading">Why it works</h2>
+              <p className="how-benefits-intro">We built this process so you spend less time worrying and more time planning your move.</p>
               <div className="how-benefits-grid">
                 {BENEFITS.map((b) => (
                   <div key={b.label} className="how-benefits-card">
@@ -155,10 +174,10 @@ export default function HowWeWork() {
           </section>
 
           {/* CTA */}
-          <section className="how-cta-section" style={{ padding: '3.5rem 0', background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}>
+          <section className="how-cta-section">
             <div className="home-container" style={{ maxWidth: '520px', margin: '0 auto', padding: '0 2rem', textAlign: 'center' }}>
               <h2 className="how-cta-title">Ready to get started?</h2>
-              <p className="how-cta-lead">Sign up for a free eligibility assessment or contact us to discuss your case.</p>
+              <p className="how-cta-lead">Sign up for a free eligibility assessment or contact us to discuss your case. We&apos;ll reply within 24 hours.</p>
               <div className="how-cta-buttons">
                 <Link href="/contact" onClick={() => setNavOpen(false)} className="hero-cta hero-cta-primary">Free assessment</Link>
                 <Link href="/auth/signup" onClick={() => setNavOpen(false)} className="hero-cta hero-cta-secondary hero-cta-secondary-dark">Sign up</Link>
@@ -166,9 +185,9 @@ export default function HowWeWork() {
             </div>
           </section>
 
-          <p style={{ textAlign: 'center', padding: '2rem 0', margin: 0 }}>
-            <Link href="/" className="text-primary font-semibold">← Back to home</Link>
-          </p>
+          <footer className="how-we-work-footer">
+            <Link href="/" className="how-we-work-back">← Back to home</Link>
+          </footer>
         </main>
       </div>
     </>

@@ -1,5 +1,12 @@
+import Head from 'next/head'
+
 export default function NotFound() {
   return (
+    <>
+      <Head>
+        <title>Page Not Found — WINIT Portugal Immigration</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
     <div style={{
       minHeight: '100vh',
       display: 'flex',
@@ -18,5 +25,6 @@ export default function NotFound() {
       </p>
       <a href="/" style={{ color: '#0066cc', fontWeight: '600' }}>Go back home</a>
     </div>
+    </>
   )
 }

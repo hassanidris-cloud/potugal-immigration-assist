@@ -1,8 +1,10 @@
 import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabaseClient'
 import { countries } from '../../../lib/countries'
+import CaseChatWidget from '../../../components/CaseChatWidget'
 
 export default function EditCase() {
   const router = useRouter()
@@ -120,7 +122,12 @@ export default function EditCase() {
   if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
+    <>
+      <Head>
+        <title>Edit case — WINIT Portugal Immigration</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
+    <div className="case-page-wrap" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', fontFamily: 'var(--font-sans, sans-serif)' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <header style={{ marginBottom: '2rem' }}>
           <Link href={`/case/${id}/checklist`} style={{ color: '#0066cc', textDecoration: 'none' }}>← Back to Checklist</Link>
@@ -243,6 +250,15 @@ export default function EditCase() {
           </div>
         </form>
       </div>
+
+      {caseData && id && (
+        <CaseChatWidget
+          caseId={id as string}
+          caseUserId={caseData.user_id}
+          title="Message your specialist"
+        />
+      )}
     </div>
+    </>
   )
 }

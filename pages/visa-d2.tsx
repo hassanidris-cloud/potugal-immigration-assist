@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import Head from 'next/head'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import EditPageFloatingButton from '../components/EditPageFloatingButton'
+import AuthNavLinks from '../components/AuthNavLinks'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 
@@ -11,9 +13,9 @@ const D2_PAGE_IMAGES = [
   'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1920&q=90', // 1 Overview
   'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&q=90', // 2 (unused; investment uses local)
   'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=90', // 3 Benefits
-  'https://images.unsplash.com/photo-1504314285-879b4d3f0f7a?w=1920&q=90',   // 4 Comparison
-  'https://images.unsplash.com/photo-1565138652-5c2c64dd2b0a?w=1920&q=90',   // 5 Eligibility
-  'https://images.unsplash.com/photo-1570654921-5a8b639f4b2c?w=1920&q=90',   // 6 Process
+  'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=90',   // 4 Comparison
+  'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=90',   // 5 Eligibility / Requirements
+  'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=90',   // 6 Process / How it works
   'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=90',   // 7 Why us
   'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1920&q=90', // 8 Business types
   'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=1920&q=90', // 9 FAQs
@@ -24,6 +26,11 @@ export default function VisaD2() {
   const [navOpen, setNavOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [debugText, setDebugText] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setDebugText(new URLSearchParams(window.location.search).get('debug') === 'text')
+  }, [])
 
   return (
     <>
@@ -34,9 +41,13 @@ export default function VisaD2() {
         <meta property="og:description" content="D2 visa for entrepreneurs: establish a company in Portugal and obtain residency for you and your family." />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-d2`} />}
+        {BASE_URL && <meta property="og:url" content={`${BASE_URL}/visa-d2`} />}
+        {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
-      <div className="home-nav-spacer visa-d2-page" style={{ minHeight: '100vh' }}>
+      <div className={`home-nav-spacer visa-d2-page${debugText ? ' visa-debug-text' : ''}`} style={{ minHeight: '100vh' }}>
+        {debugText && <div className="visa-debug-banner" aria-hidden>DEBUG: Text &amp; style — outlines show text boundaries; remove ?debug=text from URL to exit</div>}
+        <EditPageFloatingButton relativePath="pages/visa-d2.tsx" />
         <nav className={`home-nav defesa-nav ${navOpen ? 'nav-open' : ''}`}>
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
@@ -51,7 +62,7 @@ export default function VisaD2() {
             <div className="home-nav-links">
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
               <div style={{ position: 'relative' }}>
-                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="no-underline font-medium" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Services ▾</button>
+                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="home-nav-link-btn no-underline font-medium">Services ▾</button>
                 {(servicesOpen || navOpen) && (
                   <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
                     <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
@@ -64,7 +75,7 @@ export default function VisaD2() {
               <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
-              <Link href="/auth/signup" onClick={() => setNavOpen(false)} className="home-nav-signup no-underline">Sign Up</Link>
+              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
             </div>
           </div>
         </nav>
@@ -84,7 +95,7 @@ export default function VisaD2() {
           </section>
 
           {/* 2. Overview – background image + same overlay as other sections */}
-          <section className="d2-overview-section section-with-bg" id="overview" style={{ backgroundImage: `url(${D2_PAGE_IMAGES[1]})` }}>
+          <section className="d2-overview-section section-with-bg visa-section-center-header" id="overview" style={{ backgroundImage: `url(${D2_PAGE_IMAGES[1]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">Overview</span>
               <h2 className="d2-heading d2-heading-light">What is the D2 Entrepreneur Visa?</h2>
@@ -98,7 +109,7 @@ export default function VisaD2() {
           </section>
 
           {/* 3. Capital Requirements / Investment – background image, same overlay */}
-          <section className="section-with-bg d2-investment-section" style={{ padding: '4.5rem 0', backgroundImage: 'url(/images/investment-braga.png.jpg)' }}>
+          <section id="investment" className="section-with-bg d2-investment-section visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: 'url(/images/investment-braga.png.jpg)' }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">Investment</span>
               <h2 className="d2-heading d2-heading-light">D2 Visa Investment &amp; Capital Requirements</h2>
@@ -141,7 +152,7 @@ export default function VisaD2() {
           </section>
 
           {/* 4. Benefits */}
-          <section className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[3]})` }}>
+          <section id="benefits" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[3]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">Why D2</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1.25rem' }}>Main Benefits of the D2 Entrepreneur Visa</h2>
@@ -157,7 +168,7 @@ export default function VisaD2() {
           </section>
 
           {/* 5. D2 vs Golden Visa */}
-          <section className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[4]})` }}>
+          <section id="comparison" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[4]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">Comparison</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1.25rem' }}>D2 Entrepreneur Visa vs Golden Visa</h2>
@@ -190,7 +201,7 @@ export default function VisaD2() {
           </section>
 
           {/* 6. Eligibility */}
-          <section className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[5]})` }}>
+          <section id="eligibility" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[5]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">Requirements</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1rem' }}>D2 Visa Eligibility Requirements</h2>
@@ -208,7 +219,7 @@ export default function VisaD2() {
           </section>
 
           {/* 7. Our Process */}
-          <section className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[6]})` }}>
+          <section id="process" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[6]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">How it works</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1.25rem' }}>Step-by-Step D2 Visa Process</h2>
@@ -233,7 +244,7 @@ export default function VisaD2() {
           </section>
 
           {/* 8. Why Choose Us */}
-          <section className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[7]})` }}>
+          <section id="why-us" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[7]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">Our support</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1rem' }}>How Our Law Firm Helps Entrepreneurs</h2>
@@ -251,7 +262,7 @@ export default function VisaD2() {
           </section>
 
           {/* 9. Business Types */}
-          <section className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[8]})` }}>
+          <section id="sectors" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[8]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
               <span className="d2-section-label d2-section-label-light">Sectors</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '0.5rem' }}>What Types of Businesses Qualify?</h2>
@@ -289,41 +300,45 @@ export default function VisaD2() {
           </section>
 
           {/* 10. FAQs */}
-          <section className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[9]})` }}>
+          <section id="faqs" className="section-with-bg" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[9]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
-              <span className="d2-section-label d2-section-label-light">Common questions</span>
-              <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1.25rem' }}>D2 Entrepreneur Visa FAQs (2026)</h2>
-              <div style={{ maxWidth: '720px' }}>
-                {[
-                  { q: 'What is the minimum investment for the D2 Entrepreneur Visa?', a: 'There is no fixed minimum investment. You must demonstrate sufficient capital to establish and operate your business—typically €5,000–€50,000+ depending on your business type, plus funds to support yourself.' },
-                  { q: 'Do I need to create jobs to get the D2 visa?', a: 'Not necessarily. While job creation strengthens your application, it is not a strict requirement. The focus is on demonstrating a viable business that contributes to the Portuguese economy.' },
-                  { q: 'What types of businesses qualify for the D2 visa?', a: 'Most legitimate business activities qualify—technology companies, consulting firms, e-commerce, hospitality, import/export, professional services, and more. Regulated sectors may have additional requirements.' },
-                  { q: 'Do I need a business plan in Portuguese?', a: 'Yes. Consulates require a detailed business plan in Portuguese demonstrating your concept, market analysis, financial projections, and economic contribution.' },
-                  { q: 'Can I include my family in the D2 application?', a: 'Yes. You can include your spouse, dependent children (generally under 18, or up to 26 if students), and dependent parents through family reunification.' },
-                  { q: 'How long does D2 visa processing take?', a: 'Visa processing typically takes 60-90 days after submission. Allow additional time for company registration and document preparation—the full process usually takes 4-6 months.' },
-                  { q: 'Can I get Portuguese citizenship through the D2 visa?', a: 'Yes. After 5 years of legal residence in Portugal, you can apply for Portuguese citizenship. You must pass a basic Portuguese language test (A2 level).' },
-                  { q: 'What happens if my business fails?', a: 'Your residency is not automatically revoked if your business struggles. You may restructure, pivot to a new business, or transition to another visa type. Consult with us to explore options.' },
-                ].map((faq, i) => (
-                  <div key={i} style={{ marginBottom: '0.75rem', background: 'rgba(255,255,255,0.97)', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }}>
-                    <button
-                      type="button"
-                      className="d2-faq-btn"
-                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      style={{ width: '100%', textAlign: 'left', padding: '1rem 1.25rem', border: 'none', background: 'none', cursor: 'pointer' }}
-                    >
-                      {faq.q} {openFaq === i ? '−' : '+'}
-                    </button>
-                    {openFaq === i && (
-                      <div className="d2-body" style={{ padding: '0 1.25rem 1rem' }}>{faq.a}</div>
-                    )}
-                  </div>
-                ))}
+              <div className="visa-faq-section">
+                <div className="visa-faq-header">
+                  <span className="d2-section-label d2-section-label-light">Common questions</span>
+                  <h2 className="d2-heading d2-heading-light" style={{ marginBottom: 0 }}>D2 Entrepreneur Visa FAQs (2026)</h2>
+                </div>
+                <div className="visa-faq-list">
+                  {[
+                    { q: 'What is the minimum investment for the D2 Entrepreneur Visa?', a: 'There is no fixed minimum investment. You must demonstrate sufficient capital to establish and operate your business—typically €5,000–€50,000+ depending on your business type, plus funds to support yourself.' },
+                    { q: 'Do I need to create jobs to get the D2 visa?', a: 'Not necessarily. While job creation strengthens your application, it is not a strict requirement. The focus is on demonstrating a viable business that contributes to the Portuguese economy.' },
+                    { q: 'What types of businesses qualify for the D2 visa?', a: 'Most legitimate business activities qualify—technology companies, consulting firms, e-commerce, hospitality, import/export, professional services, and more. Regulated sectors may have additional requirements.' },
+                    { q: 'Do I need a business plan in Portuguese?', a: 'Yes. Consulates require a detailed business plan in Portuguese demonstrating your concept, market analysis, financial projections, and economic contribution.' },
+                    { q: 'Can I include my family in the D2 application?', a: 'Yes. You can include your spouse, dependent children (generally under 18, or up to 26 if students), and dependent parents through family reunification.' },
+                    { q: 'How long does D2 visa processing take?', a: 'Visa processing typically takes 60-90 days after submission. Allow additional time for company registration and document preparation—the full process usually takes 4-6 months.' },
+                    { q: 'Can I get Portuguese citizenship through the D2 visa?', a: 'Yes. After 5 years of legal residence in Portugal, you can apply for Portuguese citizenship. You must pass a basic Portuguese language test (A2 level).' },
+                    { q: 'What happens if my business fails?', a: 'Your residency is not automatically revoked if your business struggles. You may restructure, pivot to a new business, or transition to another visa type. Consult with us to explore options.' },
+                  ].map((faq, i) => (
+                    <div key={i} className="visa-faq-item">
+                      <button
+                        type="button"
+                        className="visa-faq-question"
+                        onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                      >
+                        <span>{faq.q}</span>
+                        <span className="visa-faq-icon" aria-hidden>{openFaq === i ? '−' : '+'}</span>
+                      </button>
+                      {openFaq === i && (
+                        <div className="visa-faq-answer">{faq.a}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
 
           {/* 11. CTA */}
-          <section className="section-with-bg d2-cta-section" style={{ padding: '5.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[10]})` }}>
+          <section id="cta" className="section-with-bg d2-cta-section" style={{ padding: '5.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[10]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in style={{ textAlign: 'center' }}>
               <span className="d2-section-label d2-section-label-light">Get started</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1rem' }}>Ready to Launch Your Business in Portugal?</h2>

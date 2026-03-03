@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Head from 'next/head'
 import { useState } from 'react'
+import AuthNavLinks from '../components/AuthNavLinks'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 
@@ -12,6 +13,12 @@ export default function WhyPortugal() {
       <Head>
         <title>Why Portugal? — WINIT Portugal Immigration</title>
         <meta name="description" content="Discover why Portugal is one of the world’s most welcoming countries: lifestyle, safety, digital hub, and unmatched value." />
+        {BASE_URL && <link rel="canonical" href={`${BASE_URL}/why-portugal`} />}
+        <meta property="og:title" content="Why Portugal? — WINIT Portugal Immigration" />
+        <meta property="og:description" content="Discover why Portugal is one of the world's most welcoming countries: lifestyle, safety, digital hub, and unmatched value." />
+        <meta property="og:type" content="website" />
+        {BASE_URL && <meta property="og:url" content={`${BASE_URL}/why-portugal`} />}
+        {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
       <div className="home-nav-spacer" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
@@ -29,7 +36,7 @@ export default function WhyPortugal() {
             <div className="home-nav-links">
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
               <div style={{ position: 'relative' }}>
-                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="no-underline font-medium" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Services ▾</button>
+                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="home-nav-link-btn no-underline font-medium">Services ▾</button>
                 {(servicesOpen || navOpen) && (
                   <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
                     <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
@@ -42,8 +49,7 @@ export default function WhyPortugal() {
               <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
-              <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
-              <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
+              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
             </div>
           </div>
         </nav>

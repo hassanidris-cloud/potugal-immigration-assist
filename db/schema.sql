@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS public.invoices (
 CREATE TABLE IF NOT EXISTS public.checklist_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   visa_type TEXT NOT NULL,
+  phase TEXT,
   title TEXT NOT NULL,
   description TEXT,
   required BOOLEAN DEFAULT TRUE,
@@ -99,8 +100,10 @@ CREATE TABLE IF NOT EXISTS public.case_checklist (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   case_id UUID NOT NULL REFERENCES public.cases(id) ON DELETE CASCADE,
   template_id UUID REFERENCES public.checklist_templates(id) ON DELETE SET NULL,
+  phase TEXT,
   title TEXT NOT NULL,
   description TEXT,
+  required BOOLEAN DEFAULT TRUE,
   completed BOOLEAN DEFAULT FALSE,
   completed_at TIMESTAMP WITH TIME ZONE,
   order_index INTEGER DEFAULT 0,

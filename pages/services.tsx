@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Head from 'next/head'
 import { useState } from 'react'
+import AuthNavLinks from '../components/AuthNavLinks'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 const SERVICES_HERO_BG = 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=1920&q=80'
@@ -46,6 +47,11 @@ export default function Services() {
         <meta property="og:description" content="D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking." />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/services`} />}
+        {BASE_URL && <meta property="og:url" content={`${BASE_URL}/services`} />}
+        {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
+        <meta name="twitter:title" content="Our Services — WINIT Portugal Immigration" />
+        <meta name="twitter:description" content="D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking." />
+        {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
       <div className="home-nav-spacer" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
@@ -76,7 +82,7 @@ export default function Services() {
               <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
-              <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
+              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
             </div>
           </div>
         </nav>

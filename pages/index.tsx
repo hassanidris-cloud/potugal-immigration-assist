@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import type { CSSProperties } from 'react'
 import { useState, useEffect, useCallback, useRef } from 'react'
+import AuthNavLinks from '../components/AuthNavLinks'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 
@@ -178,8 +179,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setServicesOpen((o) => !o)}
-                  className="no-underline font-medium"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  className="home-nav-link-btn no-underline font-medium"
                 >
                   Services ▾
                 </button>
@@ -208,8 +208,7 @@ export default function Home() {
               <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact Us</Link>
-              <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
-              <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
+              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
             </div>
           </div>
         </nav>

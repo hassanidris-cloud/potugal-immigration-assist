@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import Head from 'next/head'
 import { useState } from 'react'
+import AuthNavLinks from '../components/AuthNavLinks'
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 const FAQ_BG_IMAGE = 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=1920&q=80'
 const FAQ_ITEMS = [
   { q: 'Is this service legitimate and secure?', a: 'Yes. We work with licensed immigration lawyers, CPA accountants, and qualified realtors. We work under a formal contract with clearly defined terms and payment conditions. We use bank-level encryption for your documents, and your data is never shared with third parties except as required for your application.' },
@@ -21,7 +23,16 @@ export default function FAQ() {
       <Head>
         <title>FAQ — WINIT Portugal Immigration</title>
         <meta name="description" content="Frequently asked questions about WINIT Portugal immigration support, D2, D7, and D8 visas." />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        {BASE_URL && <link rel="canonical" href={`${BASE_URL}/faq`} />}
+        <meta property="og:title" content="FAQ — WINIT Portugal Immigration" />
+        <meta property="og:description" content="Frequently asked questions about WINIT Portugal immigration support, D2, D7, and D8 visas." />
+        <meta property="og:type" content="website" />
+        {BASE_URL && <meta property="og:url" content={`${BASE_URL}/faq`} />}
+        {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
+        <meta name="twitter:title" content="FAQ — WINIT Portugal Immigration" />
+        <meta name="twitter:description" content="Frequently asked questions about WINIT Portugal immigration support, D2, D7, and D8 visas." />
+        {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
+        <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
       <div className="home-nav-spacer" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
         <nav className={`home-nav ${navOpen ? 'nav-open' : ''}`}>
@@ -38,7 +49,7 @@ export default function FAQ() {
             <div className="home-nav-links">
               <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
               <div style={{ position: 'relative' }}>
-                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="no-underline font-medium" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Services ▾</button>
+                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="home-nav-link-btn no-underline font-medium">Services ▾</button>
                 {(servicesOpen || navOpen) && (
                   <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
                     <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
@@ -51,8 +62,7 @@ export default function FAQ() {
               <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
               <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
               <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
-              <Link href="/auth/login" onClick={() => setNavOpen(false)} className="no-underline font-semibold">Login</Link>
-              <Link href="/auth/signup" className="home-nav-signup no-underline" onClick={() => setNavOpen(false)}>Sign Up</Link>
+              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
             </div>
           </div>
         </nav>

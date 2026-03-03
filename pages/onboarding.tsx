@@ -1,5 +1,6 @@
 import { useState, FormEvent, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import { supabase } from '../lib/supabaseClient'
 import { countries } from '../lib/countries'
 import { getVisaPersonalization, getVisaTypeColor } from '../lib/visaPersonalization'
@@ -119,8 +120,10 @@ export default function Onboarding() {
           template_id: template.id,
           title: template.title,
           description: template.description,
+          required: template.required !== false,
           order_index: template.order_index,
           completed: false,
+          ...(template.phase != null && { phase: template.phase }),
         }))
 
         await supabase.from('case_checklist').insert(checklistItems)
@@ -199,6 +202,11 @@ export default function Onboarding() {
   if (!user) return <div style={{ padding: '2rem' }}>Loading...</div>
 
   return (
+    <>
+      <Head>
+        <title>Create case — WINIT Portugal Immigration</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         {/* Progress Bar */}
@@ -490,5 +498,6 @@ export default function Onboarding() {
         )}
       </div>
     </div>
+    </>
   )
 }
