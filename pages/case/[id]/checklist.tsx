@@ -4,7 +4,6 @@ import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
 import { getVisaPersonalization } from '../../../lib/visaPersonalization'
-import CaseChatWidget from '../../../components/CaseChatWidget'
 
 export default function CaseChecklist() {
   const router = useRouter()
@@ -438,14 +437,6 @@ export default function CaseChecklist() {
           </Link>
         </div>
       </div>
-
-      {caseData && (id || caseData.id) && (
-        <CaseChatWidget
-          caseId={(id as string) || caseData.id}
-          caseUserId={caseData.user_id}
-          title="Message your specialist"
-        />
-      )}
     </div>
     </>
   )

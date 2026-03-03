@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
-import CaseChatWidget from '../../../components/CaseChatWidget'
 
 export default function CaseDocuments() {
   const router = useRouter()
@@ -203,14 +202,6 @@ export default function CaseDocuments() {
       <section style={{ marginTop: '2rem' }}>
         <Link href={`/case/${id}/checklist`} style={{ color: '#0070f3' }}>View Checklist</Link>
       </section>
-
-      {caseData && (id || caseData.id) && (
-        <CaseChatWidget
-          caseId={(id as string) || caseData.id}
-          caseUserId={caseData.user_id}
-          title="Message your specialist"
-        />
-      )}
     </div>
     </>
   )

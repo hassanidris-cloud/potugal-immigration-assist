@@ -4,7 +4,6 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabaseClient'
 import { countries } from '../../../lib/countries'
-import CaseChatWidget from '../../../components/CaseChatWidget'
 
 export default function EditCase() {
   const router = useRouter()
@@ -250,14 +249,6 @@ export default function EditCase() {
           </div>
         </form>
       </div>
-
-      {caseData && (id || caseData.id) && (
-        <CaseChatWidget
-          caseId={(id as string) || caseData.id}
-          caseUserId={caseData.user_id}
-          title="Message your specialist"
-        />
-      )}
     </div>
     </>
   )
