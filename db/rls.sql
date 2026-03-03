@@ -117,5 +117,25 @@ CREATE POLICY "Users can update checklist in own cases" ON public.case_checklist
     )
   );
 
+-- Users must be able to insert checklist items when creating/regenerating a checklist for their own case
+CREATE POLICY "Users can insert checklist in own cases" ON public.case_checklist
+  FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.cases
+      WHERE cases.id = case_checklist.case_id
+      AND cases.user_id = auth.uid()
+    )
+  );
+
+-- Users must be able to delete checklist items when regenerating (e.g. after visa type change)
+CREATE POLICY "Users can delete checklist in own cases" ON public.case_checklist
+  FOR DELETE USING (
+    EXISTS (
+      SELECT 1 FROM public.cases
+      WHERE cases.id = case_checklist.case_id
+      AND cases.user_id = auth.uid()
+    )
+  );
+
 CREATE POLICY "Admins can manage all checklists" ON public.case_checklist
   FOR ALL USING (is_admin());

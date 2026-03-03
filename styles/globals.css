@@ -4906,18 +4906,43 @@ a.contact-info-item .contact-info-value {
 
   .hero-slideshow-dots {
     bottom: 1.25rem;
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
 
+  /* Large tap target (44px) but small visible dot (10px) via pseudo-element */
   .hero-slideshow-dots button {
-    width: 10px;
-    height: 10px;
+    width: 44px;
+    height: 44px;
     min-width: 44px;
     min-height: 44px;
-    padding: 17px;
-    box-sizing: content-box;
+    padding: 0;
+    border: none;
+    background: transparent;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-slideshow-dots button::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.3);
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  .hero-slideshow-dots button:hover::before {
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(1.15);
+  }
+
+  .hero-slideshow-dots button.active::before {
+    background: white;
+    transform: scale(1.2);
   }
 
   .hero-slideshow-arrows button {
