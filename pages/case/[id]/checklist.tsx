@@ -437,15 +437,15 @@ export default function CaseChecklist() {
             Return to Dashboard
           </Link>
         </div>
-
-        {caseData && id && (
-          <CaseChatWidget
-            caseId={id as string}
-            caseUserId={caseData.user_id}
-            title="Message your specialist"
-          />
-        )}
       </div>
+
+      {caseData && (id || caseData.id) && (
+        <CaseChatWidget
+          caseId={(id as string) || caseData.id}
+          caseUserId={caseData.user_id}
+          title="Message your specialist"
+        />
+      )}
     </div>
     </>
   )

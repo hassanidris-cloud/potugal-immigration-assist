@@ -5401,7 +5401,7 @@ a.contact-info-item .contact-info-value {
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
-  z-index: 999;
+  z-index: 1001;
   font-family: var(--font-sans);
 }
 

@@ -204,9 +204,9 @@ export default function CaseDocuments() {
         <Link href={`/case/${id}/checklist`} style={{ color: '#0070f3' }}>View Checklist</Link>
       </section>
 
-      {caseData && id && (
+      {caseData && (id || caseData.id) && (
         <CaseChatWidget
-          caseId={id as string}
+          caseId={(id as string) || caseData.id}
           caseUserId={caseData.user_id}
           title="Message your specialist"
         />

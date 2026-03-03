@@ -251,9 +251,9 @@ export default function EditCase() {
         </form>
       </div>
 
-      {caseData && id && (
+      {caseData && (id || caseData.id) && (
         <CaseChatWidget
-          caseId={id as string}
+          caseId={(id as string) || caseData.id}
           caseUserId={caseData.user_id}
           title="Message your specialist"
         />
