@@ -61,6 +61,7 @@ Required environment variables:
 - `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook secret
 - `BASE_URL`: Your app URL (http://localhost:3000 for local)
 - `RESEND_API_KEY`: For the contact/assessment form and automatic client approval emails ([Resend](https://resend.com), free tier). **Required on Vercel** so "Request your assessment" and approval notifications work.
+- `ADMIN_NOTIFICATION_EMAIL` (optional): Admin inbox for automatic "new account created" alerts. Falls back to `CONTACT_TO_EMAIL` if omitted.
 - `RESEND_FROM_EMAIL` (optional): Custom sender address for outbound emails (contact + account-approved notifications) once your domain is verified in Resend.
 
 4. Set up the database:
