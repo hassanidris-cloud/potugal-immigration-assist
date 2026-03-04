@@ -60,7 +60,8 @@ Required environment variables:
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Your Stripe publishable key
 - `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook secret
 - `BASE_URL`: Your app URL (http://localhost:3000 for local)
-- `RESEND_API_KEY`: For the contact/assessment form to email you ([Resend](https://resend.com), free tier). **Required on Vercel** so "Request your assessment" works.
+- `RESEND_API_KEY`: For the contact/assessment form and automatic client approval emails ([Resend](https://resend.com), free tier). **Required on Vercel** so "Request your assessment" and approval notifications work.
+- `RESEND_FROM_EMAIL` (optional): Custom sender address for outbound emails (contact + account-approved notifications) once your domain is verified in Resend.
 
 4. Set up the database:
 Run the SQL scripts in the `db/` folder in your Supabase SQL Editor:

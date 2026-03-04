@@ -74,7 +74,7 @@ export default function AccountPending() {
           Account pending
         </h1>
         <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-          You’re signed in. Your specialist will activate your account and confirm payment. Once that’s done, you’ll have full access to your dashboard, case, and documents.
+          You’re signed in. Your specialist will activate your account and confirm payment. Once that’s done, you’ll have full access to your dashboard, case, and documents, and we’ll email you right away.
         </p>
         <p style={{ color: '#475569', fontSize: '0.95rem', marginBottom: '2rem' }}>
           If you’ve already paid or have questions, get in touch with us and we’ll sort it out.

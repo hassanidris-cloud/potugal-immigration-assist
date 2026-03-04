@@ -50,7 +50,7 @@ export default function Onboarding() {
     // Client must be marked paid by admin before they can create a case
     if (profileData && !profileData.paid_at) {
       setAccessBlocked(true)
-      setBlockMessage('Your account is pending payment confirmation. The specialist will enable your access after payment—you can log in and check back soon.')
+      setBlockMessage('Your account is pending payment confirmation. The specialist will enable your access after payment, and we will email you once your account is approved.')
       return
     }
 
