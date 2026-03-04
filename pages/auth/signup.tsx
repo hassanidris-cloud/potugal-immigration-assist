@@ -54,29 +54,38 @@ export default function Signup() {
         }
 
         // No confirmation needed – create profile (API or client fallback)
-        const response = await fetch('/api/auth/complete-signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: authData.user.id,
-            email,
-            fullName,
-            phone: phone ? `${phoneCountry} ${phone}` : null,
-            dateOfBirth,
-            visaType,
-          }),
-        })
+        const fallbackProfile = {
+          id: authData.user.id,
+          email,
+          full_name: fullName || null,
+          phone: phone ? `${phoneCountry} ${phone}` : null,
+          role: 'client',
+        }
 
-        if (!response.ok) {
-          const data = await response.json().catch(() => ({}))
-          // Fallback: create profile from client (RLS allows "insert own profile")
-          const { error: insertError } = await supabase.from('users').insert({
-            id: authData.user.id,
-            email,
-            full_name: fullName || null,
-            phone: phone ? `${phoneCountry} ${phone}` : null,
-            role: 'client',
+        let response: Response | null = null
+        const token =
+          authData.session?.access_token ||
+          (await supabase.auth.getSession()).data.session?.access_token
+        if (token) {
+          response = await fetch('/api/auth/complete-signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              fullName,
+              phone: phone ? `${phoneCountry} ${phone}` : null,
+              dateOfBirth,
+              visaType,
+            }),
           })
+        }
+
+        if (!response || !response.ok) {
+          const data = response ? await response.json().catch(() => ({})) : {}
+          // Fallback: create profile from client (RLS allows "insert own profile")
+          const { error: insertError } = await supabase.from('users').insert(fallbackProfile)
           if (insertError) throw new Error(data.error || insertError.message || 'Failed to create profile')
         }
 

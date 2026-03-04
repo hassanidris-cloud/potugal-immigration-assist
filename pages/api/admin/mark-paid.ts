@@ -1,34 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { authenticateRequest } from '../../../lib/serverAuth'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const authHeader = req.headers.authorization
-  if (!supabaseUrl || !serviceRoleKey || !authHeader?.startsWith('Bearer ')) {
-    return res.status(500).json({ error: 'Server or auth error' })
+  const auth = await authenticateRequest(req)
+  if (!auth.ok) {
+    return res.status(auth.status).json({ error: auth.error })
   }
-
-  const token = authHeader.replace('Bearer ', '')
-  const supabaseAuth = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-  const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
-  if (authError || !user) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
-
-  const supabase = createClient(supabaseUrl, serviceRoleKey)
-  const { data: profile } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  if (profile?.role !== 'admin') {
+  if (!auth.isAdmin) {
     return res.status(403).json({ error: 'Admin only' })
   }
+
+  const supabase = auth.supabaseAdmin
 
   const { userId } = req.body as { userId?: string }
   if (!userId || typeof userId !== 'string') {

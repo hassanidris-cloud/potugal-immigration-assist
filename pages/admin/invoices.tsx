@@ -75,24 +75,32 @@ export default function AdminInvoices() {
 
   const handlePayment = async (invoice: any) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) {
+        throw new Error('Session expired. Please sign in again.')
+      }
       const res = await fetch('/api/payments/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           invoice_id: invoice.id,
-          amount: invoice.amount,
-          currency: invoice.currency,
-          description: invoice.description,
         }),
       })
 
       const data = await res.json()
-      
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
       if (data.url) {
         window.location.href = data.url
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating checkout session:', error)
+      alert(error.message || 'Failed to start payment')
     }
   }
 

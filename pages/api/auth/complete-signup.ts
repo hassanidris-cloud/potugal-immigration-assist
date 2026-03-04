@@ -1,28 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-// Create a Supabase client with service role key (bypasses RLS)
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+import { authenticateRequest } from '../../../lib/serverAuth'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { userId, email, fullName, phone } = req.body
+  const auth = await authenticateRequest(req)
+  if (!auth.ok) {
+    return res.status(auth.status).json({ error: auth.error })
+  }
 
-  if (!userId || !email) {
+  const userId = auth.user.id
+  const { fullName, phone } = req.body
+  const email = auth.user.email
+
+  if (!email) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
   try {
+    const supabaseAdmin = auth.supabaseAdmin
     console.log('Step 1: Verifying auth user exists for:', userId)
 
-    // First verify the user exists in auth.users (because public.users has FK to auth.users)
-    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId)
+    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(
+      userId
+    )
     
     if (authError || !authUser) {
       console.error('Auth user not found:', authError, userId)
@@ -66,8 +69,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       console.log('User profile created:', newUser)
       // Mirror role into Auth app_metadata so it shows in Supabase Authentication → Users
+      const existing = (authUser.user?.app_metadata as Record<string, unknown>) || {}
       await supabaseAdmin.auth.admin.updateUserById(userId, {
-        app_metadata: { role: 'client' },
+        app_metadata: { ...existing, role: 'client' },
       })
     }
 

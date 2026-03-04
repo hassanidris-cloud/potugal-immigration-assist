@@ -34,10 +34,18 @@ export default function Settings() {
     setDeleting(true)
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) {
+        throw new Error('Session expired. Please sign in again.')
+      }
+
       const response = await fetch('/api/auth/delete-account', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       const data = await response.json()

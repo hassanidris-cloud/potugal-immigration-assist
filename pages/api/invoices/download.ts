@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { authenticateRequest } from '../../../lib/serverAuth'
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,21 +14,12 @@ export default async function handler(
     return res.status(400).json({ error: 'Missing invoice id' })
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const authHeader = req.headers.authorization
-  if (!supabaseUrl || !serviceRoleKey || !authHeader?.startsWith('Bearer ')) {
-    return res.status(500).json({ error: 'Server or auth error' })
+  const auth = await authenticateRequest(req)
+  if (!auth.ok) {
+    return res.status(auth.status).json({ error: auth.error })
   }
 
-  const token = authHeader.replace('Bearer ', '')
-  const supabaseAuth = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-  const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
-  if (authError || !user) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
-
-  const supabase = createClient(supabaseUrl, serviceRoleKey)
+  const supabase = auth.supabaseAdmin
   const { data: invoice, error: invError } = await supabase
     .from('user_invoices')
     .select('id, user_id, file_path, file_name')
@@ -39,14 +30,7 @@ export default async function handler(
     return res.status(404).json({ error: 'Invoice not found' })
   }
 
-  const { data: profile } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  const isAdmin = profile?.role === 'admin'
-  if (invoice.user_id !== user.id && !isAdmin) {
+  if (invoice.user_id !== auth.user.id && !auth.isAdmin) {
     return res.status(403).json({ error: 'Forbidden' })
   }
 
