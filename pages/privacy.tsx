@@ -5,15 +5,15 @@ export default function Privacy() {
   return (
     <>
       <Head>
-        <title>Privacy Policy — WINIT Portugal Immigration</title>
-        <meta name="description" content="Privacy policy for WINIT Portugal Immigration. How we collect, use, and protect your data." />
+        <title>Privacy Policy — WinIT Portugal Immigration</title>
+        <meta name="description" content="Privacy policy for WinIT Portugal Immigration. How we collect, use, and protect your data." />
       </Head>
       <div className="policy-page" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
         <nav style={{ background: '#1e293b', padding: '1rem 2rem' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <Link href="/" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>Back to home</Link>
           </div>

@@ -35,9 +35,9 @@ export default function VisaD2() {
   return (
     <>
       <Head>
-        <title>D2 Entrepreneur Visa Portugal 2026 – Business Residency | WINIT</title>
+        <title>D2 Entrepreneur Visa Portugal 2026 – Business Residency | WinIT</title>
         <meta name="description" content="Launch your business in Portugal and secure residency with the D2 Entrepreneur Visa. No minimum investment. Business plan, company registration, full support." />
-        <meta property="og:title" content="D2 Entrepreneur Visa Portugal 2026 – Business Residency | WINIT" />
+        <meta property="og:title" content="D2 Entrepreneur Visa Portugal 2026 – Business Residency | WinIT" />
         <meta property="og:description" content="D2 visa for entrepreneurs: establish a company in Portugal and obtain residency for you and your family." />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-d2`} />}
@@ -52,7 +52,7 @@ export default function VisaD2() {
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />

@@ -95,7 +95,7 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Dashboard — WINIT Portugal Immigration</title>
+        <title>Dashboard — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div className="dashboard">

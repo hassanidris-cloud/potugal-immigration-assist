@@ -40,8 +40,8 @@ export default async function handler(
     })
   }
 
-  const from = process.env.RESEND_FROM_EMAIL || 'WINIT Contact <onboarding@resend.dev>'
-  const subject = `WINIT inquiry from ${name.trim()}`
+  const from = process.env.RESEND_FROM_EMAIL || 'WinIT Contact <onboarding@resend.dev>'
+  const subject = `WinIT inquiry from ${name.trim()}`
   const html = `
     <h2>New contact form submission</h2>
     <p><strong>Name:</strong> ${escapeHtml(name.trim())}</p>

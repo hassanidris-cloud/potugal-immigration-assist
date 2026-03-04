@@ -111,7 +111,7 @@ export default function CaseDocuments() {
   return (
     <>
       <Head>
-        <title>Documents — WINIT Portugal Immigration</title>
+        <title>Documents — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div className="case-page-wrap" style={{ fontFamily: 'var(--font-sans, sans-serif)' }}>

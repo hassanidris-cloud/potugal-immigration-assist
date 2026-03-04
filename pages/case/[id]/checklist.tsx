@@ -251,7 +251,7 @@ export default function CaseChecklist() {
   return (
     <>
       <Head>
-        <title>Checklist — WINIT Portugal Immigration</title>
+        <title>Checklist — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div className="case-page-wrap" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', fontFamily: 'var(--font-sans, sans-serif)' }}>

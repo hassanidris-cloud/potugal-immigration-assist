@@ -48,16 +48,16 @@ export default function Contact() {
   return (
     <>
       <Head>
-        <title>Contact Us — WINIT Portugal Immigration</title>
-        <meta name="description" content="Schedule a consultation or request a free eligibility assessment. Contact WINIT for D2, D7, and D8 visa support." />
+        <title>Contact Us — WinIT Portugal Immigration</title>
+        <meta name="description" content="Schedule a consultation or request a free eligibility assessment. Contact WinIT for D2, D7, and D8 visa support." />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/contact`} />}
-        <meta property="og:title" content="Contact Us — WINIT Portugal Immigration" />
-        <meta property="og:description" content="Schedule a consultation or request a free eligibility assessment. Contact WINIT for D2, D7, and D8 visa support." />
+        <meta property="og:title" content="Contact Us — WinIT Portugal Immigration" />
+        <meta property="og:description" content="Schedule a consultation or request a free eligibility assessment. Contact WinIT for D2, D7, and D8 visa support." />
         <meta property="og:type" content="website" />
         {BASE_URL && <meta property="og:url" content={`${BASE_URL}/contact`} />}
         {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
-        <meta name="twitter:title" content="Contact Us — WINIT Portugal Immigration" />
-        <meta name="twitter:description" content="Schedule a consultation or request a free eligibility assessment. Contact WINIT for D2, D7, and D8 visa support." />
+        <meta name="twitter:title" content="Contact Us — WinIT Portugal Immigration" />
+        <meta name="twitter:description" content="Schedule a consultation or request a free eligibility assessment. Contact WinIT for D2, D7, and D8 visa support." />
         {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
@@ -66,7 +66,7 @@ export default function Contact() {
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />

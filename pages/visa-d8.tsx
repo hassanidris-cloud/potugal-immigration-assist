@@ -35,9 +35,9 @@ export default function VisaD8() {
   return (
     <>
       <Head>
-        <title>D8 Digital Nomad Visa Portugal 2026 – Remote Work Residency | WINIT</title>
+        <title>D8 Digital Nomad Visa Portugal 2026 – Remote Work Residency | WinIT</title>
         <meta name="description" content="Live in Portugal while working remotely with the D8 Digital Nomad Visa. For remote employees and freelancers. Income requirements, documents, and full support." />
-        <meta property="og:title" content="D8 Digital Nomad Visa Portugal 2026 – Remote Work Residency | WINIT" />
+        <meta property="og:title" content="D8 Digital Nomad Visa Portugal 2026 – Remote Work Residency | WinIT" />
         <meta property="og:description" content="D8 visa for remote workers and freelancers with clients or employers outside Portugal." />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-d8`} />}
@@ -52,7 +52,7 @@ export default function VisaD8() {
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />

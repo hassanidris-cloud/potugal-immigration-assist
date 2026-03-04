@@ -77,7 +77,7 @@ async function createTestInvoice() {
           case_id: null,
           amount: 599.00,
           currency: 'EUR',
-          description: 'WINIT Premium Plan - Portugal Immigration Service (TEST)',
+          description: 'WinIT Premium Plan - Portugal Immigration Service (TEST)',
           status: 'paid',
           stripe_session_id: 'test_' + Date.now(),
           stripe_payment_intent_id: 'pi_test_' + Date.now(),

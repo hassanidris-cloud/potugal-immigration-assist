@@ -41,15 +41,15 @@ export default function Services() {
   return (
     <>
       <Head>
-        <title>Our Services — WINIT Portugal Immigration</title>
+        <title>Our Services — WinIT Portugal Immigration</title>
         <meta name="description" content="Comprehensive immigration support: D2 Entrepreneur, D7 Passive Income, and D8 Digital Nomad visas. Expert guidance from documentation to approval." />
-        <meta property="og:title" content="Our Services — WINIT Portugal Immigration" />
+        <meta property="og:title" content="Our Services — WinIT Portugal Immigration" />
         <meta property="og:description" content="D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking." />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/services`} />}
         {BASE_URL && <meta property="og:url" content={`${BASE_URL}/services`} />}
         {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
-        <meta name="twitter:title" content="Our Services — WINIT Portugal Immigration" />
+        <meta name="twitter:title" content="Our Services — WinIT Portugal Immigration" />
         <meta name="twitter:description" content="D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking." />
         {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
@@ -59,7 +59,7 @@ export default function Services() {
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />

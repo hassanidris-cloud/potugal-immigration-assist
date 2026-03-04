@@ -11,10 +11,10 @@ export default function WhyPortugal() {
   return (
     <>
       <Head>
-        <title>Why Portugal? — WINIT Portugal Immigration</title>
+        <title>Why Portugal? — WinIT Portugal Immigration</title>
         <meta name="description" content="Discover why Portugal is one of the world’s most welcoming countries: lifestyle, safety, digital hub, and unmatched value." />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/why-portugal`} />}
-        <meta property="og:title" content="Why Portugal? — WINIT Portugal Immigration" />
+        <meta property="og:title" content="Why Portugal? — WinIT Portugal Immigration" />
         <meta property="og:description" content="Discover why Portugal is one of the world's most welcoming countries: lifestyle, safety, digital hub, and unmatched value." />
         <meta property="og:type" content="website" />
         {BASE_URL && <meta property="og:url" content={`${BASE_URL}/why-portugal`} />}
@@ -26,7 +26,7 @@ export default function WhyPortugal() {
           <div className="home-nav-inner" style={{ paddingTop: '1rem', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />

@@ -204,7 +204,7 @@ export default function Onboarding() {
   return (
     <>
       <Head>
-        <title>Create case — WINIT Portugal Immigration</title>
+        <title>Create case — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>

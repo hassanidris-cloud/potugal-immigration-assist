@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <>
       <Head>
-        <title>Page Not Found — WINIT Portugal Immigration</title>
+        <title>Page Not Found — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div style={{

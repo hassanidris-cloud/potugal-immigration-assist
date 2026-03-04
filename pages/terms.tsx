@@ -5,15 +5,15 @@ export default function Terms() {
   return (
     <>
       <Head>
-        <title>Terms of Use — WINIT Portugal Immigration</title>
-        <meta name="description" content="Terms of use for WINIT Portugal Immigration platform." />
+        <title>Terms of Use — WinIT Portugal Immigration</title>
+        <meta name="description" content="Terms of use for WinIT Portugal Immigration platform." />
       </Head>
       <div className="policy-page" style={{ minHeight: '100vh', fontFamily: 'var(--font-sans, sans-serif)' }}>
         <nav style={{ background: '#1e293b', padding: '1rem 2rem' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <Link href="/" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'none' }}>Back to home</Link>
           </div>
@@ -23,7 +23,7 @@ export default function Terms() {
           <p style={{ color: '#64748b', marginBottom: '2rem' }}>Last updated: 2026</p>
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#1e293b' }}>1. Acceptance</h2>
-            <p style={{ color: '#475569', lineHeight: 1.7 }}>By using WINIT Portugal Immigration (“the Service”), you agree to these terms. If you do not agree, do not use the Service.</p>
+            <p style={{ color: '#475569', lineHeight: 1.7 }}>By using WinIT Portugal Immigration (“the Service”), you agree to these terms. If you do not agree, do not use the Service.</p>
           </section>
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#1e293b' }}>2. Service description</h2>
