@@ -4748,6 +4748,19 @@ body.home-sticky-cta-visible .back-to-top {
   }
 }
 
+/* iPad/touch tablet: keep back-to-top away from right-side chat button */
+@media (min-width: 640px) and (max-width: 1366px) and (pointer: coarse) {
+  .back-to-top {
+    left: max(1rem, env(safe-area-inset-left, 0px) + 0.5rem);
+    right: auto;
+    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.home-sticky-cta-visible .back-to-top {
+    bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (max-width: 639px) {
   .back-to-top {
     left: max(1rem, env(safe-area-inset-left, 0px) + 0.5rem);

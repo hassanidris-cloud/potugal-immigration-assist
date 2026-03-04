@@ -55,9 +55,10 @@ export default function Home() {
     if (typeof window === 'undefined') return
     const onScroll = () => {
       const y = window.scrollY
-      const isTabletOrPhone = window.innerWidth <= 1023
+      const isTouchDevice = !window.matchMedia('(pointer: fine)').matches
+      const isTabletOrPhone = window.innerWidth <= 1023 || isTouchDevice
       setStickyCtaVisible(y > 400)
-      setBackToTopVisible(y > (isTabletOrPhone ? 180 : 300))
+      setBackToTopVisible(y > (isTabletOrPhone ? 140 : 300))
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
