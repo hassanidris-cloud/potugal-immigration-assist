@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
-import { getVisaPersonalization } from '../../../lib/visaPersonalization'
 
 export default function CaseChecklist() {
   const router = useRouter()
@@ -48,24 +47,7 @@ export default function CaseChecklist() {
 
       const docs = documentsData || []
       setDocuments(docs)
-
-      // Sync: mark item completed in DB when a matching document was uploaded (progress from uploads)
-      for (const item of items) {
-        if (item.completed) continue
-        if (!itemHasMatchingDocument(item, docs)) continue
-        await supabase
-          .from('case_checklist')
-          .update({ completed: true, completed_at: new Date().toISOString() })
-          .eq('id', item.id)
-      }
-
-      // Re-fetch checklist after sync so UI shows updated completed state
-      const { data: refreshed } = await supabase
-        .from('case_checklist')
-        .select('*')
-        .eq('case_id', id)
-        .order('order_index')
-      setChecklist(refreshed || items)
+      setChecklist(items)
     } catch (error) {
       console.error('Error loading checklist:', error)
     } finally {
@@ -73,44 +55,35 @@ export default function CaseChecklist() {
     }
   }
 
-  /** True if at least one uploaded document matches this checklist item (by title). */
-  function itemHasMatchingDocument(item: { title: string }, docs: { title: string }[]): boolean {
-    const titleLower = item.title.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
-    const firstWord = titleLower.split(/\s+/)[0] || ''
-    const firstWords = titleLower.split(/\s+/).slice(0, 3).join(' ')
-    return docs.some(doc => {
-      const d = doc.title.toLowerCase()
-      return d.includes(firstWords) || (firstWord.length >= 2 && d.includes(firstWord))
-    })
+  function normalizeDocumentType(value: string): string {
+    return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ')
   }
 
-  const toggleChecklistItem = async (itemId: string, itemTitle: string, currentlyCompleted: boolean, item?: { title: string }) => {
-    try {
-      if (!currentlyCompleted) {
-        const hasDocument = item
-          ? itemHasMatchingDocument(item, documents)
-          : documents.some(doc =>
-              doc.title.toLowerCase().includes(itemTitle.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase())
-            )
-        if (!hasDocument) {
-          alert(`⚠️ Please upload the "${itemTitle}" document before marking it as complete.\n\nGo to Upload Documents section to add this file.`)
-          return
-        }
-      }
+  function getDocumentsForChecklistItem(item: { title: string }, docs: any[]): any[] {
+    const itemType = normalizeDocumentType(item.title)
+    return docs.filter((doc) => normalizeDocumentType(doc.title) === itemType)
+  }
 
-      const { error } = await supabase
-        .from('case_checklist')
-        .update({
-          completed: !currentlyCompleted,
-          completed_at: !currentlyCompleted ? new Date().toISOString() : null,
-        })
-        .eq('id', itemId)
+  function getLatestDocumentForChecklistItem(item: { title: string }, docs: any[]): any | null {
+    const matches = getDocumentsForChecklistItem(item, docs)
+    if (matches.length === 0) return null
+    return [...matches].sort(
+      (a, b) => new Date(b.uploaded_at || 0).getTime() - new Date(a.uploaded_at || 0).getTime()
+    )[0]
+  }
 
-      if (error) throw error
-      loadChecklist()
-    } catch (error) {
-      console.error('Error updating checklist:', error)
-    }
+  function getLatestApprovedDocumentForChecklistItem(item: { title: string }, docs: any[]): any | null {
+    const approved = getDocumentsForChecklistItem(item, docs).filter((doc) => doc.status === 'approved')
+    if (approved.length === 0) return null
+    return [...approved].sort((a, b) => {
+      const dateA = new Date(a.reviewed_at || a.uploaded_at || 0).getTime()
+      const dateB = new Date(b.reviewed_at || b.uploaded_at || 0).getTime()
+      return dateB - dateA
+    })[0]
+  }
+
+  function itemHasApprovedDocument(item: { title: string }, docs: any[]): boolean {
+    return getDocumentsForChecklistItem(item, docs).some((doc) => doc.status === 'approved')
   }
 
   const regenerateChecklist = async () => {
@@ -160,10 +133,9 @@ export default function CaseChecklist() {
 
   const totalCount = checklist.length
   const effectiveCompleted = (item: typeof checklist[0]) =>
-    item.completed || itemHasMatchingDocument(item, documents)
+    itemHasApprovedDocument(item, documents)
   const completedCount = checklist.filter(effectiveCompleted).length
   const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
-  const visaInfo = getVisaPersonalization(caseData?.visa_type || '')
   const requiredItems = checklist.filter(item => item.required !== false)
   const optionalItems = checklist.filter(item => item.required === false)
   const requiredCompleted = requiredItems.filter(effectiveCompleted).length
@@ -179,7 +151,10 @@ export default function CaseChecklist() {
     : null
 
   function renderChecklistItem(item: typeof checklist[0], isCompleted: boolean, isRequired: boolean) {
-    const hasDocument = itemHasMatchingDocument(item, documents)
+    const matchingDocuments = getDocumentsForChecklistItem(item, documents)
+    const latestDocument = getLatestDocumentForChecklistItem(item, documents)
+    const latestApprovedDocument = getLatestApprovedDocumentForChecklistItem(item, documents)
+    const hasUploadedDocument = matchingDocuments.length > 0
     return (
       <div
         key={item.id}
@@ -199,12 +174,13 @@ export default function CaseChecklist() {
         <input
           type="checkbox"
           checked={isCompleted}
-          onChange={() => toggleChecklistItem(item.id, item.title, isCompleted, item)}
+          readOnly
+          disabled
           style={{
             width: '24px',
             height: '24px',
             marginTop: '0.25rem',
-            cursor: 'pointer',
+            cursor: 'default',
             accentColor: isRequired ? '#10b981' : '#3b82f6',
           }}
         />
@@ -226,20 +202,36 @@ export default function CaseChecklist() {
             </p>
           )}
           <div style={{ marginTop: '0.5rem' }}>
-            {hasDocument ? (
+            {isCompleted ? (
               <span style={{ fontSize: '0.8rem', color: '#059669', background: '#d1fae5', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
-                📎 Document uploaded
+                ✅ Approved by specialist
               </span>
-            ) : (
+            ) : !hasUploadedDocument ? (
               <span style={{ fontSize: '0.8rem', color: isRequired ? '#dc2626' : '#f59e0b', background: isRequired ? '#fee2e2' : '#fef3c7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
                 📤 {isRequired ? 'Upload required' : 'Not yet uploaded'}
               </span>
+            ) : latestDocument?.status === 'needs_revision' ? (
+              <span style={{ fontSize: '0.8rem', color: '#9a3412', background: '#ffedd5', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                📝 Revision requested by specialist
+              </span>
+            ) : latestDocument?.status === 'rejected' ? (
+              <span style={{ fontSize: '0.8rem', color: '#991b1b', background: '#fee2e2', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                ❌ Rejected — upload a new version
+              </span>
+            ) : latestDocument?.status === 'pending' ? (
+              <span style={{ fontSize: '0.8rem', color: '#854d0e', background: '#fef3c7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                ⏳ Uploaded — waiting for specialist approval
+              </span>
+            ) : (
+              <span style={{ fontSize: '0.8rem', color: '#475569', background: '#e2e8f0', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                📎 Uploaded — status: {latestDocument?.status || 'unknown'}
+              </span>
             )}
           </div>
-          {item.completed_at && isCompleted && (
+          {latestApprovedDocument && (
             <div style={{ marginTop: '0.5rem' }}>
               <span style={{ fontSize: '0.8rem', color: '#10b981', background: '#dcfce7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
-                ✓ Completed {new Date(item.completed_at).toLocaleDateString()}
+                ✓ Approved {new Date(latestApprovedDocument.reviewed_at || latestApprovedDocument.uploaded_at).toLocaleDateString()}
               </span>
             </div>
           )}
@@ -309,7 +301,12 @@ export default function CaseChecklist() {
               }} />
             </div>
             <p style={{ margin: '0.5rem 0 0', color: '#64748b', fontSize: '0.9rem' }}>
-              {completedCount} of {totalCount} items completed (uploads count automatically) • {requiredCompleted} of {requiredItems.length} required ✓
+              {completedCount} of {totalCount} items completed (only approved document types count) • {requiredCompleted} of {requiredItems.length} required ✓
+            </p>
+          </div>
+          <div style={{ padding: '0.9rem', background: '#eff6ff', borderRadius: '8px', borderLeft: '4px solid #3b82f6', marginBottom: '1rem' }}>
+            <p style={{ margin: 0, color: '#1e40af', fontSize: '0.9rem' }}>
+              Checklist items are marked complete only after a specialist approves the uploaded document type.
             </p>
           </div>
 
