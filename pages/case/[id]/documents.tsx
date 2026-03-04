@@ -89,34 +89,24 @@ export default function CaseDocuments() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
-
-      // Upload file to storage
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random()}.${fileExt}`
-      const filePath = `${id}/${fileName}`
-
-      const { error: storageError } = await supabase.storage
-        .from('documents')
-        .upload(filePath, file)
-
-      if (storageError) throw storageError
-
-      // Create document record
-      const { error: docError } = await supabase
-        .from('documents')
-        .insert({
-          case_id: id,
+      const response = await fetch('/api/documents/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          caseId: id,
+          userId: user.id,
           title: documentType,
-          description,
-          file_path: filePath,
-          file_name: file.name,
-          file_size: file.size,
-          mime_type: file.type,
-          uploaded_by: user.id,
-          status: 'pending',
-        })
+          description: description || '',
+          fileName: file.name,
+          fileSize: file.size,
+          mimeType: file.type,
+        }),
+      })
 
-      if (docError) throw docError
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed')
+      }
 
       // Reload documents
       loadDocuments()
