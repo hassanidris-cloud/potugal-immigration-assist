@@ -3,6 +3,10 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../lib/supabaseClient'
 import { countries } from '../lib/countries'
+import {
+  buildChecklistItems,
+  getChecklistTemplatesForVisaType,
+} from '../lib/checklistTemplates'
 
 export default function Onboarding() {
   const router = useRouter()
@@ -14,6 +18,43 @@ export default function Onboarding() {
   const [loading, setLoading] = useState(false)
   const [accessBlocked, setAccessBlocked] = useState(false)
   const [blockMessage, setBlockMessage] = useState('')
+
+  const ensureChecklistForCase = async (caseId: string, selectedVisaType: string) => {
+    const { count, error: countError } = await supabase
+      .from('case_checklist')
+      .select('id', { head: true, count: 'exact' })
+      .eq('case_id', caseId)
+
+    if (countError) throw countError
+    if ((count || 0) > 0) return
+
+    const { templates } = await getChecklistTemplatesForVisaType(
+      supabase,
+      selectedVisaType
+    )
+
+    if (templates.length === 0) {
+      throw new Error(
+        `No checklist template found for "${selectedVisaType}". Please contact support.`
+      )
+    }
+
+    const checklistItems = buildChecklistItems(caseId, templates)
+
+    const { error: insertError } = await supabase
+      .from('case_checklist')
+      .insert(checklistItems)
+
+    if (!insertError) return
+
+    // Retry once for occasional read-after-write delays after case creation.
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    const { error: retryError } = await supabase
+      .from('case_checklist')
+      .insert(checklistItems)
+
+    if (retryError) throw retryError
+  }
 
   useEffect(() => {
     checkUser()
@@ -50,12 +91,23 @@ export default function Onboarding() {
     // Paid user: check for existing case
     const { data: existingCases } = await supabase
       .from('cases')
-      .select('id')
+      .select('id, visa_type')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(1)
 
     if (existingCases && existingCases.length > 0) {
+      const existingCase = existingCases[0] as {
+        id: string
+        visa_type: string | null
+      }
+      if (existingCase.id && existingCase.visa_type) {
+        try {
+          await ensureChecklistForCase(existingCase.id, existingCase.visa_type)
+        } catch (error) {
+          console.error('Checklist self-heal failed:', error)
+        }
+      }
       router.replace('/dashboard')
     }
   }
@@ -71,12 +123,19 @@ export default function Onboarding() {
     try {
       const { data: existingCases } = await supabase
         .from('cases')
-        .select('id')
+        .select('id, visa_type')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
 
       if (existingCases && existingCases.length > 0) {
+        const existingCase = existingCases[0] as {
+          id: string
+          visa_type: string | null
+        }
+        if (existingCase.id && existingCase.visa_type) {
+          await ensureChecklistForCase(existingCase.id, existingCase.visa_type)
+        }
         router.push('/dashboard')
         return
       }
@@ -96,27 +155,7 @@ export default function Onboarding() {
 
       if (caseError) throw caseError
 
-      // Generate checklist from templates
-      const { data: templates } = await supabase
-        .from('checklist_templates')
-        .select('*')
-        .eq('visa_type', visaType)
-        .order('order_index')
-
-      if (templates && templates.length > 0) {
-        const checklistItems = templates.map((template: any) => ({
-          case_id: caseData.id,
-          template_id: template.id,
-          title: template.title,
-          description: template.description,
-          required: template.required !== false,
-          order_index: template.order_index,
-          completed: false,
-          ...(template.phase != null && { phase: template.phase }),
-        }))
-
-        await supabase.from('case_checklist').insert(checklistItems)
-      }
+      await ensureChecklistForCase(caseData.id, visaType)
 
       router.push('/dashboard')
     } catch (err: any) {
