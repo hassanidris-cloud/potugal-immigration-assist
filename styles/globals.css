@@ -4739,7 +4739,8 @@ body.home-sticky-cta-visible .back-to-top {
 
 @media (min-width: 640px) and (max-width: 1023px) {
   .back-to-top {
-    right: max(1rem, env(safe-area-inset-right, 0px) + 0.5rem);
+    left: max(1rem, env(safe-area-inset-left, 0px) + 0.5rem);
+    right: auto;
     bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
   }
 
@@ -4748,16 +4749,16 @@ body.home-sticky-cta-visible .back-to-top {
   }
 }
 
-/* iPad/touch tablet: keep back-to-top away from right-side chat button */
-@media (min-width: 640px) and (max-width: 1366px) and (pointer: coarse) {
+/* iPad/tablet landscape: keep back-to-top away from right-side chat button */
+@media (min-width: 1024px) and (max-width: 1366px) {
   .back-to-top {
     left: max(1rem, env(safe-area-inset-left, 0px) + 0.5rem);
     right: auto;
-    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
   }
 
   body.home-sticky-cta-visible .back-to-top {
-    bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(6.75rem + env(safe-area-inset-bottom, 0px));
   }
 }
 

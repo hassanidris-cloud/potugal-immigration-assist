@@ -56,7 +56,9 @@ export default function Home() {
     const onScroll = () => {
       const y = window.scrollY
       const isTouchDevice = !window.matchMedia('(pointer: fine)').matches
-      const isTabletOrPhone = window.innerWidth <= 1023 || isTouchDevice
+      const ua = window.navigator.userAgent || ''
+      const isIpad = /iPad/.test(ua) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1)
+      const isTabletOrPhone = window.innerWidth <= 1023 || isTouchDevice || isIpad
       setStickyCtaVisible(y > 400)
       setBackToTopVisible(y > (isTabletOrPhone ? 140 : 300))
     }
