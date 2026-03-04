@@ -40,6 +40,18 @@ export default function AdminTestMode() {
     }
   }
 
+  const getAuthHeaders = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    if (!token) {
+      throw new Error('Session expired. Please sign in again.')
+    }
+    return {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    }
+  }
+
   const createTestCase = async () => {
     setLoading(true)
     setMessage('')
@@ -47,7 +59,7 @@ export default function AdminTestMode() {
     try {
       const response = await fetch('/api/admin/generate-test-data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ type: 'case', userId: user.id }),
       })
 
@@ -75,7 +87,7 @@ export default function AdminTestMode() {
     try {
       const response = await fetch('/api/admin/generate-test-data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({
           type: 'documents',
           userId: user.id,
@@ -106,7 +118,7 @@ export default function AdminTestMode() {
     try {
       const response = await fetch('/api/admin/generate-test-data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({
           type: 'invoice',
           userId: user.id,
@@ -132,7 +144,7 @@ export default function AdminTestMode() {
     try {
       const response = await fetch('/api/admin/generate-test-data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ type: 'full', userId: user.id }),
       })
 

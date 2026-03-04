@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { authenticateRequest } from '../../../lib/serverAuth'
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,43 +10,30 @@ export default async function handler(
   }
 
   try {
-    // Create Supabase client with service role key (this bypasses RLS)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    if (!supabaseUrl || !serviceRoleKey) {
-      return res.status(500).json({ error: 'Missing Supabase credentials' })
+    const auth = await authenticateRequest(req)
+    if (!auth.ok) {
+      return res.status(auth.status).json({ error: auth.error })
     }
-
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
-
-    const { type, userId } = req.body
-
-    if (!userId) {
-      return res.status(400).json({ error: 'userId is required' })
-    }
-
-    // Verify user is admin (using service role, RLS bypassed)
-    console.log('Checking if user is admin:', userId)
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .single()
-
-    console.log('User check result:', { user, userError })
-
-    if (userError || !user || user.role !== 'admin') {
+    if (!auth.isAdmin) {
       return res.status(403).json({ error: 'Admin access required' })
     }
 
+    const supabase = auth.supabaseAdmin
+    const { type, userId: requestedUserId } = req.body as {
+      type?: string
+      userId?: string
+      caseId?: string
+    }
+    const targetUserId =
+      typeof requestedUserId === 'string' && requestedUserId ? requestedUserId : auth.user.id
+
     if (type === 'full') {
       // Create case
-      console.log('Creating test case for user:', userId)
+      console.log('Creating test case for user:', targetUserId)
       const { data: caseData, error: caseError } = await supabase
         .from('cases')
         .insert({
-          user_id: userId,
+          user_id: targetUserId,
           case_type: 'Immigration Application',
           visa_type: 'D7 Visa',
           country_of_origin: 'United States',
@@ -133,7 +120,7 @@ export default async function handler(
         file_name: `${doc.title}.pdf`,
         file_size: Math.floor(Math.random() * 5000000) + 100000,
         mime_type: 'application/pdf',
-        uploaded_by: userId,
+        uploaded_by: targetUserId,
         status: doc.status,
         admin_notes:
           doc.status === 'approved'
@@ -167,7 +154,7 @@ export default async function handler(
       const { data: caseData, error: caseError } = await supabase
         .from('cases')
         .insert({
-          user_id: userId,
+          user_id: targetUserId,
           case_type: 'Immigration Application',
           visa_type: 'D7 Visa',
           country_of_origin: 'United States',
@@ -255,7 +242,7 @@ export default async function handler(
         file_name: `${doc.title}.pdf`,
         file_size: Math.floor(Math.random() * 5000000) + 100000,
         mime_type: 'application/pdf',
-        uploaded_by: userId,
+        uploaded_by: targetUserId,
         status: doc.status,
         admin_notes:
           doc.status === 'approved'
@@ -291,6 +278,8 @@ export default async function handler(
         success: true,
         message: 'Test invoice created',
       })
+    } else {
+      return res.status(400).json({ error: 'Invalid type' })
     }
   } catch (error: any) {
     console.error('Test data generation error:', error)

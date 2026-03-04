@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { authenticateRequest } from '../../../lib/serverAuth'
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,19 +10,32 @@ export default async function handler(
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    const { caseId, userId, title, description, fileName, fileSize, mimeType } = req.body
-
-    if (!supabaseUrl || !serviceRoleKey) {
-      return res.status(500).json({ error: 'Missing Supabase credentials' })
+    const auth = await authenticateRequest(req)
+    if (!auth.ok) {
+      return res.status(auth.status).json({ error: auth.error })
     }
 
-    if (!caseId || !userId || !title) {
+    const { caseId, title, description, fileName, fileSize, mimeType } = req.body
+
+    if (!caseId || typeof caseId !== 'string' || !title || typeof title !== 'string') {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
+    const supabase = auth.supabaseAdmin
+
+    const { data: caseData, error: caseError } = await supabase
+      .from('cases')
+      .select('id, user_id')
+      .eq('id', caseId)
+      .single()
+
+    if (caseError || !caseData) {
+      return res.status(404).json({ error: 'Case not found' })
+    }
+
+    if (!auth.isAdmin && caseData.user_id !== auth.user.id) {
+      return res.status(403).json({ error: 'Forbidden' })
+    }
 
     // Create file path
     const fileExt = fileName?.split('.').pop() || 'bin'
@@ -39,7 +52,7 @@ export default async function handler(
         file_name: fileName || 'document',
         file_size: fileSize || 0,
         mime_type: mimeType || 'application/octet-stream',
-        uploaded_by: userId,
+        uploaded_by: auth.user.id,
         status: 'pending',
       })
       .select()

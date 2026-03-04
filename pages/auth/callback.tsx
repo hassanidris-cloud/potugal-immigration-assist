@@ -59,17 +59,22 @@ export default function AuthCallback() {
             .single()
 
           if (!existingProfile) {
-            const res = await fetch('/api/auth/complete-signup', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: user.id,
-                email: user.email,
-                fullName: user.user_metadata?.full_name || '',
-                phone: user.user_metadata?.phone || null,
-              }),
-            })
-            if (!res.ok) {
+            const token = (await supabase.auth.getSession()).data.session?.access_token
+            let res: Response | null = null
+            if (token) {
+              res = await fetch('/api/auth/complete-signup', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  fullName: user.user_metadata?.full_name || '',
+                  phone: user.user_metadata?.phone || null,
+                }),
+              })
+            }
+            if (!res || !res.ok) {
               // Fallback: create profile from client (RLS allows "insert own profile")
               const { error: insertError } = await supabase.from('users').insert({
                 id: user.id,
@@ -79,7 +84,7 @@ export default function AuthCallback() {
                 role: 'client',
               })
               if (insertError) {
-                const data = await res.json().catch(() => ({}))
+                const data = res ? await res.json().catch(() => ({})) : {}
                 setError(data.error || insertError.message || 'Failed to create profile')
                 setStatus('error')
                 return

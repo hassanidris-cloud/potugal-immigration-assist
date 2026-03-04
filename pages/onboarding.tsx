@@ -162,13 +162,21 @@ export default function Onboarding() {
     }
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) {
+        throw new Error('Session expired. Please sign in again.')
+      }
+
       // Send document metadata to API (service role will handle DB insert)
       const response = await fetch('/api/documents/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           caseId,
-          userId: user.id,
           title: title || file.name,
           description: description || '',
           fileName: file.name,

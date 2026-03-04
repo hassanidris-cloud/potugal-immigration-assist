@@ -29,7 +29,12 @@ CREATE POLICY "Users can insert own profile" ON public.users
   FOR INSERT WITH CHECK (auth.uid() = id);
 
 CREATE POLICY "Users can update own profile" ON public.users
-  FOR UPDATE USING (auth.uid() = id);
+  FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (
+    auth.uid() = id
+    AND (role = 'client' OR is_admin())
+  );
 
 CREATE POLICY "Admins can view all users" ON public.users
   FOR SELECT USING (is_admin());
