@@ -4696,9 +4696,9 @@ a.contact-info-item .contact-info-value {
 /* Back to top — fixed on the side, appears after scroll */
 .back-to-top {
   position: fixed;
-  right: 1.25rem;
+  right: max(1.25rem, env(safe-area-inset-right, 0px) + 0.5rem);
   bottom: 5rem;
-  z-index: 90;
+  z-index: 995;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -4732,16 +4732,36 @@ a.contact-info-item .contact-info-value {
   outline-offset: 2px;
 }
 
+/* Keep clear of sticky CTA on home page */
+body.home-sticky-cta-visible .back-to-top {
+  bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .back-to-top {
+    right: max(1rem, env(safe-area-inset-right, 0px) + 0.5rem);
+    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.home-sticky-cta-visible .back-to-top {
+    bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (max-width: 639px) {
   .back-to-top {
     left: max(1rem, env(safe-area-inset-left, 0px) + 0.5rem);
     right: auto;
-    bottom: 5.5rem;
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px) + 0.5rem);
     width: 48px;
     height: 48px;
     min-width: 48px;
     min-height: 48px;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  body.home-sticky-cta-visible .back-to-top {
+    bottom: calc(7.25rem + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -5399,10 +5419,15 @@ a.contact-info-item .contact-info-value {
 
 .case-chat-widget {
   position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px) + 0.5rem);
+  right: max(1.25rem, env(safe-area-inset-right, 0px) + 0.5rem);
   z-index: 1001;
   font-family: var(--font-sans);
+}
+
+/* Home sticky CTA can overlap floating chat controls */
+body.home-sticky-cta-visible .case-chat-widget {
+  bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 .case-chat-panel-body {
@@ -5470,8 +5495,12 @@ a.contact-info-item .contact-info-value {
 
 @media (max-width: 639px) {
   .case-chat-widget {
-    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
-    right: max(1.25rem, env(safe-area-inset-right, 0px) + 0.5rem);
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px) + 0.5rem);
+    right: max(1rem, env(safe-area-inset-right, 0px) + 0.5rem);
+  }
+
+  body.home-sticky-cta-visible .case-chat-widget {
+    bottom: calc(6.75rem + env(safe-area-inset-bottom, 0px));
   }
 
   .ai-chat-panel {
@@ -5537,5 +5566,9 @@ a.contact-info-item .contact-info-value {
 @media (min-width: 768px) and (max-width: 1023px) {
   .sticky-cta-bar {
     padding: 0.75rem 1.25rem;
+  }
+
+  body.home-sticky-cta-visible .case-chat-widget {
+    bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
   }
 }

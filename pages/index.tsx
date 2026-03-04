@@ -55,8 +55,9 @@ export default function Home() {
     if (typeof window === 'undefined') return
     const onScroll = () => {
       const y = window.scrollY
+      const isTabletOrPhone = window.innerWidth <= 1023
       setStickyCtaVisible(y > 400)
-      setBackToTopVisible(y > 300)
+      setBackToTopVisible(y > (isTabletOrPhone ? 180 : 300))
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -66,6 +67,14 @@ export default function Home() {
       window.removeEventListener('resize', onScroll)
     }
   }, [])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    document.body.classList.toggle('home-sticky-cta-visible', stickyCtaVisible)
+    return () => {
+      document.body.classList.remove('home-sticky-cta-visible')
+    }
+  }, [stickyCtaVisible])
 
   useEffect(() => {
     if (!navOpen) return
