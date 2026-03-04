@@ -4,6 +4,10 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabaseClient'
 import { countries } from '../../../lib/countries'
+import {
+  buildChecklistItems,
+  getChecklistTemplatesForVisaType,
+} from '../../../lib/checklistTemplates'
 
 export default function EditCase() {
   const router = useRouter()
@@ -85,29 +89,28 @@ export default function EditCase() {
       const visaChanged = initialVisaType && initialVisaType !== visaType
 
       if (visaChanged && regenerateChecklist) {
-        await supabase
+        const { error: deleteError } = await supabase
           .from('case_checklist')
           .delete()
           .eq('case_id', id)
+        if (deleteError) throw deleteError
 
-        const { data: templates } = await supabase
-          .from('checklist_templates')
-          .select('*')
-          .eq('visa_type', visaType)
-          .order('order_index')
+        const { templates } = await getChecklistTemplatesForVisaType(
+          supabase,
+          visaType
+        )
 
-        if (templates && templates.length > 0) {
-          const checklistItems = templates.map((template: any) => ({
-            case_id: id,
-            template_id: template.id,
-            title: template.title,
-            description: template.description,
-            order_index: template.order_index,
-            completed: false,
-          }))
-
-          await supabase.from('case_checklist').insert(checklistItems)
+        if (templates.length === 0) {
+          throw new Error(
+            `No checklist template found for "${visaType}". Please contact support.`
+          )
         }
+
+        const checklistItems = buildChecklistItems(String(id), templates)
+        const { error: insertError } = await supabase
+          .from('case_checklist')
+          .insert(checklistItems)
+        if (insertError) throw insertError
       }
 
       router.push(`/case/${id}/checklist`)

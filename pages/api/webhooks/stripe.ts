@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 import { buffer } from 'micro'
 import { getServiceSupabase } from '../../../lib/supabaseClient'
+import { approveUserAndNotify } from '../../../lib/accountApprovalNotification'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -40,17 +41,53 @@ export default async function handler(
 
       const supabase = getServiceSupabase()
 
-      // Update invoice if this is a case-specific invoice payment
+      // Update invoice and approve the related client account.
       if (invoice_id) {
-        await supabase
+        const paidAt = new Date().toISOString()
+        const { data: invoiceData, error: invoiceError } = await supabase
           .from('invoices')
           .update({
             status: 'paid',
             stripe_session_id: session.id,
             stripe_payment_intent_id: session.payment_intent as string,
-            paid_at: new Date().toISOString(),
+            paid_at: paidAt,
           })
           .eq('id', invoice_id)
+          .select('case_id')
+          .maybeSingle()
+
+        if (invoiceError) {
+          console.error('Stripe webhook invoice update error:', invoiceError)
+        }
+
+        const invoice = invoiceData as { case_id: string | null } | null
+        if (invoice?.case_id) {
+          const { data: caseData, error: caseError } = await supabase
+            .from('cases')
+            .select('user_id')
+            .eq('id', invoice.case_id)
+            .maybeSingle()
+
+          if (caseError) {
+            console.error('Stripe webhook case lookup error:', caseError)
+          }
+
+          const caseRow = caseData as { user_id: string | null } | null
+          if (caseRow?.user_id) {
+            const approvalResult = await approveUserAndNotify(
+              supabase,
+              caseRow.user_id
+            )
+
+            if (approvalResult.emailIssue) {
+              console.warn(
+                'Stripe webhook approval email issue:',
+                approvalResult.emailIssue
+              )
+            }
+          }
+        }
+
       }
     }
 

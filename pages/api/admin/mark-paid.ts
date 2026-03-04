@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { approveUserAndNotify } from '../../../lib/accountApprovalNotification'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -35,15 +36,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing userId' })
   }
 
-  const { error } = await supabase
-    .from('users')
-    .update({ paid_at: new Date().toISOString() })
-    .eq('id', userId)
+  try {
+    const approvalResult = await approveUserAndNotify(supabase, userId)
 
-  if (error) {
+    if (approvalResult.status === 'not_found') {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    if (approvalResult.status === 'admin_skipped') {
+      return res.status(400).json({ error: 'Cannot mark admin accounts as paid' })
+    }
+
+    if (approvalResult.emailIssue) {
+      console.warn('Mark paid email issue:', approvalResult.emailIssue)
+    }
+
+    return res.status(200).json({
+      success: true,
+      status: approvalResult.status,
+      emailSent: approvalResult.emailSent,
+      ...(approvalResult.emailIssue ? { emailIssue: approvalResult.emailIssue } : {}),
+    })
+  } catch (error: any) {
     console.error('Mark paid error:', error)
     return res.status(500).json({ error: error.message || 'Update failed' })
   }
-
-  return res.status(200).json({ success: true })
 }

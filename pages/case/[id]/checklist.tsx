@@ -4,6 +4,10 @@ import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
 import { getVisaPersonalization } from '../../../lib/visaPersonalization'
+import {
+  buildChecklistItems,
+  getChecklistTemplatesForVisaType,
+} from '../../../lib/checklistTemplates'
 
 export default function CaseChecklist() {
   const router = useRouter()
@@ -19,6 +23,27 @@ export default function CaseChecklist() {
       loadChecklist()
     }
   }, [id])
+
+  const createChecklistFromTemplates = async (
+    caseId: string,
+    visaType: string
+  ): Promise<boolean> => {
+    const { templates } = await getChecklistTemplatesForVisaType(
+      supabase,
+      visaType
+    )
+
+    if (templates.length === 0) {
+      return false
+    }
+
+    const checklistItems = buildChecklistItems(caseId, templates)
+    const { error: insertError } = await supabase
+      .from('case_checklist')
+      .insert(checklistItems)
+    if (insertError) throw insertError
+    return true
+  }
 
   const loadChecklist = async () => {
     try {
@@ -38,7 +63,24 @@ export default function CaseChecklist() {
         .eq('case_id', id)
         .order('order_index')
 
-      const items = checklistData || []
+      let items = checklistData || []
+
+      // Self-heal empty checklists for existing cases.
+      if (items.length === 0 && caseData?.visa_type) {
+        const generated = await createChecklistFromTemplates(
+          String(id),
+          caseData.visa_type
+        )
+        if (generated) {
+          const { data: generatedItems, error: generatedError } = await supabase
+            .from('case_checklist')
+            .select('*')
+            .eq('case_id', id)
+            .order('order_index')
+          if (generatedError) throw generatedError
+          items = generatedItems || []
+        }
+      }
 
       // Fetch documents
       const { data: documentsData } = await supabase
@@ -124,26 +166,12 @@ export default function CaseChecklist() {
         .delete()
         .eq('case_id', id)
 
-      // Get templates for this visa type
-      const { data: templates } = await supabase
-        .from('checklist_templates')
-        .select('*')
-        .eq('visa_type', caseData.visa_type)
-        .order('order_index')
-
-      if (templates && templates.length > 0) {
-        const checklistItems = templates.map((template: any) => ({
-          case_id: id,
-          template_id: template.id,
-          title: template.title,
-          description: template.description,
-          required: template.required,
-          order_index: template.order_index,
-          completed: false,
-          ...(template.phase != null && { phase: template.phase }),
-        }))
-
-        await supabase.from('case_checklist').insert(checklistItems)
+      const generated = await createChecklistFromTemplates(
+        String(id),
+        caseData.visa_type
+      )
+      if (!generated) {
+        alert(`No checklist template found for "${caseData.visa_type}".`)
       }
 
       // Reload checklist

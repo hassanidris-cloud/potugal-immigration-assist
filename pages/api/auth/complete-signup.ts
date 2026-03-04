@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { notifyAdminOfNewAccount } from '../../../lib/adminNewAccountNotification'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -65,6 +66,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         throw userError
       }
       console.log('User profile created:', newUser)
+
+      const adminNotification = await notifyAdminOfNewAccount({
+        userId,
+        email,
+        fullName: fullName || null,
+        phone: phone || null,
+      })
+      if (!adminNotification.sent) {
+        console.warn(
+          'Admin new-account notification issue:',
+          adminNotification.issue || 'unknown_error'
+        )
+      }
+
       // Mirror role into Auth app_metadata so it shows in Supabase Authentication → Users
       await supabaseAdmin.auth.admin.updateUserById(userId, {
         app_metadata: { role: 'client' },
