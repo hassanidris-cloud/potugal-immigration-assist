@@ -206,7 +206,7 @@ export default function Signup() {
           color: 'white'
         }}>
           <div style={{ marginBottom: '2rem' }}>
-            <h1 style={{ fontSize: '2.5rem', margin: '0 0 1rem 0', fontWeight: '700' }}>WINIT</h1>
+            <h1 style={{ fontSize: '2.5rem', margin: '0 0 1rem 0', fontWeight: '700' }}>WinIT</h1>
             <p style={{ fontSize: '1.2rem', margin: '0 0 2rem 0', opacity: 0.95 }}>
               Your Portugal Immigration Partner
             </p>

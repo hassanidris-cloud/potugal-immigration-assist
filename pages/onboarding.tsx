@@ -15,6 +15,8 @@ export default function Onboarding() {
   const [targetVisaDate, setTargetVisaDate] = useState('')
   const [caseId, setCaseId] = useState('')
   const [documents, setDocuments] = useState<any[]>([])
+  const [documentTypes, setDocumentTypes] = useState<string[]>([])
+  const [selectedDocumentType, setSelectedDocumentType] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showVisaInfo, setShowVisaInfo] = useState(false)
@@ -114,6 +116,16 @@ export default function Onboarding() {
         .eq('visa_type', visaType)
         .order('order_index')
 
+      const availableDocumentTypes = Array.from(
+        new Set(
+          (templates || [])
+            .map((template: any) => String(template.title || '').trim())
+            .filter(Boolean)
+        )
+      )
+      setDocumentTypes(availableDocumentTypes)
+      setSelectedDocumentType(availableDocumentTypes[0] || '')
+
       if (templates && templates.length > 0) {
         const checklistItems = templates.map((template: any) => ({
           case_id: caseData.id,
@@ -146,11 +158,16 @@ export default function Onboarding() {
 
     const formData = new FormData(form)
     const file = formData.get('file') as File
-    const title = formData.get('title') as string
+    const documentType = String(formData.get('documentType') || '').trim()
     const description = formData.get('description') as string
 
     if (!file) {
       setError('Please select a file')
+      setLoading(false)
+      return
+    }
+    if (!documentType) {
+      setError('Please select a document type from your checklist')
       setLoading(false)
       return
     }
@@ -169,7 +186,7 @@ export default function Onboarding() {
         body: JSON.stringify({
           caseId,
           userId: user.id,
-          title: title || file.name,
+          title: documentType,
           description: description || '',
           fileName: file.name,
           fileSize: file.size,
@@ -204,7 +221,7 @@ export default function Onboarding() {
   return (
     <>
       <Head>
-        <title>Create case — WINIT Portugal Immigration</title>
+        <title>Create case — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
@@ -421,15 +438,25 @@ export default function Onboarding() {
 
             <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
               <div>
-                <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Document Title *</label>
-                <input
-                  id="title"
-                  name="title"
-                  type="text"
+                <label htmlFor="documentType" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Document Type *</label>
+                <select
+                  id="documentType"
+                  name="documentType"
+                  value={selectedDocumentType}
+                  onChange={(e) => setSelectedDocumentType(e.target.value)}
                   required
-                  placeholder="e.g., Passport Copy"
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
-                />
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
+                >
+                  <option value="" disabled>Select document type from checklist</option>
+                  {documentTypes.map((docType) => (
+                    <option key={docType} value={docType}>{docType}</option>
+                  ))}
+                </select>
+                {documentTypes.length === 0 && (
+                  <p className="text-text-muted text-sm" style={{ marginTop: '0.5rem' }}>
+                    No checklist document types found for this case yet.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -456,7 +483,7 @@ export default function Onboarding() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || documentTypes.length === 0}
                 style={{ padding: '0.75rem', background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
               >
                 {loading ? 'Uploading...' : '+ Add Document'}

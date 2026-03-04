@@ -123,7 +123,7 @@ export default function EditCase() {
   return (
     <>
       <Head>
-        <title>Edit case — WINIT Portugal Immigration</title>
+        <title>Edit case — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div className="case-page-wrap" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', fontFamily: 'var(--font-sans, sans-serif)' }}>

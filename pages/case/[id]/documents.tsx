@@ -9,6 +9,8 @@ export default function CaseDocuments() {
   const { id } = router.query
   const [caseData, setCaseData] = useState<any>(null)
   const [documents, setDocuments] = useState<any[]>([])
+  const [checklistDocumentTypes, setChecklistDocumentTypes] = useState<string[]>([])
+  const [selectedDocumentType, setSelectedDocumentType] = useState('')
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
@@ -29,6 +31,23 @@ export default function CaseDocuments() {
         .single()
 
       setCaseData(caseData)
+
+      // Fetch checklist titles so client selects an exact document type
+      const { data: checklistData } = await supabase
+        .from('case_checklist')
+        .select('title, order_index')
+        .eq('case_id', id)
+        .order('order_index')
+
+      const types = Array.from(
+        new Set(
+          (checklistData || [])
+            .map((item: any) => String(item.title || '').trim())
+            .filter(Boolean)
+        )
+      )
+      setChecklistDocumentTypes(types)
+      setSelectedDocumentType((prev) => (prev && types.includes(prev) ? prev : (types[0] || '')))
 
       // Fetch documents
       const { data: docsData } = await supabase
@@ -53,7 +72,7 @@ export default function CaseDocuments() {
 
     const formData = new FormData(form)
     const file = formData.get('file') as File
-    const title = formData.get('title') as string
+    const documentType = String(formData.get('documentType') || '').trim()
     const description = formData.get('description') as string
 
     if (!file) {
@@ -61,38 +80,33 @@ export default function CaseDocuments() {
       setUploading(false)
       return
     }
+    if (!documentType) {
+      setUploadError('Please choose a document type from your checklist')
+      setUploading(false)
+      return
+    }
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
+      const response = await fetch('/api/documents/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          caseId: id,
+          userId: user.id,
+          title: documentType,
+          description: description || '',
+          fileName: file.name,
+          fileSize: file.size,
+          mimeType: file.type,
+        }),
+      })
 
-      // Upload file to storage
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random()}.${fileExt}`
-      const filePath = `${id}/${fileName}`
-
-      const { error: storageError } = await supabase.storage
-        .from('documents')
-        .upload(filePath, file)
-
-      if (storageError) throw storageError
-
-      // Create document record
-      const { error: docError } = await supabase
-        .from('documents')
-        .insert({
-          case_id: id,
-          title: title || file.name,
-          description,
-          file_path: filePath,
-          file_name: file.name,
-          file_size: file.size,
-          mime_type: file.type,
-          uploaded_by: user.id,
-          status: 'pending',
-        })
-
-      if (docError) throw docError
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed')
+      }
 
       // Reload documents
       loadDocuments()
@@ -111,7 +125,7 @@ export default function CaseDocuments() {
   return (
     <>
       <Head>
-        <title>Documents — WINIT Portugal Immigration</title>
+        <title>Documents — WinIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
     <div className="case-page-wrap" style={{ fontFamily: 'var(--font-sans, sans-serif)' }}>
@@ -132,14 +146,25 @@ export default function CaseDocuments() {
           {uploadError && <div style={{ color: 'red', padding: '0.5rem', background: '#fee', borderRadius: '5px' }}>{uploadError}</div>}
           
           <div>
-            <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem' }}>Document Title</label>
-            <input
-              id="title"
-              name="title"
-              type="text"
+            <label htmlFor="documentType" style={{ display: 'block', marginBottom: '0.5rem' }}>Document Type</label>
+            <select
+              id="documentType"
+              name="documentType"
+              value={selectedDocumentType}
+              onChange={(e) => setSelectedDocumentType(e.target.value)}
               required
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
-            />
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc', background: 'white' }}
+            >
+              <option value="" disabled>Select document type from checklist</option>
+              {checklistDocumentTypes.map((docType) => (
+                <option key={docType} value={docType}>{docType}</option>
+              ))}
+            </select>
+            {checklistDocumentTypes.length === 0 && (
+              <p style={{ marginTop: '0.5rem', color: '#b45309', fontSize: '0.9rem' }}>
+                No checklist document types found yet. Please regenerate checklist first.
+              </p>
+            )}
           </div>
 
           <div>
@@ -165,8 +190,8 @@ export default function CaseDocuments() {
 
           <button
             type="submit"
-            disabled={uploading}
-            style={{ padding: '0.75rem', background: '#0070f3', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            disabled={uploading || checklistDocumentTypes.length === 0}
+            style={{ padding: '0.75rem', background: '#0070f3', color: 'white', border: 'none', borderRadius: '5px', cursor: (uploading || checklistDocumentTypes.length === 0) ? 'not-allowed' : 'pointer' }}
           >
             {uploading ? 'Uploading...' : 'Upload Document'}
           </button>

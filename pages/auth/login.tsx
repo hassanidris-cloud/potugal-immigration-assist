@@ -74,7 +74,7 @@ export default function Login() {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
-            WINIT
+            WinIT
           </h1>
           <h2 style={{ fontSize: '1.5rem', margin: '0 0 0.5rem 0', color: '#1e293b' }}>
             Welcome Back

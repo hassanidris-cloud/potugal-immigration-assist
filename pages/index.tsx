@@ -55,8 +55,12 @@ export default function Home() {
     if (typeof window === 'undefined') return
     const onScroll = () => {
       const y = window.scrollY
+      const isTouchDevice = !window.matchMedia('(pointer: fine)').matches
+      const ua = window.navigator.userAgent || ''
+      const isIpad = /iPad/.test(ua) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1)
+      const isTabletOrPhone = window.innerWidth <= 1023 || isTouchDevice || isIpad
       setStickyCtaVisible(y > 400)
-      setBackToTopVisible(y > 300)
+      setBackToTopVisible(y > (isTabletOrPhone ? 140 : 300))
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -66,6 +70,14 @@ export default function Home() {
       window.removeEventListener('resize', onScroll)
     }
   }, [])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    document.body.classList.toggle('home-sticky-cta-visible', stickyCtaVisible)
+    return () => {
+      document.body.classList.remove('home-sticky-cta-visible')
+    }
+  }, [stickyCtaVisible])
 
   useEffect(() => {
     if (!navOpen) return
@@ -120,17 +132,17 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>WINIT — Move to Portugal with Confidence</title>
+        <title>WinIT — Move to Portugal with Confidence</title>
         <meta name="description" content="Portugal immigration support: D2, D7, and D8 visa applications. Document checklist, expert help, and tracking. Start your application today." />
         {BASE_URL && <link rel="canonical" href={BASE_URL} />}
-        <meta property="og:title" content="WINIT — Move to Portugal with Confidence" />
+        <meta property="og:title" content="WinIT — Move to Portugal with Confidence" />
         <meta property="og:description" content="Portugal immigration support: D2, D7, and D8 visa applications. Document checklist, expert help, and tracking." />
         <meta property="og:type" content="website" />
         {BASE_URL && <meta property="og:url" content={BASE_URL} />}
         {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
-        <meta property="og:site_name" content="WINIT Portugal Immigration" />
+        <meta property="og:site_name" content="WinIT Portugal Immigration" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="WINIT — Move to Portugal with Confidence" />
+        <meta name="twitter:title" content="WinIT — Move to Portugal with Confidence" />
         <meta name="twitter:description" content="Portugal immigration support: D2, D7, and D8 visa applications. Document checklist, expert help, and tracking." />
         {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
@@ -140,7 +152,7 @@ export default function Home() {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'WINIT Portugal Immigration',
+              name: 'WinIT Portugal Immigration',
               description: 'Portugal immigration support: D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking.',
               ...(BASE_URL && { url: BASE_URL }),
               ...(BASE_URL && {
@@ -161,7 +173,7 @@ export default function Home() {
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button
               type="button"
@@ -238,7 +250,7 @@ export default function Home() {
             ))}
           </div>
           <div className="home-container home-hero-inner home-hero-clean-inner fade-in-on-scroll" data-fade-in>
-            <p className="home-hero-eyebrow" style={{ color: 'rgba(255,255,255,0.85)', marginBottom: '0.5rem' }}>WINIT Immigration</p>
+            <p className="home-hero-eyebrow" style={{ color: 'rgba(255,255,255,0.85)', marginBottom: '0.5rem' }}>WinIT Immigration</p>
             <h1 className="defesa-hero-title">Portugal Immigration &amp; Residency</h1>
             <p className="defesa-hero-sub">Expert guidance on D2, D7, and D8 visas. We handle the legal complexities so you can focus on your new life in Portugal.</p>
             <div className="hero-cta-group">
@@ -383,7 +395,7 @@ export default function Home() {
               <div>
                 <div className="mb-4" style={{ display: 'flex', alignItems: 'center' }}>
                   <img src="/logo.png" alt="" width={70} height={41} style={{ height: 40, width: 'auto' }} />
-                  <span className="home-nav-logo-text" style={{ color: 'rgba(255,255,255,0.95)', marginLeft: '0.5rem' }}>WINIT</span>
+                  <span className="home-nav-logo-text" style={{ color: 'rgba(255,255,255,0.95)', marginLeft: '0.5rem' }}>WinIT</span>
                 </div>
                 <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', lineHeight: 1.6, margin: '0 0 1rem 0' }}>
                   Portugal immigration support. D2, D7, and D8 visa applications with document checklist, expert help, and progress tracking.
@@ -406,7 +418,7 @@ export default function Home() {
               </div>
             </div>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-              Terms of Service · Privacy Policy · © {new Date().getFullYear()} WINIT. All rights reserved.
+              Terms of Service · Privacy Policy · © {new Date().getFullYear()} WinIT. All rights reserved.
             </p>
           </div>
         </footer>

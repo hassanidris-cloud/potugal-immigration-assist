@@ -23,6 +23,23 @@ export default async function handler(
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey)
+    const normalizedTitle = String(title).trim()
+
+    // Enforce checklist-backed document type selection for this case
+    const { data: matchingType, error: matchingTypeError } = await supabase
+      .from('case_checklist')
+      .select('id')
+      .eq('case_id', caseId)
+      .eq('title', normalizedTitle)
+      .limit(1)
+
+    if (matchingTypeError) {
+      console.error('Checklist type lookup error:', matchingTypeError)
+      return res.status(500).json({ error: 'Could not validate document type' })
+    }
+    if (!matchingType || matchingType.length === 0) {
+      return res.status(400).json({ error: 'Invalid document type for this case' })
+    }
 
     // Create file path
     const fileExt = fileName?.split('.').pop() || 'bin'
@@ -33,7 +50,7 @@ export default async function handler(
       .from('documents')
       .insert({
         case_id: caseId,
-        title: title || fileName,
+        title: normalizedTitle,
         description: description || '',
         file_path: storagePath,
         file_name: fileName || 'document',

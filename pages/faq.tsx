@@ -21,16 +21,16 @@ export default function FAQ() {
   return (
     <>
       <Head>
-        <title>FAQ — WINIT Portugal Immigration</title>
-        <meta name="description" content="Frequently asked questions about WINIT Portugal immigration support, D2, D7, and D8 visas." />
+        <title>FAQ — WinIT Portugal Immigration</title>
+        <meta name="description" content="Frequently asked questions about WinIT Portugal immigration support, D2, D7, and D8 visas." />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/faq`} />}
-        <meta property="og:title" content="FAQ — WINIT Portugal Immigration" />
-        <meta property="og:description" content="Frequently asked questions about WINIT Portugal immigration support, D2, D7, and D8 visas." />
+        <meta property="og:title" content="FAQ — WinIT Portugal Immigration" />
+        <meta property="og:description" content="Frequently asked questions about WinIT Portugal immigration support, D2, D7, and D8 visas." />
         <meta property="og:type" content="website" />
         {BASE_URL && <meta property="og:url" content={`${BASE_URL}/faq`} />}
         {BASE_URL && <meta property="og:image" content={`${BASE_URL}/og.png`} />}
-        <meta name="twitter:title" content="FAQ — WINIT Portugal Immigration" />
-        <meta name="twitter:description" content="Frequently asked questions about WINIT Portugal immigration support, D2, D7, and D8 visas." />
+        <meta name="twitter:title" content="FAQ — WinIT Portugal Immigration" />
+        <meta name="twitter:description" content="Frequently asked questions about WinIT Portugal immigration support, D2, D7, and D8 visas." />
         {BASE_URL && <meta name="twitter:image" content={`${BASE_URL}/og.png`} />}
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
@@ -39,7 +39,7 @@ export default function FAQ() {
           <div className="home-nav-inner" style={{ paddingTop: '1rem', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />

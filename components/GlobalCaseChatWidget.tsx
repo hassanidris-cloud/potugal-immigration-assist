@@ -16,14 +16,7 @@ export default function GlobalCaseChatWidget() {
   useEffect(() => {
     let mounted = true
 
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!mounted || !user) {
-        if (mounted) setUserId(null)
-        return
-      }
-      setUserId(user.id)
-
+    const resolveCaseForUser = async (activeUserId: string) => {
       const pathId = router.query.id as string | undefined
       if (pathId && router.pathname.startsWith('/case/[id]')) {
         const { data: caseRow } = await supabase
@@ -31,7 +24,7 @@ export default function GlobalCaseChatWidget() {
           .select('id, user_id')
           .eq('id', pathId)
           .single()
-        if (mounted && caseRow && caseRow.user_id === user.id) {
+        if (mounted && caseRow && caseRow.user_id === activeUserId) {
           setCaseId(caseRow.id)
           setCaseUserId(caseRow.user_id)
           return
@@ -41,7 +34,7 @@ export default function GlobalCaseChatWidget() {
       const { data: cases } = await supabase
         .from('cases')
         .select('id, user_id')
-        .eq('user_id', user.id)
+        .eq('user_id', activeUserId)
         .order('created_at', { ascending: false })
         .limit(1)
       if (mounted && cases && cases.length > 0) {
@@ -53,9 +46,40 @@ export default function GlobalCaseChatWidget() {
       }
     }
 
-    init()
-    return () => { mounted = false }
-  }, [router.pathname, router.query.id])
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!mounted || !user) {
+        if (mounted) {
+          setUserId(null)
+          setCaseId(null)
+          setCaseUserId(null)
+        }
+        return
+      }
+      setUserId(user.id)
+      await resolveCaseForUser(user.id)
+    }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const activeUser = session?.user
+      if (!mounted || !activeUser) {
+        if (mounted) {
+          setUserId(null)
+          setCaseId(null)
+          setCaseUserId(null)
+        }
+        return
+      }
+      setUserId(activeUser.id)
+      void resolveCaseForUser(activeUser.id)
+    })
+
+    void init()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [router.asPath, router.pathname, router.query.id])
 
   if (!userId || !caseId || !caseUserId) return null
 

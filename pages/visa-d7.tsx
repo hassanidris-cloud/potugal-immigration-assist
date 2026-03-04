@@ -35,9 +35,9 @@ export default function VisaD7() {
   return (
     <>
       <Head>
-        <title>D7 Passive Income Visa Portugal 2026 – Retirement &amp; Residency | WINIT</title>
+        <title>D7 Passive Income Visa Portugal 2026 – Retirement &amp; Residency | WinIT</title>
         <meta name="description" content="Live in Portugal with the D7 Passive Income Visa. For retirees and anyone with stable income from pension, investments, or rentals. Requirements, support, and application." />
-        <meta property="og:title" content="D7 Passive Income Visa Portugal 2026 – Retirement &amp; Residency | WINIT" />
+        <meta property="og:title" content="D7 Passive Income Visa Portugal 2026 – Retirement &amp; Residency | WinIT" />
         <meta property="og:description" content="D7 visa for stable recurring income from outside Portugal. Pension, investments, rentals." />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-d7`} />}
@@ -52,7 +52,7 @@ export default function VisaD7() {
           <div className="home-nav-inner">
             <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
               <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
+              <span className="home-nav-logo-text">WinIT</span>
             </Link>
             <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
               <span className="hamburger-line" />
