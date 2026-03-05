@@ -1,0 +1,3 @@
+{
+  "install": "npm ci && node -e \"require('tesseract.js'); console.log('tesseract.js runtime ready')\""
+}

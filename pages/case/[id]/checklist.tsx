@@ -3,14 +3,13 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
-import { getVisaPersonalization } from '../../../lib/visaPersonalization'
 
 export default function CaseChecklist() {
   const router = useRouter()
   const { id } = router.query
   const [caseData, setCaseData] = useState<any>(null)
   const [checklist, setChecklist] = useState<any[]>([])
-  const [documents, setDocuments] = useState<any[]>([])
+  const [checklistLinks, setChecklistLinks] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [regenerating, setRegenerating] = useState(false)
 
@@ -40,22 +39,38 @@ export default function CaseChecklist() {
 
       const items = checklistData || []
 
-      // Fetch documents
-      const { data: documentsData } = await supabase
-        .from('documents')
-        .select('*')
+      // Fetch explicit checklist-document links (with OCR + document status context)
+      const { data: linksData } = await supabase
+        .from('case_checklist_documents')
+        .select(`
+          id,
+          checklist_item_id,
+          document_id,
+          ocr_status,
+          ocr_confidence,
+          created_at,
+          document:documents (
+            id,
+            title,
+            status,
+            uploaded_at
+          )
+        `)
         .eq('case_id', id)
 
-      const docs = documentsData || []
-      setDocuments(docs)
+      const links = linksData || []
+      setChecklistLinks(links)
 
-      // Sync: mark item completed in DB when a matching document was uploaded (progress from uploads)
+      // Sync completed state from explicit links only (no title-based matching)
       for (const item of items) {
-        if (item.completed) continue
-        if (!itemHasMatchingDocument(item, docs)) continue
+        const hasEligibleLink = itemHasEligibleLinkedDocument(item.id, links)
+        if (item.completed === hasEligibleLink) continue
         await supabase
           .from('case_checklist')
-          .update({ completed: true, completed_at: new Date().toISOString() })
+          .update({
+            completed: hasEligibleLink,
+            completed_at: hasEligibleLink ? new Date().toISOString() : null,
+          })
           .eq('id', item.id)
       }
 
@@ -73,27 +88,27 @@ export default function CaseChecklist() {
     }
   }
 
-  /** True if at least one uploaded document matches this checklist item (by title). */
-  function itemHasMatchingDocument(item: { title: string }, docs: { title: string }[]): boolean {
-    const titleLower = item.title.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
-    const firstWord = titleLower.split(/\s+/)[0] || ''
-    const firstWords = titleLower.split(/\s+/).slice(0, 3).join(' ')
-    return docs.some(doc => {
-      const d = doc.title.toLowerCase()
-      return d.includes(firstWords) || (firstWord.length >= 2 && d.includes(firstWord))
-    })
+  function getChecklistLinks(itemId: string, links = checklistLinks): any[] {
+    return links.filter(link => link.checklist_item_id === itemId)
   }
 
-  const toggleChecklistItem = async (itemId: string, itemTitle: string, currentlyCompleted: boolean, item?: { title: string }) => {
+  function isLinkEligible(link: any): boolean {
+    const linkedDocument = Array.isArray(link?.document) ? link.document[0] : link?.document
+    const documentStatus = linkedDocument?.status
+    if (documentStatus === 'approved') return true
+    return link?.ocr_status === 'matched'
+  }
+
+  function itemHasEligibleLinkedDocument(itemId: string, links = checklistLinks): boolean {
+    return getChecklistLinks(itemId, links).some(isLinkEligible)
+  }
+
+  const toggleChecklistItem = async (itemId: string, itemTitle: string, currentlyCompleted: boolean) => {
     try {
       if (!currentlyCompleted) {
-        const hasDocument = item
-          ? itemHasMatchingDocument(item, documents)
-          : documents.some(doc =>
-              doc.title.toLowerCase().includes(itemTitle.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase())
-            )
-        if (!hasDocument) {
-          alert(`⚠️ Please upload the "${itemTitle}" document before marking it as complete.\n\nGo to Upload Documents section to add this file.`)
+        const hasEligibleDocument = itemHasEligibleLinkedDocument(itemId)
+        if (!hasEligibleDocument) {
+          alert(`⚠️ Please upload and link the "${itemTitle}" document before marking it as complete.\n\nOnly OCR-matched documents (or admin-approved documents) can satisfy checklist requirements.`)
           return
         }
       }
@@ -160,10 +175,9 @@ export default function CaseChecklist() {
 
   const totalCount = checklist.length
   const effectiveCompleted = (item: typeof checklist[0]) =>
-    item.completed || itemHasMatchingDocument(item, documents)
+    item.completed || itemHasEligibleLinkedDocument(item.id)
   const completedCount = checklist.filter(effectiveCompleted).length
   const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
-  const visaInfo = getVisaPersonalization(caseData?.visa_type || '')
   const requiredItems = checklist.filter(item => item.required !== false)
   const optionalItems = checklist.filter(item => item.required === false)
   const requiredCompleted = requiredItems.filter(effectiveCompleted).length
@@ -179,7 +193,10 @@ export default function CaseChecklist() {
     : null
 
   function renderChecklistItem(item: typeof checklist[0], isCompleted: boolean, isRequired: boolean) {
-    const hasDocument = itemHasMatchingDocument(item, documents)
+    const itemLinks = getChecklistLinks(item.id)
+    const hasEligibleDocument = itemLinks.some(isLinkEligible)
+    const hasMismatch = itemLinks.some(link => link.ocr_status === 'mismatch')
+    const pendingVerification = itemLinks.length > 0 && !hasEligibleDocument && !hasMismatch
     return (
       <div
         key={item.id}
@@ -199,7 +216,7 @@ export default function CaseChecklist() {
         <input
           type="checkbox"
           checked={isCompleted}
-          onChange={() => toggleChecklistItem(item.id, item.title, isCompleted, item)}
+          onChange={() => toggleChecklistItem(item.id, item.title, isCompleted)}
           style={{
             width: '24px',
             height: '24px',
@@ -226,13 +243,21 @@ export default function CaseChecklist() {
             </p>
           )}
           <div style={{ marginTop: '0.5rem' }}>
-            {hasDocument ? (
+            {hasEligibleDocument ? (
               <span style={{ fontSize: '0.8rem', color: '#059669', background: '#d1fae5', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
-                📎 Document uploaded
+                📎 Linked and verified
+              </span>
+            ) : hasMismatch ? (
+              <span style={{ fontSize: '0.8rem', color: '#dc2626', background: '#fee2e2', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                ⚠️ OCR mismatch: upload clearer/correct document
+              </span>
+            ) : pendingVerification ? (
+              <span style={{ fontSize: '0.8rem', color: '#92400e', background: '#fef3c7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                ⏳ Linked, pending OCR/admin verification
               </span>
             ) : (
               <span style={{ fontSize: '0.8rem', color: isRequired ? '#dc2626' : '#f59e0b', background: isRequired ? '#fee2e2' : '#fef3c7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
-                📤 {isRequired ? 'Upload required' : 'Not yet uploaded'}
+                📤 {isRequired ? 'Upload + link required' : 'Not yet linked'}
               </span>
             )}
           </div>
@@ -309,7 +334,7 @@ export default function CaseChecklist() {
               }} />
             </div>
             <p style={{ margin: '0.5rem 0 0', color: '#64748b', fontSize: '0.9rem' }}>
-              {completedCount} of {totalCount} items completed (uploads count automatically) • {requiredCompleted} of {requiredItems.length} required ✓
+              {completedCount} of {totalCount} items completed (linked + verified docs) • {requiredCompleted} of {requiredItems.length} required ✓
             </p>
           </div>
 
