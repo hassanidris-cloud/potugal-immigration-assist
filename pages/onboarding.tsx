@@ -8,18 +8,17 @@ import { getVisaPersonalization, getVisaTypeColor } from '../lib/visaPersonaliza
 export default function Onboarding() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
-  const [step, setStep] = useState(1)
   const [caseType, setCaseType] = useState('Immigration Application')
   const [visaType, setVisaType] = useState('D7 Visa')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
   const [targetVisaDate, setTargetVisaDate] = useState('')
   const [caseId, setCaseId] = useState('')
-  const [documents, setDocuments] = useState<any[]>([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showVisaInfo, setShowVisaInfo] = useState(false)
   const [accessBlocked, setAccessBlocked] = useState(false)
   const [blockMessage, setBlockMessage] = useState('')
+  const [visaLockedFromSignup, setVisaLockedFromSignup] = useState(false)
   const visaInfo = getVisaPersonalization(visaType)
 
   useEffect(() => {
@@ -39,6 +38,11 @@ export default function Onboarding() {
       .select('*')
       .eq('id', user.id)
       .single()
+
+    if (profileData?.visa_type) {
+      setVisaType(profileData.visa_type)
+      setVisaLockedFromSignup(true)
+    }
 
     // Admin owners should not create cases
     if (user && profileData?.role === 'admin') {
@@ -129,74 +133,14 @@ export default function Onboarding() {
         await supabase.from('case_checklist').insert(checklistItems)
       }
 
-      // Move to document upload step
-      setStep(2)
+      // Go straight to checklist so user sees what to upload (no vague upload step)
+      router.push(`/case/${caseData.id}/checklist`)
+      return
     } catch (err: any) {
       setError(err.message || 'Failed to create case')
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleFileUpload = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const form = e.currentTarget
-    setError('')
-    setLoading(true)
-
-    const formData = new FormData(form)
-    const file = formData.get('file') as File
-    const title = formData.get('title') as string
-    const description = formData.get('description') as string
-
-    if (!file) {
-      setError('Please select a file')
-      setLoading(false)
-      return
-    }
-
-    if (file.size > 50 * 1024 * 1024) {
-      setError('File must be under 50MB')
-      setLoading(false)
-      return
-    }
-
-    try {
-      // Send document metadata to API (service role will handle DB insert)
-      const response = await fetch('/api/documents/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          caseId,
-          userId: user.id,
-          title: title || file.name,
-          description: description || '',
-          fileName: file.name,
-          fileSize: file.size,
-          mimeType: file.type,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Upload failed')
-      }
-
-      setDocuments([...documents, data.document])
-      
-      // Reset form
-      if (form) form.reset()
-    } catch (error: any) {
-      console.error('Upload error:', error)
-      setError(error.message || 'Upload failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const completeOnboarding = () => {
-    router.push(`/case/${caseId}/checklist`)
   }
 
   if (!user) return <div style={{ padding: '2rem' }}>Loading...</div>
@@ -209,16 +153,16 @@ export default function Onboarding() {
       </Head>
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        {/* Progress Bar */}
+        {/* Progress */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <span className={step >= 1 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>1. Case Details</span>
-            <span className={step >= 2 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>2. Upload Documents</span>
-            <span className={step >= 3 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>3. Complete</span>
+            <span className="text-primary font-bold">1. Case details</span>
+            <span className="text-text-muted font-bold">2. View checklist & upload</span>
           </div>
           <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-            <div style={{ width: `${(step / 3) * 100}%`, height: '100%', background: 'linear-gradient(90deg, #0066cc, #00c896)', transition: 'width 0.3s' }} />
+            <div style={{ width: '50%', height: '100%', background: 'linear-gradient(90deg, #0066cc, #00c896)', transition: 'width 0.3s' }} />
           </div>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.5rem' }}>After you create your case, you&apos;ll see your personalized checklist with each document type—upload from there.</p>
         </div>
 
         {/* Step 1: Case Details */}
@@ -276,34 +220,54 @@ export default function Onboarding() {
 
               <div>
                 <label htmlFor="visaType" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Which Visa Type Do You Need? 🇵🇹</label>
-                                <button
-                                  type="button"
-                                  onClick={() => setShowVisaInfo(!showVisaInfo)}
-                                  style={{ 
-                                    fontSize: '0.875rem', 
-                                    color: 'var(--primary)', 
-                                    textDecoration: 'underline', 
-                                    cursor: 'pointer', 
-                                    border: 'none', 
-                                    background: 'none', 
-                                    padding: 0,
-                                    marginBottom: '0.5rem'
-                                  }}
-                                >
-                                  {showVisaInfo ? '▼ Hide visa details' : '▶ Show details about selected visa'}
-                                </button>
-                <select
-                  id="visaType"
-                  value={visaType}
-                  onChange={(e) => { setVisaType(e.target.value); setShowVisaInfo(true); }}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
-                >
-                  <optgroup label="Residency visa programs">
-                    <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
-                    <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
-                    <option value="D8 Visa">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
-                  </optgroup>
-                </select>
+                {visaLockedFromSignup ? (
+                  <>
+                    <div style={{ padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', background: '#f8fafc', fontSize: '1rem' }}>
+                      {visaType}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowVisaInfo(!showVisaInfo)}
+                      style={{ fontSize: '0.875rem', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer', border: 'none', background: 'none', padding: 0, marginTop: '0.5rem' }}
+                    >
+                      {showVisaInfo ? '▼ Hide visa details' : '▶ Show details about this visa'}
+                    </button>
+                    <p className="text-text-muted text-sm" style={{ marginTop: '0.5rem' }}>
+                      Set at signup. To change visa type, contact your specialist.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowVisaInfo(!showVisaInfo)}
+                      style={{
+                        fontSize: '0.875rem',
+                        color: 'var(--primary)',
+                        textDecoration: 'underline',
+                        cursor: 'pointer',
+                        border: 'none',
+                        background: 'none',
+                        padding: 0,
+                        marginBottom: '0.5rem'
+                      }}
+                    >
+                      {showVisaInfo ? '▼ Hide visa details' : '▶ Show details about selected visa'}
+                    </button>
+                    <select
+                      id="visaType"
+                      value={visaType}
+                      onChange={(e) => { setVisaType(e.target.value); setShowVisaInfo(true); }}
+                      style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
+                    >
+                      <optgroup label="Residency visa programs">
+                        <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
+                        <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
+                        <option value="D8 Visa">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
+                      </optgroup>
+                    </select>
+                  </>
+                )}
                 {showVisaInfo && (
                   <div style={{
                     marginTop: '1rem',
@@ -406,94 +370,9 @@ export default function Onboarding() {
                   cursor: (loading || accessBlocked) ? 'not-allowed' : 'pointer'
                 }}
               >
-                {loading ? 'Creating...' : 'Next: Upload Documents →'}
+                {loading ? 'Creating...' : 'Create my case & view checklist'}
               </button>
             </form>
-          </div>
-        )}
-        {/* Step 2: Document Upload */}
-        {step === 2 && (
-          <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-            <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>📄 Upload Your Documents</h1>
-            <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Start by uploading at least one document. You can add more anytime.</p>
-
-            {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
-
-            <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-              <div>
-                <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Document Title *</label>
-                <input
-                  id="title"
-                  name="title"
-                  type="text"
-                  required
-                  placeholder="e.g., Passport Copy"
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="description" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  rows={2}
-                  placeholder="Add any notes about this document"
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="file" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>File *</label>
-                <input
-                  id="file"
-                  name="file"
-                  type="file"
-                  required
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                style={{ padding: '0.75rem', background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                {loading ? 'Uploading...' : '+ Add Document'}
-              </button>
-            </form>
-
-            {documents.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h3 className="text-text" style={{ marginBottom: '1rem' }}>✅ Uploaded Documents ({documents.length})</h3>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {documents.map((doc) => (
-                    <li key={doc.id} style={{ padding: '1rem', background: '#f0fdf4', borderRadius: '8px', marginBottom: '0.5rem', border: '1px solid #bbf7d0' }}>
-                      <strong>{doc.title}</strong> - {(doc.file_size / 1024).toFixed(1)} KB
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button
-                onClick={() => setStep(1)}
-                style={{ flex: 1, padding: '1rem', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                ← Back
-              </button>
-              <button
-                onClick={completeOnboarding}
-                disabled={documents.length === 0}
-                style={{ flex: 2, padding: '1rem', background: documents.length > 0 ? 'linear-gradient(135deg, #0066cc, #00c896)' : '#cbd5e1', color: 'white', border: 'none', borderRadius: '8px', cursor: documents.length > 0 ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
-              >
-                Complete Setup →
-              </button>
-            </div>
-            {documents.length === 0 && (
-              <p className="text-text-muted text-center text-sm" style={{ marginTop: '1rem' }}>Upload at least one document to continue</p>
-            )}
           </div>
         )}
       </div>

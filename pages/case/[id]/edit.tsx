@@ -15,6 +15,7 @@ export default function EditCase() {
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
   const [targetVisaDate, setTargetVisaDate] = useState('')
   const [initialVisaType, setInitialVisaType] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -34,6 +35,14 @@ export default function EditCase() {
       }
       setUser(user)
 
+      const { data: profile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      const admin = profile?.role === 'admin'
+      setIsAdmin(!!admin)
+
       const { data, error } = await supabase
         .from('cases')
         .select('*')
@@ -45,7 +54,7 @@ export default function EditCase() {
         return
       }
 
-      if (data.user_id !== user.id) {
+      if (!admin && data.user_id !== user.id) {
         setError('You do not have access to this case')
         return
       }
@@ -73,19 +82,23 @@ export default function EditCase() {
     setSaving(true)
 
     try {
+      const updatePayload: Record<string, unknown> = {
+        case_type: caseType,
+        country_of_origin: countryOfOrigin,
+        target_visa_date: targetVisaDate || null,
+      }
+      if (isAdmin) {
+        updatePayload.visa_type = visaType
+      }
+
       const { error: updateError } = await supabase
         .from('cases')
-        .update({
-          case_type: caseType,
-          visa_type: visaType,
-          country_of_origin: countryOfOrigin,
-          target_visa_date: targetVisaDate || null,
-        })
+        .update(updatePayload)
         .eq('id', id)
 
       if (updateError) throw updateError
 
-      const visaChanged = initialVisaType && initialVisaType !== visaType
+      const visaChanged = isAdmin && initialVisaType && initialVisaType !== visaType
 
       if (visaChanged) {
         await supabase
@@ -120,6 +133,10 @@ export default function EditCase() {
           }))
 
           await supabase.from('case_checklist').insert(checklistItems)
+        }
+
+        if (caseData?.user_id) {
+          await supabase.from('users').update({ visa_type: visaType }).eq('id', caseData.user_id)
         }
       }
 
@@ -171,18 +188,29 @@ export default function EditCase() {
 
             <div>
               <label htmlFor="visaType" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Visa Type</label>
-              <select
-                id="visaType"
-                value={visaType}
-                onChange={(e) => setVisaType(e.target.value)}
-                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
-              >
-                <optgroup label="Residency visa programs">
-                  <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
-                  <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
-                  <option value="D8 Visa">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
-                </optgroup>
-              </select>
+              {isAdmin ? (
+                <select
+                  id="visaType"
+                  value={visaType}
+                  onChange={(e) => setVisaType(e.target.value)}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
+                >
+                  <optgroup label="Residency visa programs">
+                    <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
+                    <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
+                    <option value="D8 Visa">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
+                  </optgroup>
+                </select>
+              ) : (
+                <>
+                  <div style={{ padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', background: '#f8fafc', fontSize: '1rem' }}>
+                    {visaType}
+                  </div>
+                  <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#64748b' }}>
+                    To change visa type, contact your specialist.
+                  </p>
+                </>
+              )}
             </div>
 
             <div>
@@ -212,7 +240,7 @@ export default function EditCase() {
               />
             </div>
 
-            {initialVisaType && initialVisaType !== visaType && (
+            {isAdmin && initialVisaType && initialVisaType !== visaType && (
               <div style={{ padding: '1rem', background: '#fef3c7', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
                 <p style={{ margin: 0, color: '#92400e', fontSize: '0.95rem' }}>
                   Your checklist will be automatically refreshed to match the new visa requirements when you save.

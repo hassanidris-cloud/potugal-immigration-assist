@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { userId, email, fullName, phone } = req.body
+  const { userId, email, fullName, phone, visaType } = req.body
 
   if (!userId || !email) {
     return res.status(400).json({ error: 'Missing required fields' })
@@ -57,6 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           full_name: fullName || email.split('@')[0],
           phone: phone || null,
           role: 'client',
+          visa_type: visaType || null,
         })
         .select()
 

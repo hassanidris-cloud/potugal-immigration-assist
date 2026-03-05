@@ -97,7 +97,12 @@ export default function AdminCaseReview() {
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <header style={{ marginBottom: '2rem' }}>
         <Link href="/admin/cases" style={{ color: '#0070f3' }}>← Back to client cases</Link>
-        <h1 style={{ marginTop: '1rem' }}>Case details</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+          <h1 style={{ margin: 0 }}>Case details</h1>
+          <Link href={`/case/${id}/edit`} style={{ padding: '0.5rem 1rem', background: '#0070f3', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' }}>
+            Edit case (visa type, country, etc.)
+          </Link>
+        </div>
       </header>
 
       {caseData && (
