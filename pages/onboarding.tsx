@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../lib/supabaseClient'
 import { countries } from '../lib/countries'
-import { getVisaPersonalization, getVisaTypeColor } from '../lib/visaPersonalization'
+import { getVisaPersonalization } from '../lib/visaPersonalization'
 
 export default function Onboarding() {
   const router = useRouter()
@@ -199,7 +199,12 @@ export default function Onboarding() {
     router.push(`/case/${caseId}/checklist`)
   }
 
-  if (!user) return <div style={{ padding: '2rem' }}>Loading...</div>
+  const formFieldClass = 'w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-3 text-base'
+  const labelClass = 'mb-2 block font-semibold text-text'
+  const cardClass = 'card animate-fade-in rounded-2xl bg-white p-10 shadow-[0_4px_20px_rgba(0,0,0,0.1)]'
+  const primaryButtonClass = 'w-full rounded-lg px-4 py-4 text-[1.1rem] font-bold text-white transition'
+
+  if (!user) return <div className="p-8">Loading...</div>
 
   return (
     <>
@@ -207,49 +212,37 @@ export default function Onboarding() {
         <title>Create case — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-sky-100 p-8 font-sans">
+      <div className="mx-auto max-w-[800px]">
         {/* Progress Bar */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <div className="mb-8">
+          <div className="mb-4 flex justify-between">
             <span className={step >= 1 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>1. Case Details</span>
             <span className={step >= 2 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>2. Upload Documents</span>
             <span className={step >= 3 ? 'text-primary font-bold' : 'text-text-muted font-bold'}>3. Complete</span>
           </div>
-          <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-            <div style={{ width: `${(step / 3) * 100}%`, height: '100%', background: 'linear-gradient(90deg, #0066cc, #00c896)', transition: 'width 0.3s' }} />
+          <div className="h-2 overflow-hidden rounded bg-slate-200">
+            <div
+              className="h-full bg-gradient-to-r from-[#0066cc] to-[#00c896] transition-all duration-300"
+              style={{ width: `${(step / 3) * 100}%` }}
+            />
           </div>
         </div>
 
         {/* Step 1: Case Details */}
         {step === 1 && (
-          <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-            <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚀 Let&apos;s Create Your Case</h1>
-            <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Tell us about your immigration plans to Portugal</p>
+          <div className={cardClass}>
+            <h1 className="mb-4 text-3xl text-text">🚀 Let&apos;s Create Your Case</h1>
+            <p className="mb-8 text-text-muted">Tell us about your immigration plans to Portugal</p>
 
             {accessBlocked && (
-              <div style={{
-                background: '#fff7ed',
-                border: '1px solid #fdba74',
-                color: '#9a3412',
-                padding: '1rem',
-                borderRadius: '8px',
-                marginBottom: '1.5rem'
-              }}>
+              <div className="mb-6 rounded-lg border border-orange-300 bg-orange-50 p-4 text-orange-800">
                 <strong>Access Locked:</strong> {blockMessage}
-                <div style={{ marginTop: '0.75rem' }}>
+                <div className="mt-3">
                   <button
                     type="button"
                     onClick={() => router.push('/')}
-                    style={{
-                      background: '#10b981',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.6rem 1rem',
-                      borderRadius: '8px',
-                      fontWeight: '600',
-                      cursor: 'pointer'
-                    }}
+                    className="rounded-lg bg-emerald-500 px-4 py-2 font-semibold text-white transition hover:bg-emerald-600"
                   >
                     Back to home
                   </button>
@@ -257,16 +250,19 @@ export default function Onboarding() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', opacity: accessBlocked ? 0.6 : 1, pointerEvents: accessBlocked ? 'none' : 'auto' }}>
-              {error && <div className="text-error" style={{ padding: '1rem', background: '#fee2e2', borderRadius: '8px', borderLeft: '4px solid var(--error)' }}>{error}</div>}
+            <form
+              onSubmit={handleSubmit}
+              className={`flex flex-col gap-6 ${accessBlocked ? 'pointer-events-none opacity-60' : ''}`}
+            >
+              {error && <div className="rounded-lg border-l-4 border-error bg-red-100 p-4 text-error">{error}</div>}
 
               <div>
-                <label htmlFor="caseType" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Case Type</label>
+                <label htmlFor="caseType" className={labelClass}>Case Type</label>
                 <select
                   id="caseType"
                   value={caseType}
                   onChange={(e) => setCaseType(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
+                  className={formFieldClass}
                 >
                   <option>Immigration Application</option>
                   <option>Residency Renewal</option>
@@ -275,28 +271,19 @@ export default function Onboarding() {
               </div>
 
               <div>
-                <label htmlFor="visaType" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Which Visa Type Do You Need? 🇵🇹</label>
-                                <button
-                                  type="button"
-                                  onClick={() => setShowVisaInfo(!showVisaInfo)}
-                                  style={{ 
-                                    fontSize: '0.875rem', 
-                                    color: 'var(--primary)', 
-                                    textDecoration: 'underline', 
-                                    cursor: 'pointer', 
-                                    border: 'none', 
-                                    background: 'none', 
-                                    padding: 0,
-                                    marginBottom: '0.5rem'
-                                  }}
-                                >
-                                  {showVisaInfo ? '▼ Hide visa details' : '▶ Show details about selected visa'}
-                                </button>
+                <label htmlFor="visaType" className={labelClass}>Which Visa Type Do You Need? 🇵🇹</label>
+                <button
+                  type="button"
+                  onClick={() => setShowVisaInfo(!showVisaInfo)}
+                  className="mb-2 border-none bg-transparent p-0 text-sm text-primary underline transition hover:text-primary/80"
+                >
+                  {showVisaInfo ? '▼ Hide visa details' : '▶ Show details about selected visa'}
+                </button>
                 <select
                   id="visaType"
                   value={visaType}
                   onChange={(e) => { setVisaType(e.target.value); setShowVisaInfo(true); }}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
+                  className={formFieldClass}
                 >
                   <optgroup label="Residency visa programs">
                     <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
@@ -305,72 +292,58 @@ export default function Onboarding() {
                   </optgroup>
                 </select>
                 {showVisaInfo && (
-                  <div style={{
-                    marginTop: '1rem',
-                    padding: '1.5rem',
-                    background: '#f1f5f9',
-                    borderRadius: '12px',
-                    borderLeft: `4px solid ${getVisaTypeColor(visaType).replace('bg-', '#')}`,
-                    animation: 'fadeIn 0.3s ease-in'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                      <span style={{
-                        padding: '0.5rem 1rem',
-                        background: 'linear-gradient(135deg, #0066cc, #00c896)',
-                        color: 'white',
-                        borderRadius: '20px',
-                        fontSize: '0.875rem',
-                        fontWeight: '600'
-                      }}>
+                  <div className="mt-4 animate-fade-in rounded-xl border-l-4 border-primary bg-slate-100 p-6">
+                    <div className="mb-4 flex items-center gap-3">
+                      <span className="rounded-full bg-gradient-to-br from-[#0066cc] to-[#00c896] px-4 py-2 text-sm font-semibold text-white">
                         {visaInfo.visaType}
                       </span>
                     </div>
-                    <p className="text-text-muted" style={{ fontSize: '0.95rem', marginBottom: '1rem', lineHeight: '1.6' }}>
+                    <p className="mb-4 text-[0.95rem] leading-relaxed text-text-muted">
                       {visaInfo.welcomeMessage}
                     </p>
-                    <p className="text-text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+                    <p className="mb-6 text-[0.9rem] leading-relaxed text-text-muted">
                       {visaInfo.description}
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                      <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
-                        <div className="text-text-muted text-xs" style={{ marginBottom: '0.25rem' }}>Processing Time</div>
+                    <div className="mb-6 grid gap-4 md:grid-cols-2">
+                      <div className="rounded-lg bg-white p-3">
+                        <div className="mb-1 text-xs text-text-muted">Processing Time</div>
                         <div className="text-text font-semibold">⏱️ {visaInfo.processingTime}</div>
                       </div>
-                      <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
-                        <div className="text-text-muted text-xs" style={{ marginBottom: '0.25rem' }}>Success Rate</div>
-                        <div className="font-semibold text-[var(--success)]">✓ {visaInfo.successRate}</div>
+                      <div className="rounded-lg bg-white p-3">
+                        <div className="mb-1 text-xs text-text-muted">Success Rate</div>
+                        <div className="font-semibold text-emerald-600">✓ {visaInfo.successRate}</div>
                       </div>
                     </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <h4 className="text-text font-semibold text-sm" style={{ marginBottom: '0.5rem' }}>📋 Key Requirements:</h4>
-                      <ul className="text-text-muted text-sm" style={{ paddingLeft: '1.25rem', margin: 0 }}>
+                    <div className="mb-4">
+                      <h4 className="mb-2 text-sm font-semibold text-text">📋 Key Requirements:</h4>
+                      <ul className="list-disc space-y-1 pl-5 text-sm text-text-muted">
                         {visaInfo.keyRequirements.slice(0, 3).map((req, idx) => (
-                          <li key={idx} style={{ marginBottom: '0.25rem' }}>{req}</li>
+                          <li key={idx}>{req}</li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <h4 className="text-text font-semibold text-sm" style={{ marginBottom: '0.5rem' }}>💡 Pro Tips:</h4>
-                      <ul className="text-text-muted text-sm" style={{ paddingLeft: '1.25rem', margin: 0 }}>
+                      <h4 className="mb-2 text-sm font-semibold text-text">💡 Pro Tips:</h4>
+                      <ul className="list-disc space-y-1 pl-5 text-sm text-text-muted">
                         {visaInfo.tips.slice(0, 2).map((tip, idx) => (
-                          <li key={idx} style={{ marginBottom: '0.25rem' }}>{tip}</li>
+                          <li key={idx}>{tip}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
                 )}
-                <p className="text-text-muted text-sm" style={{ marginTop: '0.5rem' }}>
+                <p className="mt-2 text-sm text-text-muted">
                   💡 Most visas are processed through VFS Global
                 </p>
               </div>
 
               <div>
-                <label htmlFor="countryOfOrigin" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Country of Origin 🌍</label>
+                <label htmlFor="countryOfOrigin" className={labelClass}>Country of Origin 🌍</label>
                 <select
                   id="countryOfOrigin"
                   value={countryOfOrigin}
                   onChange={(e) => setCountryOfOrigin(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
+                  className={formFieldClass}
                   required
                 >
                   <option value="">Select your country...</option>
@@ -381,30 +354,24 @@ export default function Onboarding() {
               </div>
 
               <div>
-                <label htmlFor="targetVisaDate" className="text-text font-semibold" style={{ display: 'block', marginBottom: '0.5rem' }}>Target Application Date (Optional)</label>
+                <label htmlFor="targetVisaDate" className={labelClass}>Target Application Date (Optional)</label>
                 <input
                   id="targetVisaDate"
                   type="date"
                   value={targetVisaDate}
                   onChange={(e) => setTargetVisaDate(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
+                  className={formFieldClass}
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading || accessBlocked}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  background: (loading || accessBlocked) ? '#94a3b8' : 'linear-gradient(135deg, #0066cc, #00c896)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '1.1rem',
-                  fontWeight: 'bold',
-                  cursor: (loading || accessBlocked) ? 'not-allowed' : 'pointer'
-                }}
+                className={`${primaryButtonClass} ${
+                  loading || accessBlocked
+                    ? 'cursor-not-allowed bg-slate-400'
+                    : 'bg-gradient-to-br from-[#0066cc] to-[#00c896] hover:opacity-90'
+                }`}
               >
                 {loading ? 'Creating...' : 'Next: Upload Documents →'}
               </button>
@@ -413,62 +380,62 @@ export default function Onboarding() {
         )}
         {/* Step 2: Document Upload */}
         {step === 2 && (
-          <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-            <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>📄 Upload Your Documents</h1>
-            <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Start by uploading at least one document. You can add more anytime.</p>
+          <div className={cardClass}>
+            <h1 className="mb-4 text-3xl text-text">📄 Upload Your Documents</h1>
+            <p className="mb-8 text-text-muted">Start by uploading at least one document. You can add more anytime.</p>
 
-            {error && <div style={{ color: '#ef4444', padding: '1rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
+            {error && <div className="rounded-lg bg-red-100 p-4 text-red-500">{error}</div>}
 
-            <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+            <form onSubmit={handleFileUpload} className="mb-8 flex flex-col gap-4">
               <div>
-                <label htmlFor="title" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Document Title *</label>
+                <label htmlFor="title" className={labelClass}>Document Title *</label>
                 <input
                   id="title"
                   name="title"
                   type="text"
                   required
                   placeholder="e.g., Passport Copy"
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
+                  className={formFieldClass}
                 />
               </div>
 
               <div>
-                <label htmlFor="description" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Description</label>
+                <label htmlFor="description" className={labelClass}>Description</label>
                 <textarea
                   id="description"
                   name="description"
                   rows={2}
                   placeholder="Add any notes about this document"
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem' }}
+                  className={formFieldClass}
                 />
               </div>
 
               <div>
-                <label htmlFor="file" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>File *</label>
+                <label htmlFor="file" className={labelClass}>File *</label>
                 <input
                   id="file"
                   name="file"
                   type="file"
                   required
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '1rem', background: 'white' }}
+                  className={formFieldClass}
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                style={{ padding: '0.75rem', background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                className="rounded-lg bg-emerald-500 px-3 py-3 font-bold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? 'Uploading...' : '+ Add Document'}
               </button>
             </form>
 
             {documents.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h3 className="text-text" style={{ marginBottom: '1rem' }}>✅ Uploaded Documents ({documents.length})</h3>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
+              <div className="mb-8">
+                <h3 className="mb-4 text-text">✅ Uploaded Documents ({documents.length})</h3>
+                <ul className="list-none p-0">
                   {documents.map((doc) => (
-                    <li key={doc.id} style={{ padding: '1rem', background: '#f0fdf4', borderRadius: '8px', marginBottom: '0.5rem', border: '1px solid #bbf7d0' }}>
+                    <li key={doc.id} className="mb-2 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
                       <strong>{doc.title}</strong> - {(doc.file_size / 1024).toFixed(1)} KB
                     </li>
                   ))}
@@ -476,23 +443,27 @@ export default function Onboarding() {
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '1rem' }}>
+            <div className="flex gap-4">
               <button
                 onClick={() => setStep(1)}
-                style={{ flex: 1, padding: '1rem', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                className="flex-1 rounded-lg bg-slate-100 px-4 py-4 font-bold text-slate-700 transition hover:bg-slate-200"
               >
                 ← Back
               </button>
               <button
                 onClick={completeOnboarding}
                 disabled={documents.length === 0}
-                style={{ flex: 2, padding: '1rem', background: documents.length > 0 ? 'linear-gradient(135deg, #0066cc, #00c896)' : '#cbd5e1', color: 'white', border: 'none', borderRadius: '8px', cursor: documents.length > 0 ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
+                className={`flex-[2] rounded-lg px-4 py-4 font-bold text-white transition ${
+                  documents.length > 0
+                    ? 'bg-gradient-to-br from-[#0066cc] to-[#00c896] hover:opacity-90'
+                    : 'cursor-not-allowed bg-slate-300'
+                }`}
               >
                 Complete Setup →
               </button>
             </div>
             {documents.length === 0 && (
-              <p className="text-text-muted text-center text-sm" style={{ marginTop: '1rem' }}>Upload at least one document to continue</p>
+              <p className="mt-4 text-center text-sm text-text-muted">Upload at least one document to continue</p>
             )}
           </div>
         )}
