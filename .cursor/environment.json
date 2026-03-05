@@ -1,0 +1,18 @@
+{
+  "$schema": "https://www.cursor.com/schemas/environment.schema.json",
+  "name": "nextjs-cloud-agent",
+  "install": "npm install --no-audit --no-fund",
+  "terminals": [
+    {
+      "name": "Next.js app",
+      "command": "npm run dev",
+      "description": "Keeps the app running for API/smoke checks."
+    }
+  ],
+  "ports": [
+    {
+      "name": "Next.js dev server",
+      "port": 3001
+    }
+  ]
+}
