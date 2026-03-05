@@ -8,6 +8,7 @@ export default function AdminTestMode() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [testData, setTestData] = useState<any>(null)
+  const primaryButtonClass = 'rounded-lg bg-[#0066cc] px-3 py-3 text-white transition disabled:cursor-not-allowed disabled:opacity-70'
 
   useEffect(() => {
     checkAdmin()
@@ -155,60 +156,39 @@ export default function AdminTestMode() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#1e293b' }}>🧪 Admin Test Mode</h1>
-          <p style={{ color: '#64748b', marginBottom: '2rem' }}>Quickly generate test data to explore all features</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-sky-100 p-8 font-sans">
+      <div className="mx-auto max-w-[600px]">
+        <div className="rounded-xl bg-white p-8 shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
+          <h1 className="mb-2 text-3xl text-slate-800">🧪 Admin Test Mode</h1>
+          <p className="mb-8 text-slate-500">Quickly generate test data to explore all features</p>
 
           {message && (
             <div
-              style={{
-                padding: '1rem',
-                borderRadius: '8px',
-                marginBottom: '1.5rem',
-                background: message.includes('❌') ? '#fee2e2' : '#dcfce7',
-                color: message.includes('❌') ? '#991b1b' : '#166534',
-                borderLeft: `4px solid ${message.includes('❌') ? '#ef4444' : '#22c55e'}`,
-              }}
+              className={`mb-6 rounded-lg border-l-4 p-4 ${
+                message.includes('❌')
+                  ? 'border-red-500 bg-red-100 text-red-800'
+                  : 'border-green-500 bg-green-100 text-green-800'
+              }`}
             >
               {message}
             </div>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="flex flex-col gap-4">
             <button
               onClick={createFullTestEnvironment}
               disabled={loading}
-              style={{
-                padding: '1rem',
-                background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.7 : 1,
-              }}
+              className="rounded-lg bg-gradient-to-br from-[#0066cc] to-[#00c896] px-4 py-4 text-base font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70"
             >
               ⚡ Create Full Test Environment
             </button>
 
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <p style={{ color: '#475569', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Or build step by step:</p>
+            <div className="flex flex-col gap-3 border-t border-slate-200 pt-4">
+              <p className="mb-2 text-[0.9rem] text-slate-600">Or build step by step:</p>
               <button
                 onClick={createTestCase}
                 disabled={loading}
-                style={{
-                  padding: '0.75rem',
-                  background: '#0066cc',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.7 : 1,
-                }}
+                className={primaryButtonClass}
               >
                 1️⃣ Create Test Case
               </button>
@@ -216,15 +196,11 @@ export default function AdminTestMode() {
               <button
                 onClick={createTestDocuments}
                 disabled={loading || !testData?.case?.id}
-                style={{
-                  padding: '0.75rem',
-                  background: testData?.case?.id ? '#0066cc' : '#cbd5e1',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: loading || !testData?.case?.id ? 'not-allowed' : 'pointer',
-                  opacity: loading || !testData?.case?.id ? 0.7 : 1,
-                }}
+                className={
+                  !testData?.case?.id
+                    ? 'rounded-lg bg-slate-300 px-3 py-3 text-white transition disabled:cursor-not-allowed disabled:opacity-70'
+                    : primaryButtonClass
+                }
               >
                 2️⃣ Add Test Documents
               </button>
@@ -232,15 +208,11 @@ export default function AdminTestMode() {
               <button
                 onClick={createTestInvoice}
                 disabled={loading || !testData?.case?.id}
-                style={{
-                  padding: '0.75rem',
-                  background: testData?.case?.id ? '#0066cc' : '#cbd5e1',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: loading || !testData?.case?.id ? 'not-allowed' : 'pointer',
-                  opacity: loading || !testData?.case?.id ? 0.7 : 1,
-                }}
+                className={
+                  !testData?.case?.id
+                    ? 'rounded-lg bg-slate-300 px-3 py-3 text-white transition disabled:cursor-not-allowed disabled:opacity-70'
+                    : primaryButtonClass
+                }
               >
                 3️⃣ Add Test Invoice
               </button>
@@ -250,17 +222,7 @@ export default function AdminTestMode() {
               <button
                 onClick={goToTestCase}
                 disabled={loading}
-                style={{
-                  padding: '1rem',
-                  background: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  marginTop: '1rem',
-                }}
+                className="mt-4 rounded-lg bg-emerald-500 px-4 py-4 text-base font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 👉 Go to Test Case
               </button>
@@ -268,22 +230,14 @@ export default function AdminTestMode() {
 
             <button
               onClick={() => router.push('/admin/cases')}
-              style={{
-                padding: '0.75rem',
-                background: '#f1f5f9',
-                color: '#475569',
-                border: '1px solid #cbd5e1',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                marginTop: '1rem',
-              }}
+              className="mt-4 rounded-md border border-slate-300 bg-slate-100 px-3 py-3 text-slate-600 transition hover:bg-slate-200"
             >
               ← Back to Cases
             </button>
           </div>
 
-          <div style={{ marginTop: '2rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #3b82f6' }}>
-            <p style={{ color: '#475569', fontSize: '0.9rem', margin: 0 }}>
+          <div className="mt-8 rounded-lg border-l-4 border-blue-500 bg-slate-50 p-4">
+            <p className="m-0 text-[0.9rem] text-slate-600">
               💡 <strong>Tip:</strong> Use "Create Full Test Environment" to get everything set up at once, then explore the dashboard, document review, invoicing, and other admin features!
             </p>
           </div>

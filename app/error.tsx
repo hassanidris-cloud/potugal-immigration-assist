@@ -8,39 +8,21 @@ export default function Error({
   reset: () => void
 }) {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      fontFamily: 'sans-serif',
-      textAlign: 'center',
-    }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#1e293b' }}>
+    <div className="flex min-h-screen flex-col items-center justify-center p-8 text-center font-sans">
+      <h1 className="mb-2 text-3xl text-slate-800">
         Something went wrong
       </h1>
-      <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
+      <p className="mb-6 text-slate-500">
         An error occurred. Please try again.
       </p>
       <button
         type="button"
         onClick={reset}
-        style={{
-          padding: '0.5rem 1rem',
-          background: '#0066cc',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontWeight: 600,
-          marginRight: '0.5rem',
-        }}
+        className="mr-2 rounded-lg bg-[#0066cc] px-4 py-2 font-semibold text-white transition hover:opacity-90"
       >
         Try again
       </button>
-      <a href="/" style={{ color: '#0066cc', fontWeight: 600 }}>Go back home</a>
+      <a href="/" className="font-semibold text-[#0066cc] hover:underline">Go back home</a>
     </div>
   )
 }
