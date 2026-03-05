@@ -93,8 +93,8 @@ export default function CaseChecklist() {
   }
 
   /** True if at least one uploaded document matches this checklist item. Prefers explicit link (no bypass); falls back to title match for legacy docs. */
-  function itemHasMatchingDocument(item: { id: string; title: string }, docs: { case_checklist_id?: string | null; title: string }[]): boolean {
-    const hasExplicit = docs.some(doc => doc.case_checklist_id === item.id)
+  function itemHasMatchingDocument(item: { id?: string; title: string }, docs: { case_checklist_id?: string | null; title: string }[]): boolean {
+    const hasExplicit = item.id != null && docs.some(doc => doc.case_checklist_id === item.id)
     if (hasExplicit) return true
     return docs.some(doc => legacyTitleMatch(item.title, doc.title))
   }
