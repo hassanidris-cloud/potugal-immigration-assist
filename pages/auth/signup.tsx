@@ -87,16 +87,23 @@ export default function Signup() {
 
       if (authError) {
         const msg = authError.message || ''
+
+        // If Supabase says the confirmation email failed to send, we still
+        // treat signup as successful and show the verification screen,
+        // guiding the user to the "Resend verification" flow.
+        if (isEmailSendError || msg.toLowerCase().includes('confirmation') || msg.toLowerCase().includes('confirm')) {
+          setEmailSendFailed(true)
+          setVerificationSent(true)
+          setLoading(false)
+          return
+        }
+
         if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('registered') || msg.toLowerCase().includes('exists')) {
           setError('This email is already registered. Check your inbox for a verification link, or try signing in.')
           setLoading(false)
           return
         }
-        if (isEmailSendError) {
-          setError('Your account was created but we couldn\'t send the verification email right now. Use "Resend verification email" below to get a new link.')
-          setLoading(false)
-          return
-        }
+
         throw authError
       }
     } catch (err: any) {
@@ -152,11 +159,82 @@ export default function Signup() {
               Next Steps:
             </p>
             <ul style={{ margin: 0, paddingLeft: '1.5rem', color: '#64748b', fontSize: '0.9rem' }}>
-              <li>Check your email inbox (and spam folder)</li>
+              <li>Check your email inbox (and spam/junk folder)</li>
               <li>Click the verification link</li>
               <li>You'll be redirected to login</li>
               <li>Start your 14-day free trial!</li>
             </ul>
+          </div>
+
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: '0.75rem',
+            justifyContent: 'center',
+            marginBottom: '2rem'
+          }}>
+            <a
+              href="https://mail.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: '0.625rem 1.25rem',
+                borderRadius: '999px',
+                border: '1px solid #e2e8f0',
+                background: 'white',
+                color: '#1e293b',
+                fontSize: '0.9rem',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <span>📨</span>
+              <span>Open Gmail</span>
+            </a>
+
+            <a
+              href="https://outlook.live.com/mail"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: '0.625rem 1.25rem',
+                borderRadius: '999px',
+                border: '1px solid #e2e8f0',
+                background: 'white',
+                color: '#1e293b',
+                fontSize: '0.9rem',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <span>📧</span>
+              <span>Open Outlook</span>
+            </a>
+
+            <a
+              href="https://www.icloud.com/mail"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: '0.625rem 1.25rem',
+                borderRadius: '999px',
+                border: '1px solid #e2e8f0',
+                background: 'white',
+                color: '#1e293b',
+                fontSize: '0.9rem',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <span>📮</span>
+              <span>Open iCloud Mail</span>
+            </a>
           </div>
           <Link href="/auth/login" style={{ 
             display: 'inline-block',

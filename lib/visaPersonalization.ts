@@ -137,6 +137,37 @@ export const visaPersonalizations: Record<string, VisaPersonalization> = {
     ]
   },
 
+  "D8 Visa": {
+    visaType: "D8 Visa (Digital Nomad)",
+    welcomeMessage: "Welcome! You are applying for Portugal's D8 Digital Nomad visa to work remotely from Portugal.",
+    description: "The D8 visa allows remote workers and freelancers to live in Portugal while working for non-Portuguese clients or employers.",
+    processingTime: "60-90 days",
+    successRate: "80%",
+    keyRequirements: [
+      "Proof of remote work capability",
+      "Minimum income of €3,040/month (4x Portuguese minimum wage)",
+      "Last 3 months tax returns or income proof",
+      "Accommodation in Portugal"
+    ],
+    commonChallenges: [
+      "Proving consistent monthly income",
+      "Demonstrating remote work arrangement",
+      "Higher income requirement than standard D7"
+    ],
+    tips: [
+      "You need 4x the Portuguese minimum wage (currently €760)",
+      "Employment contracts should specify remote work is permitted",
+      "Freelancers need client contracts and invoices",
+      "Tax residency implications - consult with tax advisor"
+    ],
+    nextSteps: [
+      "Gather 3-6 months of income proof",
+      "Get employer letter confirming remote work agreement",
+      "Secure accommodation in Portugal",
+      "Prepare to show how you'll pay Portuguese taxes"
+    ]
+  },
+
   "D7 Digital Nomad": {
     visaType: "D7 Digital Nomad Visa",
     welcomeMessage: "Welcome! You are applying for Portugal's Digital Nomad visa to work remotely from Portugal.",
@@ -335,6 +366,7 @@ export function getVisaTypeColor(visaType: string): string {
     "D1 Visa": "bg-green-500",
     "D2 Visa": "bg-purple-500",
     "D3 Visa": "bg-indigo-500",
+    "D8 Visa": "bg-cyan-500",
     "D7 Digital Nomad": "bg-cyan-500",
     "Golden Visa": "bg-yellow-500",
     "D4 Student Visa": "bg-pink-500",

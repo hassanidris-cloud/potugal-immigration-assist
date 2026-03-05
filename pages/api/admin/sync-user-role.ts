@@ -1,34 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+import { requireAdminApi } from '../../../lib/apiAuth'
+import { getServiceSupabase } from '../../../lib/supabaseClient'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { userId, role, adminUserId } = req.body as { userId: string; role: 'client' | 'admin'; adminUserId?: string }
+  const admin = await requireAdminApi(req, res)
+  if (!admin) return
+
+  const { userId, role } = req.body as { userId: string; role: 'client' | 'admin'; adminUserId?: string }
 
   if (!userId || !role || !['client', 'admin'].includes(role)) {
     return res.status(400).json({ error: 'Missing or invalid userId / role (use client or admin)' })
   }
 
-  if (!supabaseUrl || !serviceRoleKey) {
-    return res.status(500).json({ error: 'Server configuration error' })
-  }
-
-  const supabase = createClient(supabaseUrl, serviceRoleKey)
+  const supabase = getServiceSupabase()
 
   try {
-    if (adminUserId) {
-      const { data: adminUser } = await supabase.from('users').select('role').eq('id', adminUserId).single()
-      if (adminUser?.role !== 'admin') {
-        return res.status(403).json({ error: 'Admin required' })
-      }
-    }
-
     await supabase.from('users').update({ role, updated_at: new Date().toISOString() }).eq('id', userId)
 
     const { data: authUser } = await supabase.auth.admin.getUserById(userId)

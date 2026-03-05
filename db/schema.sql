@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS public.cases (
 CREATE TABLE IF NOT EXISTS public.documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   case_id UUID NOT NULL REFERENCES public.cases(id) ON DELETE CASCADE,
+  case_checklist_id UUID REFERENCES public.case_checklist(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   description TEXT,
   file_path TEXT NOT NULL,
@@ -114,6 +115,7 @@ CREATE TABLE IF NOT EXISTS public.case_checklist (
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_cases_user_id ON public.cases(user_id);
 CREATE INDEX IF NOT EXISTS idx_documents_case_id ON public.documents(case_id);
+CREATE INDEX IF NOT EXISTS idx_documents_case_checklist_id ON public.documents(case_checklist_id);
 CREATE INDEX IF NOT EXISTS idx_comments_document_id ON public.comments(document_id);
 CREATE INDEX IF NOT EXISTS idx_appointments_case_id ON public.appointments(case_id);
 CREATE INDEX IF NOT EXISTS idx_invoices_case_id ON public.invoices(case_id);

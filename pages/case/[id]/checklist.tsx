@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
@@ -13,12 +13,31 @@ export default function CaseChecklist() {
   const [documents, setDocuments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [regenerating, setRegenerating] = useState(false)
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null)
+  const [uploadingItemId, setUploadingItemId] = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState('')
 
   useEffect(() => {
     if (id) {
       loadChecklist()
     }
   }, [id])
+
+  // Collapse upload panel if the expanded item now has an approved document
+  useEffect(() => {
+    if (!expandedItemId) return
+    const item = checklist.find((i) => i.id === expandedItemId)
+    if (!item) return
+    const itemDocs = documents.filter(doc => {
+      const titleLower = item.title.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
+      const firstWords = titleLower.split(/\s+/).slice(0, 3).join(' ')
+      const d = doc.title.toLowerCase()
+      return d.includes(firstWords)
+    })
+    if (itemDocs.some((d: { status?: string }) => d.status === 'approved')) {
+      setExpandedItemId(null)
+    }
+  }, [checklist, documents, expandedItemId])
 
   const loadChecklist = async () => {
     try {
@@ -73,15 +92,19 @@ export default function CaseChecklist() {
     }
   }
 
-  /** True if at least one uploaded document matches this checklist item (by title). */
-  function itemHasMatchingDocument(item: { title: string }, docs: { title: string }[]): boolean {
-    const titleLower = item.title.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
+  /** True if at least one uploaded document matches this checklist item. Prefers explicit link (no bypass); falls back to title match for legacy docs. */
+  function itemHasMatchingDocument(item: { id: string; title: string }, docs: { case_checklist_id?: string | null; title: string }[]): boolean {
+    const hasExplicit = docs.some(doc => doc.case_checklist_id === item.id)
+    if (hasExplicit) return true
+    return docs.some(doc => legacyTitleMatch(item.title, doc.title))
+  }
+
+  function legacyTitleMatch(itemTitle: string, docTitle: string): boolean {
+    const titleLower = itemTitle.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
     const firstWord = titleLower.split(/\s+/)[0] || ''
     const firstWords = titleLower.split(/\s+/).slice(0, 3).join(' ')
-    return docs.some(doc => {
-      const d = doc.title.toLowerCase()
-      return d.includes(firstWords) || (firstWord.length >= 2 && d.includes(firstWord))
-    })
+    const d = docTitle.toLowerCase()
+    return d.includes(firstWords) || (firstWord.length >= 2 && d.includes(firstWord))
   }
 
   const toggleChecklistItem = async (itemId: string, itemTitle: string, currentlyCompleted: boolean, item?: { title: string }) => {
@@ -110,6 +133,49 @@ export default function CaseChecklist() {
       loadChecklist()
     } catch (error) {
       console.error('Error updating checklist:', error)
+    }
+  }
+
+  const handleUploadForItem = async (e: FormEvent<HTMLFormElement>, item: { id: string; title: string }) => {
+    e.preventDefault()
+    const caseId = Array.isArray(id) ? id?.[0] : id
+    if (!caseId || typeof caseId !== 'string') {
+      setUploadError('Case not loaded. Please refresh the page and try again.')
+      return
+    }
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    const file = formData.get('file') as File
+    const description = (formData.get('description') as string) || ''
+    if (!file || !file.size) {
+      setUploadError('Please select a file first.')
+      return
+    }
+    setUploadError('')
+    setUploadingItemId(item.id)
+    try {
+      const apiFormData = new FormData()
+      apiFormData.append('file', file)
+      apiFormData.append('case_id', caseId)
+      apiFormData.append('case_checklist_id', item.id)
+      apiFormData.append('title', item.title)
+      apiFormData.append('description', description.trim())
+      const res = await fetch('/api/documents/upload-with-validation', {
+        method: 'POST',
+        body: apiFormData,
+        credentials: 'include',
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(data.reason || data.error || 'Upload failed')
+      }
+      form.reset()
+      setExpandedItemId(null)
+      await loadChecklist()
+    } catch (err: any) {
+      setUploadError(err?.message || 'Upload failed')
+    } finally {
+      setUploadingItemId(null)
     }
   }
 
@@ -178,8 +244,19 @@ export default function CaseChecklist() {
       }, {})
     : null
 
+  function docsForItem(item: { id: string; title: string }) {
+    return documents.filter((doc: { case_checklist_id?: string | null; title: string }) =>
+      doc.case_checklist_id === item.id || legacyTitleMatch(item.title, doc.title)
+    )
+  }
+
   function renderChecklistItem(item: typeof checklist[0], isCompleted: boolean, isRequired: boolean) {
     const hasDocument = itemHasMatchingDocument(item, documents)
+    const itemDocs = docsForItem(item)
+    const hasApprovedDoc = itemDocs.some((d: { status?: string }) => d.status === 'approved')
+    const isExpanded = expandedItemId === item.id
+    const isUploading = uploadingItemId === item.id
+    const canAddAnother = !hasApprovedDoc
     return (
       <div
         key={item.id}
@@ -188,62 +265,145 @@ export default function CaseChecklist() {
           padding: '1.5rem',
           borderRadius: '12px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-          border: isCompleted ? '2px solid #10b981' : '2px solid #e2e8f0',
+          border: isCompleted ? '2px solid #10b981' : isExpanded ? '2px solid #0066cc' : '2px solid #e2e8f0',
           display: 'flex',
-          alignItems: 'flex-start',
-          gap: '1rem',
+          flexDirection: 'column',
+          gap: '0.75rem',
           transition: 'all 0.3s',
           opacity: isRequired ? 1 : 0.95,
         }}
       >
-        <input
-          type="checkbox"
-          checked={isCompleted}
-          onChange={() => toggleChecklistItem(item.id, item.title, isCompleted, item)}
-          style={{
-            width: '24px',
-            height: '24px',
-            marginTop: '0.25rem',
-            cursor: 'pointer',
-            accentColor: isRequired ? '#10b981' : '#3b82f6',
-          }}
-        />
-        <div style={{ flex: 1 }}>
-          <h3
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+          <input
+            type="checkbox"
+            checked={isCompleted}
+            onChange={() => toggleChecklistItem(item.id, item.title, isCompleted, item)}
             style={{
-              margin: '0 0 0.5rem 0',
-              fontSize: '1.1rem',
-              textDecoration: isCompleted ? 'line-through' : 'none',
-              color: isCompleted ? '#94a3b8' : '#1e293b',
+              width: '24px',
+              height: '24px',
+              marginTop: '0.25rem',
+              cursor: 'pointer',
+              accentColor: isRequired ? '#10b981' : '#3b82f6',
             }}
-          >
-            {item.title}
-            {!isRequired && <span style={{ fontSize: '0.8rem', color: '#94a3b8', marginLeft: '0.35rem' }}>(Optional)</span>}
-          </h3>
-          {item.description && (
-            <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
-              {item.description}
-            </p>
-          )}
-          <div style={{ marginTop: '0.5rem' }}>
-            {hasDocument ? (
-              <span style={{ fontSize: '0.8rem', color: '#059669', background: '#d1fae5', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
-                📎 Document uploaded
-              </span>
-            ) : (
-              <span style={{ fontSize: '0.8rem', color: isRequired ? '#dc2626' : '#f59e0b', background: isRequired ? '#fee2e2' : '#fef3c7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
-                📤 {isRequired ? 'Upload required' : 'Not yet uploaded'}
-              </span>
+          />
+          <div style={{ flex: 1 }}>
+            <h3
+              style={{
+                margin: '0 0 0.5rem 0',
+                fontSize: '1.1rem',
+                textDecoration: isCompleted ? 'line-through' : 'none',
+                color: isCompleted ? '#94a3b8' : '#1e293b',
+              }}
+            >
+              {item.title}
+              {!isRequired && <span style={{ fontSize: '0.8rem', color: '#94a3b8', marginLeft: '0.35rem' }}>(Optional)</span>}
+            </h3>
+            {item.description && (
+              <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                {item.description}
+              </p>
+            )}
+            <div style={{ marginTop: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
+              {hasApprovedDoc ? (
+                <span style={{ fontSize: '0.8rem', color: '#059669', background: '#d1fae5', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                  ✓ Accepted by admin — no further uploads
+                </span>
+              ) : hasDocument ? (
+                <span style={{ fontSize: '0.8rem', color: '#059669', background: '#d1fae5', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                  📎 {itemDocs.length} document{itemDocs.length !== 1 ? 's' : ''} uploaded
+                </span>
+              ) : (
+                <span style={{ fontSize: '0.8rem', color: isRequired ? '#dc2626' : '#f59e0b', background: isRequired ? '#fee2e2' : '#fef3c7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                  📤 {isRequired ? 'Upload required' : 'Not yet uploaded'}
+                </span>
+              )}
+              {canAddAnother && (
+                <button
+                  type="button"
+                  onClick={() => { setExpandedItemId(isExpanded ? null : item.id); setUploadError('') }}
+                  style={{
+                    fontSize: '0.85rem',
+                    padding: '0.35rem 0.75rem',
+                    background: isExpanded ? '#e2e8f0' : 'linear-gradient(135deg, #0066cc, #00c896)',
+                    color: isExpanded ? '#475569' : 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {isExpanded ? 'Cancel' : hasDocument ? 'Add another' : 'Upload here'}
+                </button>
+              )}
+            </div>
+            {item.completed_at && isCompleted && (
+              <div style={{ marginTop: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#10b981', background: '#dcfce7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
+                  ✓ Completed {new Date(item.completed_at).toLocaleDateString()}
+                </span>
+              </div>
             )}
           </div>
-          {item.completed_at && isCompleted && (
-            <div style={{ marginTop: '0.5rem' }}>
-              <span style={{ fontSize: '0.8rem', color: '#10b981', background: '#dcfce7', padding: '0.25rem 0.75rem', borderRadius: '12px', fontWeight: '600' }}>
-                ✓ Completed {new Date(item.completed_at).toLocaleDateString()}
-              </span>
-            </div>
-          )}
         </div>
+
+        {isExpanded && canAddAnother && (
+          <div style={{ marginLeft: '2.5rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <form onSubmit={(e) => handleUploadForItem(e, item)} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {uploadError && expandedItemId === item.id && (
+                <div style={{ color: '#dc2626', fontSize: '0.875rem', padding: '0.5rem', background: '#fee2e2', borderRadius: '6px' }}>{uploadError}</div>
+              )}
+              <div>
+                <label htmlFor={`file-${item.id}`} style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>File</label>
+                <input
+                  id={`file-${item.id}`}
+                  name="file"
+                  type="file"
+                  required
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
+                />
+              </div>
+              <div>
+                <label htmlFor={`desc-${item.id}`} style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>Note (optional)</label>
+                <input
+                  id={`desc-${item.id}`}
+                  name="description"
+                  type="text"
+                  placeholder="e.g. Front page, certified copy"
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.9rem' }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isUploading}
+                style={{
+                  padding: '0.6rem 1.25rem',
+                  background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: isUploading ? 'not-allowed' : 'pointer',
+                  opacity: isUploading ? 0.7 : 1,
+                  alignSelf: 'flex-start',
+                }}
+              >
+                {isUploading ? 'Uploading...' : 'Upload'}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {itemDocs.length > 0 && (
+          <div style={{ marginLeft: '2.5rem', fontSize: '0.85rem', color: '#64748b' }}>
+            {itemDocs.map((doc) => (
+              <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                <span>📄 {doc.title}</span>
+                <span>— {new Date(doc.uploaded_at).toLocaleDateString()}</span>
+                {doc.status && <span style={{ color: doc.status === 'approved' ? '#059669' : doc.status === 'rejected' ? '#dc2626' : '#f59e0b' }}>({doc.status})</span>}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     )
   }

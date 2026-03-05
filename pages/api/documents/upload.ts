@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import { getServiceSupabase } from '../../../lib/supabaseClient'
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,10 +12,10 @@ export default async function handler(
 
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     const { caseId, userId, title, description, fileName, fileSize, mimeType } = req.body
 
-    if (!supabaseUrl || !serviceRoleKey) {
+    if (!supabaseUrl || !anonKey) {
       return res.status(500).json({ error: 'Missing Supabase credentials' })
     }
 
@@ -22,7 +23,26 @@ export default async function handler(
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
+    const server = createServerClient(supabaseUrl, anonKey, {
+      cookies: {
+        getAll() {
+          return Object.entries(req.cookies || {}).map(([name, value]) => ({ name, value: value || '', options: {} }))
+        },
+        setAll() {},
+      },
+    })
+    const { data: { user } } = await server.auth.getUser()
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+    const supabaseAdmin = getServiceSupabase()
+    const { data: profile } = await supabaseAdmin.from('users').select('role').eq('id', user.id).single()
+    const isAdmin = profile?.role === 'admin'
+    if (user.id !== userId && !isAdmin) {
+      return res.status(403).json({ error: 'Forbidden' })
+    }
+
+    const supabase = getServiceSupabase()
 
     // Create file path
     const fileExt = fileName?.split('.').pop() || 'bin'

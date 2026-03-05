@@ -13,6 +13,9 @@
 # production
 /build
 
+# upload temp (OCR API)
+/tmp
+
 # misc
 .DS_Store
 *.pem

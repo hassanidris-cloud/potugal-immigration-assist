@@ -301,7 +301,7 @@ export default function Onboarding() {
                   <optgroup label="Residency visa programs">
                     <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
                     <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
-                    <option value="D7 Digital Nomad">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
+                    <option value="D8 Visa">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
                   </optgroup>
                 </select>
                 {showVisaInfo && (

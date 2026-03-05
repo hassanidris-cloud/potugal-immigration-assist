@@ -9,6 +9,7 @@ export default function CaseDocuments() {
   const { id } = router.query
   const [caseData, setCaseData] = useState<any>(null)
   const [documents, setDocuments] = useState<any[]>([])
+  const [checklistItems, setChecklistItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
@@ -38,6 +39,15 @@ export default function CaseDocuments() {
         .order('uploaded_at', { ascending: false })
 
       setDocuments(docsData || [])
+
+      // Fetch checklist items for this case (visa-specific requirements)
+      const { data: checklistData } = await supabase
+        .from('case_checklist')
+        .select('*')
+        .eq('case_id', id)
+        .order('order_index')
+
+      setChecklistItems(checklistData || [])
     } catch (error) {
       console.error('Error loading documents:', error)
     } finally {
@@ -53,8 +63,12 @@ export default function CaseDocuments() {
 
     const formData = new FormData(form)
     const file = formData.get('file') as File
-    const title = formData.get('title') as string
-    const description = formData.get('description') as string
+    const title = (formData.get('title') as string) || ''
+    const description = (formData.get('description') as string) || ''
+    const checklistItemId = (formData.get('checklistItemId') as string) || ''
+
+    const selectedChecklistItem = checklistItems.find((item) => item.id === checklistItemId)
+    const isChecklistItemId = selectedChecklistItem != null
 
     if (!file) {
       setUploadError('Please select a file')
@@ -62,9 +76,28 @@ export default function CaseDocuments() {
       return
     }
 
+    const genericLabels: Record<string, string> = {
+      passport: 'Passport',
+      'passport-copies': 'Passport copies',
+      photos: 'Passport-size photos',
+      nif: 'NIF (Tax number)',
+      'criminal-record': 'Criminal record certificate',
+      'proof-of-income': 'Proof of income / bank statements',
+      'proof-of-accommodation': 'Proof of accommodation',
+      'travel-insurance': 'Travel insurance',
+      'application-form': 'Visa application form',
+      other: 'Other',
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
+
+      const documentTitle =
+        title.trim() ||
+        (selectedChecklistItem?.title as string | undefined) ||
+        (checklistItemId && genericLabels[checklistItemId]) ||
+        file.name
 
       // Upload file to storage
       const fileExt = file.name.split('.').pop()
@@ -77,12 +110,13 @@ export default function CaseDocuments() {
 
       if (storageError) throw storageError
 
-      // Create document record
+      // Create document record (explicit link when uploading for a checklist requirement)
       const { error: docError } = await supabase
         .from('documents')
         .insert({
           case_id: id,
-          title: title || file.name,
+          case_checklist_id: isChecklistItemId ? checklistItemId : null,
+          title: documentTitle,
           description,
           file_path: filePath,
           file_name: file.name,
@@ -105,6 +139,12 @@ export default function CaseDocuments() {
       setUploading(false)
     }
   }
+
+  const submittedTitles = new Set(documents.map((d) => (d.title || '').trim()).filter(Boolean))
+  const hasDocumentForItem = (item: { id: string; title: string }) =>
+    documents.some((d: { case_checklist_id?: string | null; title: string }) =>
+      d.case_checklist_id === item.id || (d.title || '').trim() === (item.title || '').trim()
+    )
 
   if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>
 
@@ -150,6 +190,70 @@ export default function CaseDocuments() {
               rows={3}
               style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
             />
+          </div>
+
+          <div>
+            <label htmlFor="checklistItemId" style={{ display: 'block', marginBottom: '0.5rem' }}>
+              {checklistItems.length > 0 ? 'Checklist Item / Document Type' : 'Document Type'}
+            </label>
+            {checklistItems.length > 0 ? (
+              <select
+                id="checklistItemId"
+                name="checklistItemId"
+                required
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
+              >
+                <option value="">Select the document this upload is for</option>
+                {checklistItems.map((item) => {
+                  const submitted = hasDocumentForItem(item)
+                  return (
+                    <option key={item.id} value={item.id}>
+                      {item.required !== false ? '⭐ ' : ''}{item.title}
+                      {item.phase ? ` — ${item.phase}` : ''}
+                      {submitted ? ' ✓ Uploaded' : ''}
+                    </option>
+                  )
+                })}
+              </select>
+            ) : (
+              (() => {
+                const genericLabels: Record<string, string> = {
+                  passport: 'Passport',
+                  'passport-copies': 'Passport copies',
+                  photos: 'Passport-size photos',
+                  nif: 'NIF (Tax number)',
+                  'criminal-record': 'Criminal record certificate',
+                  'proof-of-income': 'Proof of income / bank statements',
+                  'proof-of-accommodation': 'Proof of accommodation',
+                  'travel-insurance': 'Travel insurance',
+                  'application-form': 'Visa application form',
+                  other: 'Other',
+                }
+                return (
+                  <select
+                    id="checklistItemId"
+                    name="checklistItemId"
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
+                  >
+                    <option value="">Select document type (optional)</option>
+                    {Object.entries(genericLabels).map(([value, label]) => {
+                      const submitted = submittedTitles.has(label)
+                      return (
+                        <option key={value} value={value}>
+                          {label}{submitted ? ' ✓ Uploaded' : ''}
+                        </option>
+                      )
+                    })}
+                  </select>
+                )
+              })()
+            )}
+            {checklistItems.length === 0 && (
+              <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                For visa-specific requirements, generate your checklist on the{' '}
+                <Link href={`/case/${id}/checklist`} style={{ color: '#2563eb', textDecoration: 'underline' }}>Checklist page</Link>.
+              </p>
+            )}
           </div>
 
           <div>

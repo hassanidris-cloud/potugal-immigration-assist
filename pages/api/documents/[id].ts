@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { requireAdminApi } from '../../../lib/apiAuth'
 import { getServiceSupabase } from '../../../lib/supabaseClient'
 
 export default async function handler(
@@ -23,6 +24,8 @@ export default async function handler(
       res.status(500).json({ error: error.message })
     }
   } else if (req.method === 'PATCH') {
+    const admin = await requireAdminApi(req, res)
+    if (!admin) return
     try {
       const { status, admin_notes, reviewed_by } = req.body
 

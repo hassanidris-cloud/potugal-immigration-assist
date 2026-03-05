@@ -15,7 +15,6 @@ export default function EditCase() {
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
   const [targetVisaDate, setTargetVisaDate] = useState('')
   const [initialVisaType, setInitialVisaType] = useState('')
-  const [regenerateChecklist, setRegenerateChecklist] = useState(true)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -66,6 +65,10 @@ export default function EditCase() {
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault()
+    if (!id || typeof id !== 'string') {
+      setError('Case not loaded. Please wait and try again.')
+      return
+    }
     setError('')
     setSaving(true)
 
@@ -84,17 +87,27 @@ export default function EditCase() {
 
       const visaChanged = initialVisaType && initialVisaType !== visaType
 
-      if (visaChanged && regenerateChecklist) {
+      if (visaChanged) {
         await supabase
           .from('case_checklist')
           .delete()
           .eq('case_id', id)
 
-        const { data: templates } = await supabase
+        let { data: templates } = await supabase
           .from('checklist_templates')
           .select('*')
           .eq('visa_type', visaType)
           .order('order_index')
+
+        // DB may have D8 checklist under "D7 Digital Nomad"; use as fallback for D8 Visa
+        if ((!templates || templates.length === 0) && visaType === 'D8 Visa') {
+          const { data: fallback } = await supabase
+            .from('checklist_templates')
+            .select('*')
+            .eq('visa_type', 'D7 Digital Nomad')
+            .order('order_index')
+          templates = fallback
+        }
 
         if (templates && templates.length > 0) {
           const checklistItems = templates.map((template: any) => ({
@@ -167,7 +180,7 @@ export default function EditCase() {
                 <optgroup label="Residency visa programs">
                   <option value="D2 Visa">D2 Visa - Entrepreneurs, freelancers, independent service providers</option>
                   <option value="D7 Visa">D7 Visa - Passive income (retirees, pensioners, rental/dividend income)</option>
-                  <option value="D7 Digital Nomad">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
+                  <option value="D8 Visa">D8 Visa (Digital Nomad) - Remote workers (min €3,040/month income)</option>
                 </optgroup>
               </select>
             </div>
@@ -202,16 +215,8 @@ export default function EditCase() {
             {initialVisaType && initialVisaType !== visaType && (
               <div style={{ padding: '1rem', background: '#fef3c7', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
                 <p style={{ margin: 0, color: '#92400e', fontSize: '0.95rem' }}>
-                  You changed the visa type. We can regenerate your checklist to match the new visa requirements.
+                  Your checklist will be automatically refreshed to match the new visa requirements when you save.
                 </p>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', color: '#92400e' }}>
-                  <input
-                    type="checkbox"
-                    checked={regenerateChecklist}
-                    onChange={(e) => setRegenerateChecklist(e.target.checked)}
-                  />
-                  Regenerate checklist for the new visa type
-                </label>
               </div>
             )}
 

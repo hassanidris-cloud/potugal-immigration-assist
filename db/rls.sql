@@ -41,6 +41,9 @@ CREATE POLICY "Users can view own cases" ON public.cases
 CREATE POLICY "Users can create own cases" ON public.cases
   FOR INSERT WITH CHECK (user_id = auth.uid());
 
+CREATE POLICY "Users can update own cases" ON public.cases
+  FOR UPDATE USING (user_id = auth.uid());
+
 CREATE POLICY "Admins can update any case" ON public.cases
   FOR UPDATE USING (is_admin());
 

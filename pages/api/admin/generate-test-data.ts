@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { requireAdminApi } from '../../../lib/apiAuth'
+import { getServiceSupabase } from '../../../lib/supabaseClient'
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,40 +10,19 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  const admin = await requireAdminApi(req, res)
+  if (!admin) return
+
+  const supabase = getServiceSupabase()
+
   try {
-    // Create Supabase client with service role key (this bypasses RLS)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-    if (!supabaseUrl || !serviceRoleKey) {
-      return res.status(500).json({ error: 'Missing Supabase credentials' })
-    }
-
-    const supabase = createClient(supabaseUrl, serviceRoleKey)
-
     const { type, userId } = req.body
 
-    if (!userId) {
+    if (!userId || typeof userId !== 'string') {
       return res.status(400).json({ error: 'userId is required' })
     }
 
-    // Verify user is admin (using service role, RLS bypassed)
-    console.log('Checking if user is admin:', userId)
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .single()
-
-    console.log('User check result:', { user, userError })
-
-    if (userError || !user || user.role !== 'admin') {
-      return res.status(403).json({ error: 'Admin access required' })
-    }
-
     if (type === 'full') {
-      // Create case
-      console.log('Creating test case for user:', userId)
       const { data: caseData, error: caseError } = await supabase
         .from('cases')
         .insert({
