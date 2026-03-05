@@ -9,6 +9,7 @@ ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.checklist_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.case_checklist ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.case_checklist_documents ENABLE ROW LEVEL SECURITY;
 
 -- Helper function to check if user is admin
 CREATE OR REPLACE FUNCTION public.is_admin()
@@ -138,4 +139,40 @@ CREATE POLICY "Users can delete checklist in own cases" ON public.case_checklist
   );
 
 CREATE POLICY "Admins can manage all checklists" ON public.case_checklist
+  FOR ALL USING (is_admin());
+
+-- Explicit checklist-document link policies
+CREATE POLICY "Users can view checklist document links in own cases" ON public.case_checklist_documents
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.cases
+      WHERE cases.id = case_checklist_documents.case_id
+      AND (cases.user_id = auth.uid() OR is_admin())
+    )
+  );
+
+CREATE POLICY "Users can link documents to own checklist items" ON public.case_checklist_documents
+  FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1
+      FROM public.cases
+      JOIN public.case_checklist ON case_checklist.case_id = cases.id
+      JOIN public.documents ON documents.case_id = cases.id
+      WHERE cases.id = case_checklist_documents.case_id
+      AND case_checklist.id = case_checklist_documents.checklist_item_id
+      AND documents.id = case_checklist_documents.document_id
+      AND (cases.user_id = auth.uid() OR is_admin())
+    )
+  );
+
+CREATE POLICY "Users can delete checklist document links in own cases" ON public.case_checklist_documents
+  FOR DELETE USING (
+    EXISTS (
+      SELECT 1 FROM public.cases
+      WHERE cases.id = case_checklist_documents.case_id
+      AND (cases.user_id = auth.uid() OR is_admin())
+    )
+  );
+
+CREATE POLICY "Admins can manage all checklist document links" ON public.case_checklist_documents
   FOR ALL USING (is_admin());

@@ -111,6 +111,20 @@ CREATE TABLE IF NOT EXISTS public.case_checklist (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Explicit document-to-checklist links (prevents title-based bypasses)
+CREATE TABLE IF NOT EXISTS public.case_checklist_documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  case_id UUID NOT NULL REFERENCES public.cases(id) ON DELETE CASCADE,
+  checklist_item_id UUID NOT NULL REFERENCES public.case_checklist(id) ON DELETE CASCADE,
+  document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
+  ocr_status TEXT NOT NULL DEFAULT 'pending' CHECK (ocr_status IN ('pending', 'matched', 'mismatch', 'unavailable', 'error')),
+  ocr_confidence NUMERIC(5,2),
+  ocr_excerpt TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (document_id),
+  UNIQUE (checklist_item_id, document_id)
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_cases_user_id ON public.cases(user_id);
 CREATE INDEX IF NOT EXISTS idx_documents_case_id ON public.documents(case_id);
@@ -118,3 +132,6 @@ CREATE INDEX IF NOT EXISTS idx_comments_document_id ON public.comments(document_
 CREATE INDEX IF NOT EXISTS idx_appointments_case_id ON public.appointments(case_id);
 CREATE INDEX IF NOT EXISTS idx_invoices_case_id ON public.invoices(case_id);
 CREATE INDEX IF NOT EXISTS idx_case_checklist_case_id ON public.case_checklist(case_id);
+CREATE INDEX IF NOT EXISTS idx_case_checklist_documents_case_id ON public.case_checklist_documents(case_id);
+CREATE INDEX IF NOT EXISTS idx_case_checklist_documents_checklist_item_id ON public.case_checklist_documents(checklist_item_id);
+CREATE INDEX IF NOT EXISTS idx_case_checklist_documents_document_id ON public.case_checklist_documents(document_id);
