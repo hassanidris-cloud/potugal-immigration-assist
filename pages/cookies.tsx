@@ -34,7 +34,7 @@ export default function Cookies() {
             <p style={{ color: '#475569', lineHeight: 1.7 }}>You can change your choice using the cookie banner or your browser settings. Blocking essential cookies may affect how the site works.</p>
           </section>
           <p style={{ marginTop: '2rem' }}>
-            <Link href="/" style={{ color: '#0066cc', fontWeight: '600' }}>← Back to home</Link>
+            <Link href="/" style={{ color: '#1e293b', fontWeight: '600' }}>← Back to home</Link>
           </p>
         </main>
       </div>

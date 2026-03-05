@@ -156,7 +156,7 @@ export default function AdminInvoices() {
                       style={{
                         padding: '0.4rem 0.75rem',
                         marginRight: '0.5rem',
-                        background: '#0066cc',
+                        background: '#1e293b',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',

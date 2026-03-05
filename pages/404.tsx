@@ -23,7 +23,7 @@ export default function NotFound() {
       <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
         This page could not be found.
       </p>
-      <a href="/" style={{ color: '#0066cc', fontWeight: '600' }}>Go back home</a>
+      <a href="/" style={{ color: '#1e293b', fontWeight: '600' }}>Go back home</a>
     </div>
     </>
   )

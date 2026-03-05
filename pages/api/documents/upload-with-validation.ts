@@ -141,7 +141,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         upsert: false,
       })
     if (storageError) {
-      return res.status(500).json({ error: 'Storage upload failed', detail: storageError.message })
+      const reason = storageError.message || 'Storage upload failed'
+      return res.status(500).json({ error: 'Storage upload failed', reason })
     }
 
     const { data: docData, error: docError } = await supabase
@@ -161,12 +162,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .select()
       .single()
     if (docError) {
-      return res.status(500).json({ error: 'Failed to create document record', detail: docError.message })
+      const reason = docError.message || 'Failed to save document record'
+      return res.status(500).json({ error: 'Failed to create document record', reason })
     }
     return res.status(200).json({ success: true, document: docData })
   } catch (err: any) {
     console.error('Upload with validation error:', err)
-    return res.status(500).json({ error: err.message || 'Upload failed' })
+    const reason = err.message || 'Upload failed'
+    const isSize = /size|large|limit|25\s*MB/i.test(reason)
+    const message = isSize ? `File too large. Maximum size is 25 MB. (${reason})` : reason
+    return res.status(500).json({ error: 'Upload failed', reason: message })
   } finally {
     if (tmpFilePath && fs.existsSync(tmpFilePath)) {
       try { fs.unlinkSync(tmpFilePath) } catch {}

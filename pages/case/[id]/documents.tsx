@@ -134,7 +134,18 @@ export default function CaseDocuments() {
       // Reset form
       if (form) form.reset()
     } catch (error: any) {
-      setUploadError(error.message || 'Upload failed')
+      const msg = error?.message || ''
+      let reason = msg
+      if (/payload too large|file size|size limit|413/i.test(msg)) {
+        reason = 'File is too large. Please use a file under 50 MB.'
+      } else if (/duplicate|already exists|unique/i.test(msg)) {
+        reason = 'A file with this name already exists. Try renaming or choose another file.'
+      } else if (/not authenticated|unauthorized|401|403/i.test(msg)) {
+        reason = 'Session may have expired. Please refresh the page and try again.'
+      } else if (!msg) {
+        reason = 'Upload failed. Please check your connection and try again.'
+      }
+      setUploadError(reason)
     } finally {
       setUploading(false)
     }
@@ -154,9 +165,9 @@ export default function CaseDocuments() {
         <title>Documents — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div className="case-page-wrap" style={{ fontFamily: 'var(--font-sans, sans-serif)' }}>
+    <div className="case-page-wrap" style={{ fontFamily: 'var(--font-sans, sans-serif)', background: '#f5f5f5', minHeight: '100vh', padding: '2rem 0' }}>
       <header style={{ marginBottom: '2rem' }}>
-        <Link href="/dashboard" style={{ color: '#0070f3' }}>← Back to Dashboard</Link>
+        <Link href="/dashboard" style={{ color: '#1e293b', textDecoration: 'none' }}>← Back to Dashboard</Link>
         <h1 style={{ marginTop: '1rem' }}>Case Documents</h1>
         {caseData && (
           <div>
@@ -166,8 +177,8 @@ export default function CaseDocuments() {
         )}
       </header>
 
-      <section style={{ marginBottom: '2rem', padding: '1.5rem', background: '#f9f9f9', borderRadius: '5px' }}>
-        <h2>Upload Document</h2>
+      <section style={{ marginBottom: '2rem', padding: '1.5rem', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1e293b', marginBottom: '1rem' }}>Upload document</h2>
         <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {uploadError && <div style={{ color: 'red', padding: '0.5rem', background: '#fee', borderRadius: '5px' }}>{uploadError}</div>}
           
@@ -270,9 +281,9 @@ export default function CaseDocuments() {
           <button
             type="submit"
             disabled={uploading}
-            style={{ padding: '0.75rem', background: '#0070f3', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            style={{ padding: '0.75rem 1rem', background: uploading ? '#9ca3af' : '#1e293b', color: 'white', border: 'none', borderRadius: '6px', cursor: uploading ? 'not-allowed' : 'pointer', fontWeight: '500' }}
           >
-            {uploading ? 'Uploading...' : 'Upload Document'}
+            {uploading ? 'Uploading…' : 'Upload document'}
           </button>
         </form>
       </section>
@@ -304,7 +315,7 @@ export default function CaseDocuments() {
       </section>
 
       <section style={{ marginTop: '2rem' }}>
-        <Link href={`/case/${id}/checklist`} style={{ color: '#0070f3' }}>View Checklist</Link>
+        <Link href={`/case/${id}/checklist`} style={{ color: '#1e293b', textDecoration: 'none', fontWeight: '500' }}>View checklist</Link>
       </section>
     </div>
     </>

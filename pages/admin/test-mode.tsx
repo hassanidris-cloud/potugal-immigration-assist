@@ -155,7 +155,7 @@ export default function AdminTestMode() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: '2rem', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '600px', margin: '0 auto' }}>
         <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#1e293b' }}>🧪 Admin Test Mode</h1>
@@ -182,7 +182,7 @@ export default function AdminTestMode() {
               disabled={loading}
               style={{
                 padding: '1rem',
-                background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
+                background: '#1e293b',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
@@ -202,7 +202,7 @@ export default function AdminTestMode() {
                 disabled={loading}
                 style={{
                   padding: '0.75rem',
-                  background: '#0066cc',
+                  background: '#1e293b',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',
@@ -218,7 +218,7 @@ export default function AdminTestMode() {
                 disabled={loading || !testData?.case?.id}
                 style={{
                   padding: '0.75rem',
-                  background: testData?.case?.id ? '#0066cc' : '#cbd5e1',
+                  background: testData?.case?.id ? '#1e293b' : '#cbd5e1',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',
@@ -234,7 +234,7 @@ export default function AdminTestMode() {
                 disabled={loading || !testData?.case?.id}
                 style={{
                   padding: '0.75rem',
-                  background: testData?.case?.id ? '#0066cc' : '#cbd5e1',
+                  background: testData?.case?.id ? '#1e293b' : '#cbd5e1',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',

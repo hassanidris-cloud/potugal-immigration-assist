@@ -151,7 +151,7 @@ export default function Onboarding() {
         <title>Create case — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', padding: '2rem', fontFamily: 'sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: '2rem', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         {/* Progress */}
         <div style={{ marginBottom: '2rem' }}>
@@ -160,13 +160,13 @@ export default function Onboarding() {
             <span className="text-text-muted font-bold">2. View checklist & upload</span>
           </div>
           <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-            <div style={{ width: '50%', height: '100%', background: 'linear-gradient(90deg, #0066cc, #00c896)', transition: 'width 0.3s' }} />
+            <div style={{ width: '50%', height: '100%', background: '#1e293b', transition: 'width 0.3s' }} />
           </div>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.5rem' }}>After you create your case, you&apos;ll see your personalized checklist with each document type—upload from there.</p>
         </div>
 
         {/* Case Details */}
-        <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
             <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚀 Let&apos;s Create Your Case</h1>
             <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Tell us about your immigration plans to Portugal</p>
 
@@ -279,7 +279,7 @@ export default function Onboarding() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                       <span style={{
                         padding: '0.5rem 1rem',
-                        background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                        background: '#1e293b',
                         color: 'white',
                         borderRadius: '20px',
                         fontSize: '0.875rem',
@@ -360,7 +360,7 @@ export default function Onboarding() {
                 style={{
                   width: '100%',
                   padding: '1rem',
-                  background: (loading || accessBlocked) ? '#94a3b8' : 'linear-gradient(135deg, #0066cc, #00c896)',
+                  background: (loading || accessBlocked) ? '#9ca3af' : '#1e293b',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',

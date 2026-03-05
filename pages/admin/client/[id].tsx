@@ -215,7 +215,7 @@ export default function AdminClientInvoices() {
                     onClick={() => handleDownload(inv.id)}
                     style={{
                       padding: '0.35rem 0.75rem',
-                      background: '#0066cc',
+                      background: '#1e293b',
                       color: 'white',
                       border: 'none',
                       borderRadius: '6px',

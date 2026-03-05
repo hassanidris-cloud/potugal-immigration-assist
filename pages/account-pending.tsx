@@ -39,7 +39,7 @@ export default function AccountPending() {
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)',
+        background: '#f5f5f5',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -53,7 +53,7 @@ export default function AccountPending() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)',
+      background: '#f5f5f5',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -64,13 +64,12 @@ export default function AccountPending() {
         maxWidth: '480px',
         width: '100%',
         background: 'white',
-        borderRadius: '20px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
+        borderRadius: '8px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         padding: '2.5rem',
         textAlign: 'center',
       }}>
-        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📋</div>
-        <h1 style={{ fontSize: '1.75rem', margin: '0 0 0.5rem 0', color: '#1e293b' }}>
+        <h1 style={{ fontSize: '1.35rem', margin: '0 0 0.5rem 0', color: '#1e293b', fontWeight: '600' }}>
           Account pending
         </h1>
         <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
@@ -85,12 +84,12 @@ export default function AccountPending() {
             style={{
               display: 'block',
               padding: '1rem 1.5rem',
-              background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
+              background: '#1e293b',
               color: 'white',
               textDecoration: 'none',
-              borderRadius: '10px',
-              fontWeight: '600',
-              fontSize: '1rem',
+              borderRadius: '6px',
+              fontWeight: '500',
+              fontSize: '0.9375rem',
             }}
           >
             Contact us
@@ -100,13 +99,13 @@ export default function AccountPending() {
             style={{
               display: 'block',
               padding: '0.75rem',
-              color: '#0066cc',
+              color: '#1e293b',
               textDecoration: 'none',
-              fontWeight: '600',
-              fontSize: '0.95rem',
+              fontWeight: '500',
+              fontSize: '0.9rem',
             }}
           >
-            ← Back to home
+            Back to home
           </Link>
           <button
             type="button"

@@ -87,33 +87,10 @@ export default function ResetPassword() {
   }
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', 
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      fontFamily: 'sans-serif'
-    }}>
-      <div style={{ 
-        maxWidth: '450px',
-        width: '100%',
-        background: 'white',
-        borderRadius: '20px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
-        padding: '3rem'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ 
-            fontSize: '2.5rem', 
-            margin: '0 0 0.5rem 0',
-            background: 'linear-gradient(135deg, #0066cc 0%, #00c896 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            WINIT
-          </h1>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', fontFamily: 'sans-serif' }}>
+      <div style={{ maxWidth: '420px', width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', padding: '2.5rem' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h1 style={{ fontSize: '1.5rem', margin: '0 0 0.25rem 0', color: '#1e293b', fontWeight: '600' }}>WINIT</h1>
           <h2 style={{ fontSize: '1.5rem', margin: '0 0 0.5rem 0', color: '#1e293b' }}>
             {step === 'email' && 'Reset Password'}
             {step === 'otp' && 'Enter Code'}
@@ -149,9 +126,9 @@ export default function ResetPassword() {
             <button
               type="submit"
               disabled={loading}
-              style={{ width: '100%', padding: '0.75rem', background: '#0066cc', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              style={{ width: '100%', padding: '0.75rem', background: loading ? '#9ca3af' : '#1e293b', color: 'white', border: 'none', borderRadius: '6px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '500' }}
             >
-              {loading ? 'Sending...' : 'Send Code'}
+              {loading ? 'Sending…' : 'Send code'}
             </button>
           </form>
         )}
@@ -179,9 +156,9 @@ export default function ResetPassword() {
             <button
               type="submit"
               disabled={loading || otp.length !== 6}
-              style={{ width: '100%', padding: '0.75rem', background: '#0066cc', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              style={{ width: '100%', padding: '0.75rem', background: (loading || otp.length !== 6) ? '#9ca3af' : '#1e293b', color: 'white', border: 'none', borderRadius: '6px', cursor: (loading || otp.length !== 6) ? 'not-allowed' : 'pointer', fontWeight: '500' }}
             >
-              {loading ? 'Verifying...' : 'Verify'}
+              {loading ? 'Verifying…' : 'Verify'}
             </button>
           </form>
         )}
@@ -223,17 +200,15 @@ export default function ResetPassword() {
             <button
               type="submit"
               disabled={loading}
-              style={{ width: '100%', padding: '0.75rem', background: '#0066cc', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              style={{ width: '100%', padding: '0.75rem', background: loading ? '#9ca3af' : '#1e293b', color: 'white', border: 'none', borderRadius: '6px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '500' }}
             >
-              {loading ? 'Resetting...' : 'Reset Password'}
+              {loading ? 'Resetting…' : 'Reset password'}
             </button>
           </form>
         )}
 
         <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-          <Link href="/auth/login" style={{ color: '#0066cc', textDecoration: 'none', fontSize: '0.9rem' }}>
-            Back to login
-          </Link>
+          <Link href="/auth/login" style={{ color: '#1e293b', textDecoration: 'none', fontSize: '0.875rem', fontWeight: '500' }}>Back to sign in</Link>
         </div>
       </div>
     </div>

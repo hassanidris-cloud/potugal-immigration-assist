@@ -167,13 +167,14 @@ export default function CaseChecklist() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        throw new Error(data.reason || data.error || 'Upload failed')
+        const message = data.reason || data.detail || data.error || 'Upload failed'
+        throw new Error(message)
       }
       form.reset()
       setExpandedItemId(null)
       await loadChecklist()
     } catch (err: any) {
-      setUploadError(err?.message || 'Upload failed')
+      setUploadError(err?.message || 'Upload failed. Please try again or use a different file.')
     } finally {
       setUploadingItemId(null)
     }
@@ -265,7 +266,7 @@ export default function CaseChecklist() {
           padding: '1.5rem',
           borderRadius: '12px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-          border: isCompleted ? '2px solid #10b981' : isExpanded ? '2px solid #0066cc' : '2px solid #e2e8f0',
+          border: isCompleted ? '2px solid #10b981' : isExpanded ? '2px solid #374151' : '2px solid #e2e8f0',
           display: 'flex',
           flexDirection: 'column',
           gap: '0.75rem',
@@ -324,7 +325,7 @@ export default function CaseChecklist() {
                   style={{
                     fontSize: '0.85rem',
                     padding: '0.35rem 0.75rem',
-                    background: isExpanded ? '#e2e8f0' : 'linear-gradient(135deg, #0066cc, #00c896)',
+                    background: isExpanded ? '#e2e8f0' : '#1e293b',
                     color: isExpanded ? '#475569' : 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -377,17 +378,17 @@ export default function CaseChecklist() {
                 disabled={isUploading}
                 style={{
                   padding: '0.6rem 1.25rem',
-                  background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                  background: isUploading ? '#9ca3af' : '#1e293b',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '8px',
-                  fontWeight: '600',
+                  borderRadius: '6px',
+                  fontWeight: '500',
                   cursor: isUploading ? 'not-allowed' : 'pointer',
-                  opacity: isUploading ? 0.7 : 1,
+                  opacity: 1,
                   alignSelf: 'flex-start',
                 }}
               >
-                {isUploading ? 'Uploading...' : 'Upload'}
+                {isUploading ? 'Uploading…' : 'Upload'}
               </button>
             </form>
           </div>
@@ -414,38 +415,36 @@ export default function CaseChecklist() {
         <title>Checklist — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div className="case-page-wrap" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', fontFamily: 'var(--font-sans, sans-serif)' }}>
+    <div className="case-page-wrap" style={{ background: '#f5f5f5', fontFamily: 'var(--font-sans, sans-serif)' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        {/* Header */}
         <header style={{ marginBottom: '2rem' }}>
-          <Link href="/dashboard" style={{ color: '#0066cc', fontSize: '0.95rem', textDecoration: 'none' }}>← Back to Dashboard</Link>
+          <Link href="/dashboard" style={{ color: '#1e293b', fontSize: '0.95rem', textDecoration: 'none' }}>← Back to Dashboard</Link>
         </header>
 
-        {/* Case Info Card */}
-        <div style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
+        <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-            <h1 style={{ margin: 0, fontSize: '2rem', color: '#1e293b' }}>📋 Your Document Checklist</h1>
+            <h1 style={{ margin: 0, fontSize: '1.5rem', color: '#1e293b', fontWeight: '600' }}>Document checklist</h1>
           </div>
           
           {caseData && (
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
               <span style={{ 
-                padding: '0.5rem 1rem', 
-                background: 'linear-gradient(135deg, #0066cc, #00c896)', 
+                padding: '0.4rem 0.875rem', 
+                background: '#1e293b', 
                 color: 'white', 
-                borderRadius: '20px', 
+                borderRadius: '6px', 
                 fontSize: '0.875rem', 
-                fontWeight: '600' 
+                fontWeight: '500' 
               }}>
                 {caseData.visa_type}
               </span>
               <span style={{ 
-                padding: '0.5rem 1rem', 
+                padding: '0.4rem 0.875rem', 
                 background: '#f1f5f9', 
                 color: '#475569', 
-                borderRadius: '20px', 
+                borderRadius: '6px', 
                 fontSize: '0.875rem', 
-                fontWeight: '600',
+                fontWeight: '500',
                 textTransform: 'capitalize'
               }}>
                 {caseData.status.replace('_', ' ')}
@@ -453,17 +452,16 @@ export default function CaseChecklist() {
             </div>
           )}
 
-          {/* Progress Bar */}
           <div style={{ marginBottom: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1e293b' }}>Overall Progress</span>
-              <span style={{ fontSize: '1.1rem', fontWeight: '700', color: '#0066cc' }}>{progress}%</span>
+              <span style={{ fontSize: '1rem', fontWeight: '600', color: '#1e293b' }}>Overall progress</span>
+              <span style={{ fontSize: '1rem', fontWeight: '600', color: '#1e293b' }}>{progress}%</span>
             </div>
-            <div style={{ width: '100%', height: '12px', background: '#e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '10px', background: '#e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
               <div style={{ 
                 width: `${progress}%`, 
                 height: '100%', 
-                background: 'linear-gradient(90deg, #0066cc, #00c896)', 
+                background: '#1e293b', 
                 transition: 'width 0.5s ease',
                 borderRadius: '6px'
               }} />
@@ -486,26 +484,24 @@ export default function CaseChecklist() {
         {/* Checklist Items */}
         <div style={{ marginBottom: '2rem' }}>
           {checklist.length === 0 ? (
-            <div style={{ background: 'white', padding: '3rem', borderRadius: '16px', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📄</div>
-              <p style={{ fontSize: '1.1rem', color: '#64748b', margin: '0 0 1.5rem 0' }}>
+            <div style={{ background: 'white', padding: '2.5rem', borderRadius: '8px', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+              <p style={{ fontSize: '1rem', color: '#64748b', margin: '0 0 1.25rem 0' }}>
                 No checklist items found for your {caseData?.visa_type}.
               </p>
               <button
                 onClick={regenerateChecklist}
                 disabled={regenerating}
                 style={{
-                  padding: '0.9rem 2rem',
-                  background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                  padding: '0.75rem 1.5rem',
+                  background: regenerating ? '#9ca3af' : '#1e293b',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '8px',
-                  fontWeight: '600',
-                  cursor: regenerating ? 'not-allowed' : 'pointer',
-                  opacity: regenerating ? 0.7 : 1
+                  borderRadius: '6px',
+                  fontWeight: '500',
+                  cursor: regenerating ? 'not-allowed' : 'pointer'
                 }}
               >
-                {regenerating ? '⏳ Generating...' : '🔄 Generate Checklist'}
+                {regenerating ? 'Generating…' : 'Generate checklist'}
               </button>
             </div>
           ) : (
@@ -549,51 +545,50 @@ export default function CaseChecklist() {
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <Link 
             href={`/case/${id}/documents`} 
             style={{ 
-              padding: '1rem 2rem', 
-              background: 'linear-gradient(135deg, #0066cc, #00c896)', 
+              padding: '0.75rem 1.5rem', 
+              background: '#1e293b', 
               color: 'white', 
-              borderRadius: '8px', 
+              borderRadius: '6px', 
               textDecoration: 'none', 
-              fontWeight: '600',
-              boxShadow: '0 4px 12px rgba(0, 102, 204, 0.3)',
-              transition: 'transform 0.2s'
+              fontWeight: '500',
+              fontSize: '0.9375rem'
             }}
           >
-            📤 Upload Documents
+            Upload documents
           </Link>
           <Link 
             href={`/case/${id}/edit`} 
             style={{ 
-              padding: '1rem 2rem', 
-              background: '#f8fafc', 
-              color: '#475569', 
-              border: '2px solid #e2e8f0',
-              borderRadius: '8px', 
+              padding: '0.75rem 1.5rem', 
+              background: 'white', 
+              color: '#374151', 
+              border: '1px solid #d1d5db',
+              borderRadius: '6px', 
               textDecoration: 'none', 
-              fontWeight: '600'
+              fontWeight: '500',
+              fontSize: '0.9375rem'
             }}
           >
-            ✏️ Edit Case
+            Edit case
           </Link>
           <Link 
             href="/dashboard" 
             style={{ 
-              padding: '1rem 2rem', 
+              padding: '0.75rem 1.5rem', 
               background: 'white', 
-              color: '#0066cc', 
-              border: '2px solid #0066cc',
-              borderRadius: '8px', 
+              color: '#1e293b', 
+              border: '1px solid #1e293b',
+              borderRadius: '6px', 
               textDecoration: 'none', 
-              fontWeight: '600',
-              transition: 'all 0.2s'
+              fontWeight: '500',
+              fontSize: '0.9375rem'
             }}
           >
-            Return to Dashboard
+            Return to dashboard
           </Link>
         </div>
       </div>

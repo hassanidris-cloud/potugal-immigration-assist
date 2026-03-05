@@ -119,13 +119,12 @@ export default function WhyPortugal() {
                   style={{
                     display: 'inline-block',
                     padding: '0.875rem 2rem',
-                    background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                    background: '#1e293b',
                     color: 'white',
                     textDecoration: 'none',
-                    borderRadius: '12px',
-                    fontWeight: '700',
-                    fontSize: '1rem',
-                    boxShadow: '0 4px 16px rgba(0, 102, 204, 0.3)',
+                    borderRadius: '8px',
+                    fontWeight: '500',
+                    fontSize: '0.9375rem',
                   }}
                 >
                   Check your eligibility →

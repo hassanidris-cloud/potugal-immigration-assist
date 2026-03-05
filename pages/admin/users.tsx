@@ -128,7 +128,7 @@ export default function AdminUsers() {
                         href={`/admin/client/${u.id}`}
                         style={{
                           padding: '0.4rem 0.75rem',
-                          background: '#0066cc',
+                          background: '#1e293b',
                           color: 'white',
                           textDecoration: 'none',
                           borderRadius: '6px',

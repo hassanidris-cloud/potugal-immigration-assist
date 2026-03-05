@@ -39,11 +39,11 @@ export default function Privacy() {
           </section>
           <section style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#1e293b' }}>5. Cookies</h2>
-            <p style={{ color: '#475569', lineHeight: 1.7 }}>We use essential cookies to run the site and optional cookies if you accept our cookie banner. See our <Link href="/cookies" style={{ color: '#0066cc' }}>Cookie Policy</Link> for details.</p>
+            <p style={{ color: '#475569', lineHeight: 1.7 }}>We use essential cookies to run the site and optional cookies if you accept our cookie banner. See our <Link href="/cookies" style={{ color: '#1e293b' }}>Cookie Policy</Link> for details.</p>
           </section>
           <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: '2rem' }}>Replace this with your full legal privacy policy. This is placeholder text.</p>
           <p style={{ marginTop: '2rem' }}>
-            <Link href="/" style={{ color: '#0066cc', fontWeight: '600' }}>← Back to home</Link>
+            <Link href="/" style={{ color: '#1e293b', fontWeight: '600' }}>← Back to home</Link>
           </p>
         </main>
       </div>

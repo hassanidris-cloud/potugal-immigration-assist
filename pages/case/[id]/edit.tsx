@@ -156,10 +156,10 @@ export default function EditCase() {
         <title>Edit case — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div className="case-page-wrap" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)', fontFamily: 'var(--font-sans, sans-serif)' }}>
+    <div className="case-page-wrap" style={{ background: '#f5f5f5', fontFamily: 'var(--font-sans, sans-serif)' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <header style={{ marginBottom: '2rem' }}>
-          <Link href={`/case/${id}/checklist`} style={{ color: '#0066cc', textDecoration: 'none' }}>← Back to Checklist</Link>
+          <Link href={`/case/${id}/checklist`} style={{ color: '#1e293b', textDecoration: 'none' }}>← Back to Checklist</Link>
           <h1 style={{ marginTop: '1rem', fontSize: '2rem', color: '#1e293b' }}>Edit Case Details</h1>
           <p style={{ color: '#64748b' }}>Update your visa type or personal details at any time.</p>
         </header>
@@ -170,7 +170,7 @@ export default function EditCase() {
           </div>
         )}
 
-        <form onSubmit={handleSave} style={{ background: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+        <form onSubmit={handleSave} style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
               <label htmlFor="caseType" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Case Type</label>
@@ -253,26 +253,26 @@ export default function EditCase() {
                 type="submit"
                 disabled={saving}
                 style={{
-                  padding: '0.9rem 2rem',
-                  background: 'linear-gradient(135deg, #0066cc, #00c896)',
+                  padding: '0.75rem 1.5rem',
+                  background: saving ? '#9ca3af' : '#1e293b',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '8px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
+                  borderRadius: '6px',
+                  fontWeight: '500',
+                  cursor: saving ? 'not-allowed' : 'pointer',
                 }}
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? 'Saving…' : 'Save changes'}
               </button>
               <Link
                 href={`/case/${id}/checklist`}
                 style={{
-                  padding: '0.9rem 2rem',
+                  padding: '0.75rem 1.5rem',
                   background: 'white',
-                  color: '#0066cc',
-                  border: '2px solid #0066cc',
-                  borderRadius: '8px',
-                  fontWeight: '600',
+                  color: '#374151',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontWeight: '500',
                   textDecoration: 'none',
                 }}
               >

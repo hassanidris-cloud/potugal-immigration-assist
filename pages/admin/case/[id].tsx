@@ -99,7 +99,7 @@ export default function AdminCaseReview() {
         <Link href="/admin/cases" style={{ color: '#0070f3' }}>← Back to client cases</Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
           <h1 style={{ margin: 0 }}>Case details</h1>
-          <Link href={`/case/${id}/edit`} style={{ padding: '0.5rem 1rem', background: '#0070f3', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' }}>
+          <Link href={`/case/${id}/edit`} style={{ padding: '0.5rem 1rem', background: '#1e293b', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' }}>
             Edit case (visa type, country, etc.)
           </Link>
         </div>

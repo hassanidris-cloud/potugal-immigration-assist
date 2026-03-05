@@ -43,7 +43,7 @@ export default function Terms() {
           </section>
           <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: '2rem' }}>Replace this with your full legal terms. This is placeholder text.</p>
           <p style={{ marginTop: '2rem' }}>
-            <Link href="/" style={{ color: '#0066cc', fontWeight: '600' }}>← Back to home</Link>
+            <Link href="/" style={{ color: '#1e293b', fontWeight: '600' }}>← Back to home</Link>
           </p>
         </main>
       </div>

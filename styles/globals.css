@@ -9,12 +9,12 @@
 /* ========== Logo colors: blue, green, yellow, black ========== */
 :root {
   --nav-bg: #000000;         /* Logo black: nav/footer */
-  --primary: #2563eb;        /* Logo blue: buttons, main links */
-  --primary-dark: #1d4ed8;   /* Darker blue: hover */
-  --primary-light: #3b82f6; /* Lighter blue: gradients */
-  --accent: #2563eb;         /* Same as primary */
-  --logo-green: #22c55e;     /* Logo green: secondary accent, success */
-  --logo-yellow: #eab308;    /* Logo yellow: highlights, badges */
+  --primary: #1e293b;        /* Slate: buttons, main links (professional) */
+  --primary-dark: #0f172a;  /* Darker slate: hover */
+  --primary-light: #334155;  /* Muted slate */
+  --accent: #1e293b;         /* Same as primary */
+  --logo-green: #22c55e;     /* Success states */
+  --logo-yellow: #eab308;    /* Highlights, badges */
   --secondary: #f0fdf4;      /* Very light green tint: section divider */
   --background: #FFFFFF;
   --card: #FFFFFF;
@@ -765,7 +765,7 @@ textarea {
   color: var(--text);
   letter-spacing: -0.02em;
 }
-.dashboard-brand span { color: var(--primary); }
+.dashboard-brand span { color: #1e293b; }
 .dashboard-nav {
   display: flex;
   align-items: center;
@@ -794,13 +794,12 @@ textarea {
   color: var(--text);
 }
 .dashboard-btn-primary {
-  background: var(--primary);
+  background: #1e293b;
   color: #fff;
 }
 .dashboard-btn-primary:hover {
-  background: var(--primary-dark);
+  background: #0f172a;
   color: #fff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 .dashboard-btn-danger {
   background: #dc2626;
@@ -814,12 +813,12 @@ textarea {
   padding: 2rem 0 3rem;
 }
 .dashboard-hero {
-  background: linear-gradient(135deg, var(--primary) 0%, #1d8f4a 100%);
+  background: #1e293b;
   color: #fff;
   border-radius: var(--radius-md);
   padding: 2rem 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 @media (max-width: 639px) {
   .dashboard-hero {
@@ -891,7 +890,7 @@ textarea {
   font-size: 1.75rem;
   font-weight: 800;
   font-family: var(--font-display);
-  color: var(--primary);
+  color: #1e293b;
 }
 .dashboard-stat-value.success { color: var(--success); }
 .dashboard-stat-value.warning { color: var(--warning); }
@@ -909,8 +908,7 @@ textarea {
 }
 .dashboard-case-card:hover {
   box-shadow: var(--shadow-elevated);
-  border-color: var(--primary);
-  transform: translateY(-2px);
+  border-color: #64748b;
 }
 .dashboard-case-card-title,
 .dashboard-invoice-row span:first-child {
@@ -974,14 +972,14 @@ textarea {
   }
 }
 .dashboard-case-actions a.dashboard-btn-ghost {
-  background: #f0f9ff;
-  color: var(--primary);
-  border: 1px solid #bae6fd;
+  background: #f8fafc;
+  color: #374151;
+  border: 1px solid #e2e8f0;
 }
 .dashboard-case-actions a.dashboard-btn-ghost:hover {
-  background: var(--primary);
+  background: #1e293b;
   color: #fff;
-  border-color: var(--primary);
+  border-color: #1e293b;
 }
 .dashboard-empty {
   background: #fff;
@@ -1023,7 +1021,7 @@ textarea {
   width: 48px;
   height: 48px;
   border: 4px solid #e2e8f0;
-  border-top-color: var(--primary);
+  border-top-color: #1e293b;
   border-radius: 50%;
   animation: dashboard-spin 0.8s linear infinite;
   margin: 0 auto 1.25rem;
@@ -1064,7 +1062,7 @@ textarea {
   border: 1px solid #e2e8f0;
 }
 .dashboard-visa-tip-item strong { font-size: 0.8rem; color: var(--text-muted); }
-.dashboard-visa-tip-item span { font-size: 1rem; font-weight: 600; color: var(--primary); }
+.dashboard-visa-tip-item span { font-size: 1rem; font-weight: 600; color: #1e293b; }
 .dashboard-invoice-row {
   display: flex;
   align-items: center;
@@ -1112,14 +1110,12 @@ textarea {
   transition: all 0.2s;
 }
 .dashboard-workspace a:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
-  transform: translateY(-2px);
+  border-color: #1e293b;
+  color: #1e293b;
 }
-.dashboard-workspace a.workspace-cases { border-left: 4px solid var(--primary); }
-.dashboard-workspace a.workspace-users { border-left: 4px solid var(--success); }
-.dashboard-workspace a.workspace-invoices { border-left: 4px solid #ec4899; }
+.dashboard-workspace a.workspace-cases { border-left: 4px solid #1e293b; }
+.dashboard-workspace a.workspace-users { border-left: 4px solid #64748b; }
+.dashboard-workspace a.workspace-invoices { border-left: 4px solid #64748b; }
 
 .final-cta-section .defesa-cta-box .section-heading {
   color: #0f172a;
