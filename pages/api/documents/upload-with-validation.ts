@@ -5,8 +5,8 @@ import fs from 'fs'
 import path from 'path'
 import { createWorker } from 'tesseract.js'
 import pdfParse from 'pdf-parse'
-import { getServiceSupabase } from '../../../../lib/supabaseClient'
-import { validateDocumentText } from '../../../../lib/documentValidation'
+import { getServiceSupabase } from '../../../lib/supabaseClient'
+import { validateDocumentText } from '../../../lib/documentValidation'
 
 export const config = {
   api: { bodyParser: false },
