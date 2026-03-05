@@ -120,3 +120,19 @@ CREATE INDEX IF NOT EXISTS idx_comments_document_id ON public.comments(document_
 CREATE INDEX IF NOT EXISTS idx_appointments_case_id ON public.appointments(case_id);
 CREATE INDEX IF NOT EXISTS idx_invoices_case_id ON public.invoices(case_id);
 CREATE INDEX IF NOT EXISTS idx_case_checklist_case_id ON public.case_checklist(case_id);
+
+-- Reviews (only signed-in users can write)
+CREATE TABLE IF NOT EXISTS public.reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON public.reviews(user_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON public.reviews(created_at DESC);
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can view reviews" ON public.reviews FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can create own review" ON public.reviews FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own review" ON public.reviews FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own review" ON public.reviews FOR DELETE USING (auth.uid() = user_id);

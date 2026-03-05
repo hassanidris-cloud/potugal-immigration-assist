@@ -3,6 +3,7 @@ import Head from 'next/head'
 import type { CSSProperties } from 'react'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import AuthNavLinks from '../components/AuthNavLinks'
+import ReviewsSection from '../components/ReviewsSection'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
 
@@ -338,8 +339,7 @@ export default function Home() {
               </div>
             </div>
 
-            <h2 className="defesa-section-title home-trusted-reviews-title" style={{ color: '#fff' }}>What Clients Say</h2>
-            <p className="defesa-section-sub" style={{ color: 'rgba(255,255,255,0.85)', marginBottom: 0 }}>We&apos;re building our success stories. Get in touch to start yours.</p>
+            <ReviewsSection />
           </div>
         </section>
 
