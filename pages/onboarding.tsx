@@ -165,9 +165,8 @@ export default function Onboarding() {
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.5rem' }}>After you create your case, you&apos;ll see your personalized checklist with each document type—upload from there.</p>
         </div>
 
-        {/* Step 1: Case Details */}
-        {step === 1 && (
-          <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        {/* Case Details */}
+        <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
             <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚀 Let&apos;s Create Your Case</h1>
             <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Tell us about your immigration plans to Portugal</p>
 
@@ -374,7 +373,6 @@ export default function Onboarding() {
               </button>
             </form>
           </div>
-        )}
       </div>
     </div>
     </>
