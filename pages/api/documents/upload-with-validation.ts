@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createServerClient } from '@supabase/ssr'
-import formidable from 'formidable'
+import formidable, { type File as FormidableFile } from 'formidable'
 import fs from 'fs'
 import path from 'path'
 import { createWorker } from 'tesseract.js'
@@ -12,7 +12,7 @@ export const config = {
   api: { bodyParser: false },
 }
 
-async function parseForm(req: NextApiRequest): Promise<{ fields: Record<string, string>; file: formidable.File }> {
+async function parseForm(req: NextApiRequest): Promise<{ fields: Record<string, string>; file: FormidableFile }> {
   const uploadDir = path.join(process.cwd(), 'tmp', 'uploads')
   if (!fs.existsSync(path.dirname(uploadDir))) {
     fs.mkdirSync(path.dirname(uploadDir), { recursive: true })
@@ -32,7 +32,7 @@ async function parseForm(req: NextApiRequest): Promise<{ fields: Record<string, 
   for (const [k, v] of Object.entries(fields || {})) {
     fieldMap[k] = Array.isArray(v) ? v[0] : v || ''
   }
-  return { fields: fieldMap, file: file as formidable.File }
+  return { fields: fieldMap, file: file as FormidableFile }
 }
 
 async function extractTextFromFile(filePath: string, mimeType?: string): Promise<string> {
