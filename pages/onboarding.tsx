@@ -151,8 +151,8 @@ export default function Onboarding() {
         <title>Create case — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: '1rem 0', fontFamily: 'sans-serif', boxSizing: 'border-box' }}>
+      <div className="onboarding-wrap">
         {/* Progress */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
@@ -166,7 +166,7 @@ export default function Onboarding() {
         </div>
 
         {/* Case Details */}
-        <div className="card animate-fade-in" style={{ background: 'white', padding: '2.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+        <div className="card animate-fade-in onboarding-card" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
             <h1 className="text-text" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚀 Let&apos;s Create Your Case</h1>
             <p className="text-text-muted" style={{ marginBottom: '2rem' }}>Tell us about your immigration plans to Portugal</p>
 
@@ -294,7 +294,7 @@ export default function Onboarding() {
                     <p className="text-text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
                       {visaInfo.description}
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <div className="onboarding-grid-2" style={{ marginBottom: '1.5rem' }}>
                       <div style={{ padding: '0.75rem', background: 'white', borderRadius: '8px' }}>
                         <div className="text-text-muted text-xs" style={{ marginBottom: '0.25rem' }}>Processing Time</div>
                         <div className="text-text font-semibold">⏱️ {visaInfo.processingTime}</div>

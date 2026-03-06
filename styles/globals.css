@@ -1117,6 +1117,123 @@ textarea {
 .dashboard-workspace a.workspace-users { border-left: 4px solid #64748b; }
 .dashboard-workspace a.workspace-invoices { border-left: 4px solid #64748b; }
 
+/* ========== Auth & app mobile responsiveness ========== */
+.auth-page-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  font-family: var(--font-sans, sans-serif);
+  box-sizing: border-box;
+}
+@media (min-width: 640px) {
+  .auth-page-wrap { padding: 2rem; }
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+}
+.auth-card-wide {
+  max-width: 500px;
+}
+@media (max-width: 767px) {
+  .auth-card,
+  .auth-card-wide { max-width: 100%; }
+}
+
+/* Signup: two-column card stacks on mobile */
+.signup-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1000px;
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.signup-card-branding {
+  background: #1e293b;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+}
+.signup-card-form { padding: 2.5rem; box-sizing: border-box; }
+@media (max-width: 767px) {
+  .signup-card {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+  .signup-card-branding {
+    padding: 1.25rem 1.5rem;
+    order: 0;
+  }
+  .signup-card-branding ul { margin-bottom: 0 !important; }
+  .signup-card-branding p:last-child { margin-top: 1rem !important; }
+  .signup-card-form { padding: 1.5rem 1.25rem; order: 1; }
+}
+.signup-card-form input,
+.signup-card-form select,
+.signup-card-form button[type="button"] { max-width: 100%; box-sizing: border-box; }
+.signup-card-form label + div[style*="display: flex"] { flex-wrap: wrap; }
+.signup-card-form label + div input { min-width: 0; }
+
+/* Auth inner card padding on mobile */
+.auth-inner { padding: 2.5rem; box-sizing: border-box; }
+@media (max-width: 480px) {
+  .auth-inner { padding: 1.25rem 1rem; }
+}
+
+/* Case pages & onboarding: content width and padding */
+.case-content-wrap,
+.onboarding-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+@media (min-width: 640px) {
+  .case-content-wrap { padding: 0 1.5rem; }
+  .onboarding-wrap { padding: 0 1.5rem; }
+}
+.case-content-wrap { max-width: 900px; }
+.onboarding-wrap { max-width: 800px; }
+.case-edit-wrap { max-width: 800px; }
+.case-card,
+.onboarding-card {
+  padding: 2rem;
+  box-sizing: border-box;
+}
+@media (max-width: 480px) {
+  .case-card,
+  .onboarding-card { padding: 1.25rem 1rem; }
+}
+
+/* Onboarding two-column grid (e.g. processing time / success rate) stacks on mobile */
+.onboarding-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 480px) {
+  .onboarding-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* Admin tables: horizontal scroll on small screens */
+.admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 767px) {
+  .admin-table-wrap { margin: 0 -1rem; padding: 0 1rem; }
+}
+
+/* Settings page mobile */
+.settings-page-wrap { min-height: 100vh; background: #f5f5f5; padding: 1rem; box-sizing: border-box; }
+.settings-inner { padding: 1.25rem 1rem; box-sizing: border-box; }
+@media (min-width: 640px) {
+  .settings-page-wrap { padding: 2rem; }
+  .settings-inner { padding: 2rem; }
+}
+
 .final-cta-section .defesa-cta-box .section-heading {
   color: #0f172a;
   font-size: clamp(1.5rem, 3.5vw, 2rem);

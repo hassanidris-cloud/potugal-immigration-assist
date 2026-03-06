@@ -130,7 +130,8 @@ export default function AdminInvoices() {
         {clientInvoices.length === 0 ? (
           <p style={{ color: '#64748b' }}>No client PDF invoices yet. Upload from Clients & contacts → Invoice per client.</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="admin-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '520px' }}>
             <thead>
               <tr style={{ background: '#f9f9f9', textAlign: 'left' }}>
                 <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Client</th>
@@ -184,6 +185,7 @@ export default function AdminInvoices() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
 
@@ -192,7 +194,8 @@ export default function AdminInvoices() {
         {invoices.length === 0 ? (
           <p>No invoices found.</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="admin-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '560px' }}>
             <thead>
               <tr style={{ background: '#f9f9f9', textAlign: 'left' }}>
                 <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Client</th>
@@ -244,6 +247,7 @@ export default function AdminInvoices() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </div>

@@ -48,18 +48,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       // New user, create profile
       console.log('Step 3: Creating user profile')
-      
-      const { data: newUser, error: userError } = await supabaseAdmin
+      const basePayload = {
+        id: userId,
+        email,
+        full_name: fullName || email.split('@')[0],
+        phone: phone || null,
+        role: 'client',
+      }
+      let insertPayload: Record<string, unknown> = { ...basePayload, visa_type: visaType || null }
+      let { data: newUser, error: userError } = await supabaseAdmin
         .from('users')
-        .insert({
-          id: userId,
-          email,
-          full_name: fullName || email.split('@')[0],
-          phone: phone || null,
-          role: 'client',
-          visa_type: visaType || null,
-        })
+        .insert(insertPayload)
         .select()
+
+      // If insert fails with schema/cache error (e.g. visa_type column missing), retry without visa_type
+      const isSchemaCacheError = userError?.message && (
+        /schema cache|cache|column.*visa_type|visa_type.*column/i.test(userError.message)
+      )
+      if (userError && isSchemaCacheError) {
+        console.warn('User insert failed (likely visa_type column missing), retrying without visa_type:', userError.message)
+        insertPayload = { ...basePayload }
+        const retry = await supabaseAdmin.from('users').insert(insertPayload).select()
+        userError = retry.error
+        newUser = retry.data
+      }
 
       if (userError) {
         console.error('User insert error:', userError)

@@ -165,10 +165,11 @@ export default function CaseDocuments() {
         <title>Documents — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div className="case-page-wrap" style={{ fontFamily: 'var(--font-sans, sans-serif)', background: '#f5f5f5', minHeight: '100vh', padding: '2rem 0' }}>
-      <header style={{ marginBottom: '2rem' }}>
+    <div className="case-page-wrap" style={{ fontFamily: 'var(--font-sans, sans-serif)', background: '#f5f5f5', minHeight: '100vh', padding: '1rem 0', boxSizing: 'border-box' }}>
+      <div className="case-content-wrap">
+      <header style={{ marginBottom: '1.5rem' }}>
         <Link href="/dashboard" style={{ color: '#1e293b', textDecoration: 'none' }}>← Back to Dashboard</Link>
-        <h1 style={{ marginTop: '1rem' }}>Case Documents</h1>
+        <h1 style={{ marginTop: '0.75rem', fontSize: '1.35rem' }}>Case Documents</h1>
         {caseData && (
           <div>
             <p><strong>Case Type:</strong> {caseData.case_type}</p>
@@ -177,7 +178,7 @@ export default function CaseDocuments() {
         )}
       </header>
 
-      <section style={{ marginBottom: '2rem', padding: '1.5rem', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+      <section className="case-card" style={{ marginBottom: '1.5rem', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1e293b', marginBottom: '1rem' }}>Upload document</h2>
         <form onSubmit={handleFileUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {uploadError && <div style={{ color: 'red', padding: '0.5rem', background: '#fee', borderRadius: '5px' }}>{uploadError}</div>}
@@ -314,9 +315,10 @@ export default function CaseDocuments() {
         )}
       </section>
 
-      <section style={{ marginTop: '2rem' }}>
+      <section style={{ marginTop: '1.5rem' }}>
         <Link href={`/case/${id}/checklist`} style={{ color: '#1e293b', textDecoration: 'none', fontWeight: '500' }}>View checklist</Link>
       </section>
+      </div>
     </div>
     </>
   )

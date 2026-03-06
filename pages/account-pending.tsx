@@ -37,38 +37,15 @@ export default function AccountPending() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#f5f5f5',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'sans-serif',
-      }}>
-        <p style={{ fontSize: '1.1rem', color: '#64748b' }}>Loading...</p>
+      <div className="auth-page-wrap" style={{ background: '#f5f5f5' }}>
+        <p style={{ fontSize: '1rem', color: '#64748b' }}>Loading…</p>
       </div>
     )
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#f5f5f5',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      fontFamily: 'sans-serif',
-    }}>
-      <div style={{
-        maxWidth: '480px',
-        width: '100%',
-        background: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        padding: '2.5rem',
-        textAlign: 'center',
-      }}>
+    <div className="auth-page-wrap" style={{ background: '#f5f5f5' }}>
+      <div className="auth-card auth-card-wide auth-inner" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.35rem', margin: '0 0 0.5rem 0', color: '#1e293b', fontWeight: '600' }}>
           Account pending
         </h1>

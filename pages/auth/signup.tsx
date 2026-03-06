@@ -116,24 +116,8 @@ export default function Signup() {
   // Show verification success message
   if (verificationSent) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#f5f5f5',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        fontFamily: 'sans-serif'
-      }}>
-        <div style={{
-          maxWidth: '500px',
-          width: '100%',
-          background: 'white',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-          padding: '2.5rem',
-          textAlign: 'center'
-        }}>
+      <div className="auth-page-wrap" style={{ background: '#f5f5f5' }}>
+        <div className="auth-card auth-card-wide auth-inner" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', textAlign: 'center' }}>
           <h1 style={{ fontSize: '1.5rem', margin: '0 0 1rem 0', color: '#1e293b', fontWeight: '600' }}>Check Your Email</h1>
           <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: emailSendFailed ? '1rem' : '1.5rem' }}>
             We've sent a verification link to <strong>{email}</strong>. Check your inbox and click the link to verify your account.
@@ -186,34 +170,10 @@ export default function Signup() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#f5f5f5',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      fontFamily: 'sans-serif'
-    }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        maxWidth: '1000px',
-        width: '100%',
-        background: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        overflow: 'hidden'
-      }}>
+    <div className="auth-page-wrap" style={{ background: '#f5f5f5' }}>
+      <div className="signup-card">
         {/* Left Side - Branding */}
-        <div style={{
-          background: '#1e293b',
-          padding: '2.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          color: 'white'
-        }}>
+        <div className="signup-card-branding">
           <div style={{ marginBottom: '2rem' }}>
             <h1 style={{ fontSize: '1.75rem', margin: '0 0 0.5rem 0', fontWeight: '600', letterSpacing: '0.02em' }}>WINIT</h1>
             <p style={{ fontSize: '0.95rem', margin: 0, opacity: 0.9 }}>
@@ -251,7 +211,7 @@ export default function Signup() {
         </div>
 
         {/* Right Side - Form */}
-        <div style={{ padding: '2.5rem' }}>
+        <div className="signup-card-form">
           <div style={{ marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '1.35rem', margin: '0 0 0.25rem 0', color: '#1e293b', fontWeight: '600' }}>Create account</h2>
             <p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>

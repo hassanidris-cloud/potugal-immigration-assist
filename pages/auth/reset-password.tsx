@@ -87,8 +87,8 @@ export default function ResetPassword() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <div style={{ maxWidth: '420px', width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', padding: '2.5rem' }}>
+    <div className="auth-page-wrap" style={{ background: '#f5f5f5' }}>
+      <div className="auth-card auth-inner" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
         <div style={{ marginBottom: '1.5rem' }}>
           <h1 style={{ fontSize: '1.5rem', margin: '0 0 0.25rem 0', color: '#1e293b', fontWeight: '600' }}>WINIT</h1>
           <h2 style={{ fontSize: '1.5rem', margin: '0 0 0.5rem 0', color: '#1e293b' }}>

@@ -106,8 +106,8 @@ export default function AuthCallback() {
 
   if (status === 'error') {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', fontFamily: 'sans-serif' }}>
-        <div style={{ maxWidth: '420px', width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', padding: '2.5rem', textAlign: 'center' }}>
+      <div className="auth-page-wrap" style={{ background: '#f5f5f5' }}>
+        <div className="auth-card auth-inner" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', textAlign: 'center' }}>
           <h1 style={{ fontSize: '1.25rem', margin: '0 0 0.5rem 0', color: '#1e293b', fontWeight: '600' }}>Error confirming email</h1>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{error}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -124,7 +124,7 @@ export default function AuthCallback() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
+    <div className="auth-page-wrap" style={{ background: '#f5f5f5' }}>
       <div style={{ textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#1e293b', fontWeight: '600' }}>Verifying your email…</h1>
         <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Please wait while we set up your account</p>

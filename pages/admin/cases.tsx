@@ -72,7 +72,8 @@ export default function AdminCases() {
         {cases.length === 0 ? (
           <p>No cases found.</p>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="admin-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
             <thead>
               <tr style={{ background: '#f9f9f9', textAlign: 'left' }}>
                 <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Client</th>
@@ -108,6 +109,7 @@ export default function AdminCases() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </div>

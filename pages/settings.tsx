@@ -57,9 +57,9 @@ export default function Settings() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: '2rem' }}>
+    <div className="settings-page-wrap">
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{ background: 'white', borderRadius: '8px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+        <div className="settings-inner" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
           <div style={{ marginBottom: '1.5rem' }}>
             <Link href="/dashboard" style={{ color: '#1e293b', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '500' }}>
               Back to dashboard

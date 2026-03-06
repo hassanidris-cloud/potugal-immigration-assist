@@ -415,13 +415,13 @@ export default function CaseChecklist() {
         <title>Checklist — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div className="case-page-wrap" style={{ background: '#f5f5f5', fontFamily: 'var(--font-sans, sans-serif)' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <header style={{ marginBottom: '2rem' }}>
+    <div className="case-page-wrap" style={{ background: '#f5f5f5', fontFamily: 'var(--font-sans, sans-serif)', padding: '1rem 0', boxSizing: 'border-box' }}>
+      <div className="case-content-wrap">
+        <header style={{ marginBottom: '1.5rem' }}>
           <Link href="/dashboard" style={{ color: '#1e293b', fontSize: '0.95rem', textDecoration: 'none' }}>← Back to Dashboard</Link>
         </header>
 
-        <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
+        <div className="case-card" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
             <h1 style={{ margin: 0, fontSize: '1.5rem', color: '#1e293b', fontWeight: '600' }}>Document checklist</h1>
           </div>
@@ -484,7 +484,7 @@ export default function CaseChecklist() {
         {/* Checklist Items */}
         <div style={{ marginBottom: '2rem' }}>
           {checklist.length === 0 ? (
-            <div style={{ background: 'white', padding: '2.5rem', borderRadius: '8px', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+            <div className="case-card" style={{ background: 'white', borderRadius: '8px', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
               <p style={{ fontSize: '1rem', color: '#64748b', margin: '0 0 1.25rem 0' }}>
                 No checklist items found for your {caseData?.visa_type}.
               </p>

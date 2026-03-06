@@ -93,8 +93,8 @@ export default function AdminUsers() {
         <p style={{ color: '#64748b', marginTop: '0.5rem' }}>All clients who have signed up. Total: {users.length}</p>
       </header>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="admin-table-wrap">
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '640px' }}>
           <thead>
             <tr style={{ background: '#f9f9f9', textAlign: 'left' }}>
               <th style={{ padding: '0.75rem', borderBottom: '2px solid #ddd' }}>Name</th>

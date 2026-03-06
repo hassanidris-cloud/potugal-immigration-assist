@@ -156,8 +156,8 @@ export default function EditCase() {
         <title>Edit case — WINIT Portugal Immigration</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-    <div className="case-page-wrap" style={{ background: '#f5f5f5', fontFamily: 'var(--font-sans, sans-serif)' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div className="case-page-wrap" style={{ background: '#f5f5f5', fontFamily: 'var(--font-sans, sans-serif)', padding: '1rem 0', boxSizing: 'border-box' }}>
+      <div className="case-content-wrap case-edit-wrap" style={{ maxWidth: '800px' }}>
         <header style={{ marginBottom: '2rem' }}>
           <Link href={`/case/${id}/checklist`} style={{ color: '#1e293b', textDecoration: 'none' }}>← Back to Checklist</Link>
           <h1 style={{ marginTop: '1rem', fontSize: '2rem', color: '#1e293b' }}>Edit Case Details</h1>
@@ -170,7 +170,7 @@ export default function EditCase() {
           </div>
         )}
 
-        <form onSubmit={handleSave} style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+        <form onSubmit={handleSave} className="case-card" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
               <label htmlFor="caseType" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1e293b' }}>Case Type</label>
