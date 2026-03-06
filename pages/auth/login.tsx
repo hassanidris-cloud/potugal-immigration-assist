@@ -1,14 +1,39 @@
-import { useState, FormEvent } from 'react'
+import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '../../lib/supabaseClient'
 import Link from 'next/link'
+import {
+  COOKIE_LAST_EMAIL_KEY,
+  deleteCookie,
+  getCookie,
+  hasCookieConsent,
+  setCookie,
+} from '../../lib/browserCookies'
 
 export default function Login() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberEmail, setRememberEmail] = useState(true)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!router.isReady) return
+
+    const queryEmail = typeof router.query.email === 'string' ? router.query.email : ''
+    if (queryEmail) {
+      setEmail(queryEmail)
+      setRememberEmail(true)
+      return
+    }
+
+    const savedEmail = getCookie(COOKIE_LAST_EMAIL_KEY)
+    if (savedEmail) {
+      setEmail(savedEmail)
+      setRememberEmail(true)
+    }
+  }, [router.isReady, router.query.email])
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault()
@@ -22,6 +47,14 @@ export default function Login() {
       })
 
       if (error) throw error
+
+      if (hasCookieConsent()) {
+        if (rememberEmail) {
+          setCookie(COOKIE_LAST_EMAIL_KEY, email.trim().toLowerCase(), 90)
+        } else {
+          deleteCookie(COOKIE_LAST_EMAIL_KEY)
+        }
+      }
 
       const { data: profile } = await supabase
         .from('users')
@@ -172,6 +205,15 @@ export default function Login() {
               onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
             />
           </div>
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#475569', fontSize: '0.9rem' }}>
+            <input
+              type="checkbox"
+              checked={rememberEmail}
+              onChange={(e) => setRememberEmail(e.target.checked)}
+            />
+            Remember this email on this device
+          </label>
 
           <button
             type="submit"

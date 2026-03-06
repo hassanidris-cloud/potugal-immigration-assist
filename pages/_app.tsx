@@ -4,6 +4,7 @@ import '../styles/globals.css'
 import ErrorBoundary from '../components/ErrorBoundary'
 import FadeInScroll from '../components/FadeInScroll'
 import GlobalCaseChatWidget from '../components/GlobalCaseChatWidget'
+import CookieConsentBanner from '../components/CookieConsentBanner'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -21,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
       <Component {...pageProps} />
+      <CookieConsentBanner />
       <GlobalCaseChatWidget />
     </ErrorBoundary>
   )

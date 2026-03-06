@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
+import { uploadDocumentForCase } from '../../../lib/uploadDocument'
 
 export default function CaseDocuments() {
   const router = useRouter()
@@ -63,36 +64,16 @@ export default function CaseDocuments() {
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
+      if (!id || typeof id !== 'string') {
+        throw new Error('Invalid case id')
+      }
 
-      // Upload file to storage
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random()}.${fileExt}`
-      const filePath = `${id}/${fileName}`
-
-      const { error: storageError } = await supabase.storage
-        .from('documents')
-        .upload(filePath, file)
-
-      if (storageError) throw storageError
-
-      // Create document record
-      const { error: docError } = await supabase
-        .from('documents')
-        .insert({
-          case_id: id,
-          title: title || file.name,
-          description,
-          file_path: filePath,
-          file_name: file.name,
-          file_size: file.size,
-          mime_type: file.type,
-          uploaded_by: user.id,
-          status: 'pending',
-        })
-
-      if (docError) throw docError
+      await uploadDocumentForCase({
+        caseId: id,
+        file,
+        title,
+        description,
+      })
 
       // Reload documents
       loadDocuments()

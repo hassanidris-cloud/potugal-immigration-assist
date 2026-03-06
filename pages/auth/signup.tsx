@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { supabase } from '../../lib/supabaseClient'
 import Link from 'next/link'
 import { phoneCountries, getFlagUrl } from '../../lib/phoneCountries'
+import { COOKIE_LAST_EMAIL_KEY, hasCookieConsent, setCookie } from '../../lib/browserCookies'
 
 export default function Signup() {
   const router = useRouter()
@@ -18,6 +19,12 @@ export default function Signup() {
   const [showCountryDropdown, setShowCountryDropdown] = useState(false)
   const [verificationSent, setVerificationSent] = useState(false)
   const [emailSendFailed, setEmailSendFailed] = useState(false)
+  const loginHref = `/auth/login${email ? `?email=${encodeURIComponent(email)}` : ''}`
+
+  const rememberEmailForLogin = (value: string) => {
+    if (!hasCookieConsent()) return
+    setCookie(COOKIE_LAST_EMAIL_KEY, value.trim().toLowerCase(), 90)
+  }
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault()
@@ -47,6 +54,7 @@ export default function Signup() {
         const needsConfirmation = (authData.user.identities && authData.user.identities.length === 0) ||
           authData.user.email_confirmed_at === null
         if (needsConfirmation || authMsg.includes('confirm') || isEmailSendError) {
+          rememberEmailForLogin(email)
           setEmailSendFailed(!!isEmailSendError)
           setVerificationSent(true)
           setLoading(false)
@@ -80,6 +88,7 @@ export default function Signup() {
           if (insertError) throw new Error(data.error || insertError.message || 'Failed to create profile')
         }
 
+        rememberEmailForLogin(email)
         setVerificationSent(true)
         setLoading(false)
         return
@@ -158,7 +167,7 @@ export default function Signup() {
               <li>Start your 14-day free trial!</li>
             </ul>
           </div>
-          <Link href="/auth/login" style={{ 
+          <Link href={loginHref} style={{ 
             display: 'inline-block',
             padding: '0.875rem 2rem',
             background: 'linear-gradient(135deg, #0066cc, #00c896)',

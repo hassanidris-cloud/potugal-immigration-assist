@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { supabase } from '../lib/supabaseClient'
 import { countries } from '../lib/countries'
 import { getVisaPersonalization } from '../lib/visaPersonalization'
+import { uploadDocumentForCase } from '../lib/uploadDocument'
 
 export default function Onboarding() {
   const router = useRouter()
@@ -162,29 +163,19 @@ export default function Onboarding() {
     }
 
     try {
-      // Send document metadata to API (service role will handle DB insert)
-      const response = await fetch('/api/documents/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          caseId,
-          userId: user.id,
-          title: title || file.name,
-          description: description || '',
-          fileName: file.name,
-          fileSize: file.size,
-          mimeType: file.type,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Upload failed')
+      if (!caseId) {
+        throw new Error('Case not found. Please refresh and try again.')
       }
 
-      setDocuments([...documents, data.document])
-      
+      const document = await uploadDocumentForCase({
+        caseId,
+        file,
+        title: title || file.name,
+        description: description || '',
+      })
+
+      setDocuments([...documents, document])
+
       // Reset form
       if (form) form.reset()
     } catch (error: any) {
