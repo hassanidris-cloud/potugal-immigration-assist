@@ -98,8 +98,8 @@ export default function Signup() {
           return
         }
 
-        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('registered') || msg.toLowerCase().includes('exists')) {
-          setError('This email is already registered. Check your inbox for a verification link, or try signing in.')
+        if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('registered') || msg.toLowerCase().includes('exists') || msg.toLowerCase().includes('duplicate')) {
+          setError('This account has already been created. Please sign in or use a different email.')
           setLoading(false)
           return
         }
@@ -107,7 +107,12 @@ export default function Signup() {
         throw authError
       }
     } catch (err: any) {
-      setError(err?.message || 'Signup failed')
+      const msg = (err?.message || '').toLowerCase()
+      if (msg.includes('already') || msg.includes('registered') || msg.includes('exists') || msg.includes('duplicate')) {
+        setError('This account has already been created. Please sign in or use a different email.')
+      } else {
+        setError(err?.message || 'Signup failed')
+      }
     } finally {
       setLoading(false)
     }
