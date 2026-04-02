@@ -1,35 +1,37 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabaseClient'
 import Link from 'next/link'
 
 export default function Settings() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [confirmText, setConfirmText] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
 
-  useEffect(() => {
-    checkUser()
-  }, [])
-
-  async function checkUser() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+  const checkUser = useCallback(async () => {
+    const { data: { user: nextUser } } = await supabase.auth.getUser()
+    if (!nextUser) {
       router.push('/auth/login')
       return
     }
-    setUser(user)
+    setUser(nextUser)
     setLoading(false)
-  }
+  }, [router])
+
+  useEffect(() => {
+    void checkUser()
+  }, [checkUser])
 
   async function handleDeleteAccount() {
     if (confirmText !== 'DELETE') {
       alert('Please type DELETE to confirm')
       return
     }
+    if (!user) return
 
     setDeleting(true)
 
@@ -46,8 +48,9 @@ export default function Settings() {
       // Sign out and redirect
       await supabase.auth.signOut()
       router.push('/')
-    } catch (error: any) {
-      alert('Error deleting account: ' + error.message)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      alert('Error deleting account: ' + message)
       setDeleting(false)
     }
   }

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
@@ -53,7 +54,7 @@ export default function SiteNav() {
     <nav className={`home-nav defesa-nav ${navOpen ? 'nav-open' : ''}`}>
       <div className="home-nav-inner">
         <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-          <img src="/logo.png" alt={nav.brand} width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
+          <Image src="/logo.png" alt={nav.brand} width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} priority />
           <span className="home-nav-logo-text">{nav.brand}</span>
         </Link>
         <button

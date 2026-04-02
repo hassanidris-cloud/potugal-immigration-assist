@@ -2,7 +2,6 @@ import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/
 import { createClient as createBrowserClient } from './supabase/browser'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 /** Browser client: uses cookies for session persistence (stay logged in). Use in pages/components. */
 export const supabase = createBrowserClient()

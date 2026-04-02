@@ -26,7 +26,8 @@ const TYPING_STOP_MS = 2000
 const TYPING_DISPLAY_MS = 3500
 const POLL_INTERVAL_MS = 15000
 
-export default function CaseChat({ caseId, caseUserId, isSpecialist, title, style, hideHeader, onNewMessage }: CaseChatProps) {
+export default function CaseChat(props: CaseChatProps) {
+  const { caseId, isSpecialist, title, style, hideHeader, onNewMessage } = props
   const [messages, setMessages] = useState<Message[]>([])
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentUserName, setCurrentUserName] = useState<string>('')

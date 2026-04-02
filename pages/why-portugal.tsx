@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import Head from 'next/head'
 import SiteNav from '../components/SiteNav'
@@ -62,9 +63,11 @@ export default function WhyPortugal() {
 
                 <div className="why-portugal-block why-portugal-block-reverse">
                   <div className="why-portugal-block-image">
-                    <img
+                    <Image
                       src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80"
                       alt="Portugal lifestyle"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
                   <div className="why-portugal-block-content">
