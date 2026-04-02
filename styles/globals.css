@@ -589,16 +589,18 @@ textarea {
   justify-content: center;
 }
 .defesa-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 2rem;
+  justify-content: center;
+  align-items: center;
   max-width: 1000px;
   margin: 0 auto;
   padding: 2.5rem 2rem;
   text-align: center;
 }
 @media (max-width: 767px) {
-  .defesa-stats { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; padding: 1.5rem 1rem; }
+  .defesa-stats { gap: 1.5rem; padding: 1.5rem 1rem; }
 }
 .defesa-stat-num { font-size: 2rem; font-weight: 700; color: #1e293b; display: block; }
 .defesa-stat-label { font-size: 0.9rem; color: #64748b; margin-top: 0.25rem; }

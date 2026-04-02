@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { supabase } from '../lib/supabaseClient'
 import { useAcceptedUser } from '../hooks/useAcceptedUser'
+import { getSiteCopy } from '../lib/getSiteCopy'
+
+const nav = getSiteCopy().nav
 
 type Props = {
   onNavigate?: () => void
@@ -39,7 +42,7 @@ export default function AuthNavLinks({ onNavigate, className, linkClass = 'no-un
     return (
       <span className={className} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
         <Link href="/dashboard" onClick={onNavigate} className={linkClass}>
-          Dashboard
+          {nav.dashboard}
         </Link>
         <button
           type="button"
@@ -54,7 +57,7 @@ export default function AuthNavLinks({ onNavigate, className, linkClass = 'no-un
             padding: 0,
           }}
         >
-          Log out
+          {nav.logout}
         </button>
       </span>
     )
@@ -63,10 +66,10 @@ export default function AuthNavLinks({ onNavigate, className, linkClass = 'no-un
   return (
     <span className={className} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
       <Link href="/auth/login" onClick={onNavigate} className={linkClass}>
-        Login
+        {nav.login}
       </Link>
       <Link href="/auth/signup" onClick={onNavigate} className={signupClass}>
-        Sign Up
+        {nav.signup}
       </Link>
     </span>
   )

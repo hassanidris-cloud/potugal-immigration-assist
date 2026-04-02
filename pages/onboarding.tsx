@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../lib/supabaseClient'
 import { countries } from '../lib/countries'
+import { generateChecklistForCase } from '../lib/checklistGeneration'
 import { getVisaPersonalization, getVisaTypeColor } from '../lib/visaPersonalization'
 
 export default function Onboarding() {
@@ -111,27 +112,7 @@ export default function Onboarding() {
 
       setCaseId(caseData.id)
 
-      // Generate checklist from templates
-      const { data: templates } = await supabase
-        .from('checklist_templates')
-        .select('*')
-        .eq('visa_type', visaType)
-        .order('order_index')
-
-      if (templates && templates.length > 0) {
-        const checklistItems = templates.map((template: any) => ({
-          case_id: caseData.id,
-          template_id: template.id,
-          title: template.title,
-          description: template.description,
-          required: template.required !== false,
-          order_index: template.order_index,
-          completed: false,
-          ...(template.phase != null && { phase: template.phase }),
-        }))
-
-        await supabase.from('case_checklist').insert(checklistItems)
-      }
+      await generateChecklistForCase(supabase, caseData.id, visaType)
 
       // Go straight to checklist so user sees what to upload (no vague upload step)
       router.push(`/case/${caseData.id}/checklist`)

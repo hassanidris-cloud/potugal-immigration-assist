@@ -2,9 +2,11 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import EditPageFloatingButton from '../components/EditPageFloatingButton'
-import AuthNavLinks from '../components/AuthNavLinks'
+import SiteNav from '../components/SiteNav'
+import { getSiteCopy } from '../lib/getSiteCopy'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
+const d2 = getSiteCopy().visa_d2
 
 // D2 page: each section has its own unique image; investment uses public/images
 const D2_HERO_IMAGE = 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&q=90'
@@ -23,8 +25,6 @@ const D2_PAGE_IMAGES = [
 ]
 
 export default function VisaD2() {
-  const [navOpen, setNavOpen] = useState(false)
-  const [servicesOpen, setServicesOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [debugText, setDebugText] = useState(false)
   useEffect(() => {
@@ -35,10 +35,10 @@ export default function VisaD2() {
   return (
     <>
       <Head>
-        <title>D2 Entrepreneur Visa Portugal 2026 – Business Residency | WINIT</title>
-        <meta name="description" content="Launch your business in Portugal and secure residency with the D2 Entrepreneur Visa. No minimum investment. Business plan, company registration, full support." />
-        <meta property="og:title" content="D2 Entrepreneur Visa Portugal 2026 – Business Residency | WINIT" />
-        <meta property="og:description" content="D2 visa for entrepreneurs: establish a company in Portugal and obtain residency for you and your family." />
+        <title>{d2.meta_title}</title>
+        <meta name="description" content={d2.meta_description} />
+        <meta property="og:title" content={d2.meta_title} />
+        <meta property="og:description" content={d2.meta_description} />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-d2`} />}
         {BASE_URL && <meta property="og:url" content={`${BASE_URL}/visa-d2`} />}
@@ -48,49 +48,14 @@ export default function VisaD2() {
       <div className={`home-nav-spacer visa-d2-page${debugText ? ' visa-debug-text' : ''}`} style={{ minHeight: '100vh' }}>
         {debugText && <div className="visa-debug-banner" aria-hidden>DEBUG: Text &amp; style — outlines show text boundaries; remove ?debug=text from URL to exit</div>}
         <EditPageFloatingButton relativePath="pages/visa-d2.tsx" />
-        <nav className={`home-nav defesa-nav ${navOpen ? 'nav-open' : ''}`}>
-          <div className="home-nav-inner">
-            <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-              <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
-            </Link>
-            <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-            </button>
-            <div className="home-nav-links">
-              <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
-              <div style={{ position: 'relative' }}>
-                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="home-nav-link-btn no-underline font-medium">Services ▾</button>
-                {(servicesOpen || navOpen) && (
-                  <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
-                    <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
-                    <Link href="/visa-d7" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D7 Passive Income</Link>
-                    <Link href="/visa-d8" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D8 Digital Nomad</Link>
-                    <Link href="/services" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff', borderTop: '1px solid rgba(255,255,255,0.1)' }}>All Services</Link>
-                  </div>
-                )}
-              </div>
-              <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
-              <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
-              <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
-              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
-            </div>
-          </div>
-        </nav>
+        <SiteNav />
 
         <main>
-          {/* 1. Hero – Braga / Northern Portugal */}
           <section className="section-with-bg" style={{ padding: '5.5rem 0', backgroundImage: `url(${D2_HERO_IMAGE})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-              <span className="d2-section-label d2-section-label-light">D2 Entrepreneur Visa</span>
-              <h1 className="d2-hero-title">
-                D2 Entrepreneur Visa Portugal 2026 – Business Residency for Founders
-              </h1>
-              <p className="d2-hero-sub" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                Launch your business in Portugal and secure residency for yourself and your family. The D2 visa is designed for entrepreneurs, business founders, and investors who want to establish a company in one of Europe&apos;s most business-friendly environments.
-              </p>
+              <span className="d2-section-label d2-section-label-light">{d2.hero_label}</span>
+              <h1 className="d2-hero-title">{d2.hero_title}</h1>
+              <p className="d2-hero-sub" style={{ marginLeft: 'auto', marginRight: 'auto' }}>{d2.hero_subtitle}</p>
             </div>
           </section>
 
@@ -246,10 +211,10 @@ export default function VisaD2() {
           {/* 8. Why Choose Us */}
           <section id="why-us" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D2_PAGE_IMAGES[7]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
-              <span className="d2-section-label d2-section-label-light">Our support</span>
-              <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1rem' }}>How Our Law Firm Helps Entrepreneurs</h2>
+              <span className="d2-section-label d2-section-label-light">How we can help you</span>
+              <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1rem' }}>How We Can Help You</h2>
               <p className="d2-body-light" style={{ marginBottom: '1.5rem', maxWidth: '640px', fontSize: '1.05rem' }}>
-                We provide comprehensive legal support for entrepreneurs navigating Portuguese business registration and immigration.
+                We provide comprehensive support for entrepreneurs navigating Portuguese business registration and immigration.
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
                 {['Company Formation – We handle Portuguese company registration, articles of association, tax registration, and all corporate formalities.', 'Business Plan Review – We review and refine your business plan to ensure it meets consular requirements and presents your concept effectively.', 'Full Immigration Support – We prepare your D2 visa application, coordinate documentation, and support you through the entire process.', 'Ongoing Compliance – After approval, we assist with residence permit renewals, corporate compliance, and eventual citizenship applications.'].map((item, i) => (

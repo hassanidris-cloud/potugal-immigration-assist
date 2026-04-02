@@ -2,9 +2,11 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import EditPageFloatingButton from '../components/EditPageFloatingButton'
-import AuthNavLinks from '../components/AuthNavLinks'
+import SiteNav from '../components/SiteNav'
+import { getSiteCopy } from '../lib/getSiteCopy'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
+const d7 = getSiteCopy().visa_d7
 
 // D7 page: each section has its own image (retirement, passive income, Portugal lifestyle)
 const D7_HERO_IMAGE = 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1920&q=90'
@@ -23,8 +25,6 @@ const D7_PAGE_IMAGES = [
 ]
 
 export default function VisaD7() {
-  const [navOpen, setNavOpen] = useState(false)
-  const [servicesOpen, setServicesOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [debugText, setDebugText] = useState(false)
   useEffect(() => {
@@ -35,10 +35,10 @@ export default function VisaD7() {
   return (
     <>
       <Head>
-        <title>D7 Passive Income Visa Portugal 2026 – Retirement &amp; Residency | WINIT</title>
-        <meta name="description" content="Live in Portugal with the D7 Passive Income Visa. For retirees and anyone with stable income from pension, investments, or rentals. Requirements, support, and application." />
-        <meta property="og:title" content="D7 Passive Income Visa Portugal 2026 – Retirement &amp; Residency | WINIT" />
-        <meta property="og:description" content="D7 visa for stable recurring income from outside Portugal. Pension, investments, rentals." />
+        <title>{d7.meta_title}</title>
+        <meta name="description" content={d7.meta_description} />
+        <meta property="og:title" content={d7.meta_title} />
+        <meta property="og:description" content={d7.meta_description} />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-d7`} />}
         {BASE_URL && <meta property="og:url" content={`${BASE_URL}/visa-d7`} />}
@@ -48,49 +48,14 @@ export default function VisaD7() {
       <div className={`home-nav-spacer visa-d2-page visa-d7-page${debugText ? ' visa-debug-text' : ''}`} style={{ minHeight: '100vh' }}>
         {debugText && <div className="visa-debug-banner" aria-hidden>DEBUG: Text &amp; style — outlines show text boundaries; remove ?debug=text from URL to exit</div>}
         <EditPageFloatingButton relativePath="pages/visa-d7.tsx" />
-        <nav className={`home-nav defesa-nav ${navOpen ? 'nav-open' : ''}`}>
-          <div className="home-nav-inner">
-            <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-              <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
-            </Link>
-            <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-            </button>
-            <div className="home-nav-links">
-              <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
-              <div style={{ position: 'relative' }}>
-                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="home-nav-link-btn no-underline font-medium">Services ▾</button>
-                {(servicesOpen || navOpen) && (
-                  <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
-                    <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
-                    <Link href="/visa-d7" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D7 Passive Income</Link>
-                    <Link href="/visa-d8" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D8 Digital Nomad</Link>
-                    <Link href="/services" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff', borderTop: '1px solid rgba(255,255,255,0.1)' }}>All Services</Link>
-                  </div>
-                )}
-              </div>
-              <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
-              <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
-              <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
-              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
-            </div>
-          </div>
-        </nav>
+        <SiteNav />
 
         <main>
-          {/* 1. Hero */}
           <section className="section-with-bg" style={{ padding: '5.5rem 0', backgroundImage: `url(${D7_HERO_IMAGE})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-              <span className="d2-section-label d2-section-label-light">D7 Passive Income Visa</span>
-              <h1 className="d2-hero-title">
-                D7 Passive Income Visa Portugal 2026 – Residency for Retirees &amp; Passive Income
-              </h1>
-              <p className="d2-hero-sub" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                For non-EU citizens with stable recurring income from outside Portugal—pension, investments, rentals, or royalties. Live in Portugal with full residency rights, access to healthcare, and a path to citizenship.
-              </p>
+              <span className="d2-section-label d2-section-label-light">{d7.hero_label}</span>
+              <h1 className="d2-hero-title">{d7.hero_title}</h1>
+              <p className="d2-hero-sub" style={{ marginLeft: 'auto', marginRight: 'auto' }}>{d7.hero_subtitle}</p>
             </div>
           </section>
 
@@ -246,7 +211,7 @@ export default function VisaD7() {
           {/* 8. Why Us */}
           <section id="why-us" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D7_PAGE_IMAGES[7]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
-              <span className="d2-section-label d2-section-label-light">Our support</span>
+              <span className="d2-section-label d2-section-label-light">How we can help you</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1rem' }}>How We Help D7 Applicants</h2>
               <p className="d2-body-light" style={{ marginBottom: '1.5rem', maxWidth: '640px', fontSize: '1.05rem' }}>
                 We provide end-to-end support for passive income and retirement applicants moving to Portugal.

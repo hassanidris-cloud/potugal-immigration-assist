@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabaseClient'
 import Link from 'next/link'
+import { generateChecklistForCase } from '../../../lib/checklistGeneration'
 import { getVisaPersonalization } from '../../../lib/visaPersonalization'
 
 export default function CaseChecklist() {
@@ -41,11 +42,14 @@ export default function CaseChecklist() {
 
   const loadChecklist = async () => {
     try {
+      const caseId = Array.isArray(id) ? id[0] : id
+      if (!caseId || typeof caseId !== 'string') return
+
       // Fetch case
       const { data: caseData } = await supabase
         .from('cases')
         .select('*')
-        .eq('id', id)
+        .eq('id', caseId)
         .single()
 
       setCaseData(caseData)
@@ -54,16 +58,30 @@ export default function CaseChecklist() {
       const { data: checklistData } = await supabase
         .from('case_checklist')
         .select('*')
-        .eq('case_id', id)
+        .eq('case_id', caseId)
         .order('order_index')
 
-      const items = checklistData || []
+      let items = checklistData || []
+
+      if (items.length === 0 && caseData?.visa_type) {
+        const generatedCount = await generateChecklistForCase(supabase, caseId, caseData.visa_type)
+
+        if (generatedCount > 0) {
+          const { data: generatedChecklist } = await supabase
+            .from('case_checklist')
+            .select('*')
+            .eq('case_id', caseId)
+            .order('order_index')
+
+          items = generatedChecklist || []
+        }
+      }
 
       // Fetch documents
       const { data: documentsData } = await supabase
         .from('documents')
         .select('*')
-        .eq('case_id', id)
+        .eq('case_id', caseId)
 
       const docs = documentsData || []
       setDocuments(docs)
@@ -82,7 +100,7 @@ export default function CaseChecklist() {
       const { data: refreshed } = await supabase
         .from('case_checklist')
         .select('*')
-        .eq('case_id', id)
+        .eq('case_id', caseId)
         .order('order_index')
       setChecklist(refreshed || items)
     } catch (error) {
@@ -181,37 +199,12 @@ export default function CaseChecklist() {
   }
 
   const regenerateChecklist = async () => {
-    if (!caseData || !id) return
+    const caseId = Array.isArray(id) ? id[0] : id
+    if (!caseData || !caseId || typeof caseId !== 'string') return
     
     setRegenerating(true)
     try {
-      // Delete existing checklist items
-      await supabase
-        .from('case_checklist')
-        .delete()
-        .eq('case_id', id)
-
-      // Get templates for this visa type
-      const { data: templates } = await supabase
-        .from('checklist_templates')
-        .select('*')
-        .eq('visa_type', caseData.visa_type)
-        .order('order_index')
-
-      if (templates && templates.length > 0) {
-        const checklistItems = templates.map((template: any) => ({
-          case_id: id,
-          template_id: template.id,
-          title: template.title,
-          description: template.description,
-          required: template.required,
-          order_index: template.order_index,
-          completed: false,
-          ...(template.phase != null && { phase: template.phase }),
-        }))
-
-        await supabase.from('case_checklist').insert(checklistItems)
-      }
+      await generateChecklistForCase(supabase, caseId, caseData.visa_type, true)
 
       // Reload checklist
       loadChecklist()

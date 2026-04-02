@@ -88,9 +88,11 @@ npm run seed
 
 ### Testing
 
-Run smoke tests:
+Run smoke tests (defaults to `http://localhost:3000`; if your dev server runs on another port, set `BASE_URL`):
 ```bash
 npm run test:smoke
+# Dev server runs on port 3001 by default, so for local smoke tests use:
+# BASE_URL=http://localhost:3001 npm run test:smoke
 ```
 
 Run extended API tests:

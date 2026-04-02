@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabaseClient'
 import { countries } from '../../../lib/countries'
+import { generateChecklistForCase } from '../../../lib/checklistGeneration'
 
 export default function EditCase() {
   const router = useRouter()
@@ -101,39 +102,7 @@ export default function EditCase() {
       const visaChanged = isAdmin && initialVisaType && initialVisaType !== visaType
 
       if (visaChanged) {
-        await supabase
-          .from('case_checklist')
-          .delete()
-          .eq('case_id', id)
-
-        let { data: templates } = await supabase
-          .from('checklist_templates')
-          .select('*')
-          .eq('visa_type', visaType)
-          .order('order_index')
-
-        // DB may have D8 checklist under "D7 Digital Nomad"; use as fallback for D8 Visa
-        if ((!templates || templates.length === 0) && visaType === 'D8 Visa') {
-          const { data: fallback } = await supabase
-            .from('checklist_templates')
-            .select('*')
-            .eq('visa_type', 'D7 Digital Nomad')
-            .order('order_index')
-          templates = fallback
-        }
-
-        if (templates && templates.length > 0) {
-          const checklistItems = templates.map((template: any) => ({
-            case_id: id,
-            template_id: template.id,
-            title: template.title,
-            description: template.description,
-            order_index: template.order_index,
-            completed: false,
-          }))
-
-          await supabase.from('case_checklist').insert(checklistItems)
-        }
+        await generateChecklistForCase(supabase, id, visaType, true)
 
         if (caseData?.user_id) {
           await supabase.from('users').update({ visa_type: visaType }).eq('id', caseData.user_id)

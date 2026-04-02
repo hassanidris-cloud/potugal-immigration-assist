@@ -2,9 +2,11 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import EditPageFloatingButton from '../components/EditPageFloatingButton'
-import AuthNavLinks from '../components/AuthNavLinks'
+import SiteNav from '../components/SiteNav'
+import { getSiteCopy } from '../lib/getSiteCopy'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || ''
+const d8 = getSiteCopy().visa_d8
 
 // D8 page: each section has its own image (remote work, digital nomad, laptop, tech)
 const D8_HERO_IMAGE = 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1920&q=90'
@@ -23,8 +25,6 @@ const D8_PAGE_IMAGES = [
 ]
 
 export default function VisaD8() {
-  const [navOpen, setNavOpen] = useState(false)
-  const [servicesOpen, setServicesOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [debugText, setDebugText] = useState(false)
   useEffect(() => {
@@ -35,10 +35,10 @@ export default function VisaD8() {
   return (
     <>
       <Head>
-        <title>D8 Digital Nomad Visa Portugal 2026 – Remote Work Residency | WINIT</title>
-        <meta name="description" content="Live in Portugal while working remotely with the D8 Digital Nomad Visa. For remote employees and freelancers. Income requirements, documents, and full support." />
-        <meta property="og:title" content="D8 Digital Nomad Visa Portugal 2026 – Remote Work Residency | WINIT" />
-        <meta property="og:description" content="D8 visa for remote workers and freelancers with clients or employers outside Portugal." />
+        <title>{d8.meta_title}</title>
+        <meta name="description" content={d8.meta_description} />
+        <meta property="og:title" content={d8.meta_title} />
+        <meta property="og:description" content={d8.meta_description} />
         <meta property="og:type" content="website" />
         {BASE_URL && <link rel="canonical" href={`${BASE_URL}/visa-d8`} />}
         {BASE_URL && <meta property="og:url" content={`${BASE_URL}/visa-d8`} />}
@@ -48,49 +48,14 @@ export default function VisaD8() {
       <div className={`home-nav-spacer visa-d2-page visa-d8-page${debugText ? ' visa-debug-text' : ''}`} style={{ minHeight: '100vh' }}>
         {debugText && <div className="visa-debug-banner" aria-hidden>DEBUG: Text &amp; style — outlines show text boundaries; remove ?debug=text from URL to exit</div>}
         <EditPageFloatingButton relativePath="pages/visa-d8.tsx" />
-        <nav className={`home-nav defesa-nav ${navOpen ? 'nav-open' : ''}`}>
-          <div className="home-nav-inner">
-            <Link href="/" className="home-nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-              <img src="/logo.png" alt="" width={70} height={41} style={{ display: 'block', height: 36, width: 'auto' }} />
-              <span className="home-nav-logo-text">WINIT</span>
-            </Link>
-            <button type="button" className="home-nav-hamburger" onClick={() => setNavOpen((o) => !o)} aria-expanded={navOpen} aria-label={navOpen ? 'Close menu' : 'Open menu'}>
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-            </button>
-            <div className="home-nav-links">
-              <Link href="/why-portugal" onClick={() => setNavOpen(false)} className="no-underline font-medium">Why Portugal</Link>
-              <div style={{ position: 'relative' }}>
-                <button type="button" onClick={() => setServicesOpen((o) => !o)} className="home-nav-link-btn no-underline font-medium">Services ▾</button>
-                {(servicesOpen || navOpen) && (
-                  <div style={{ position: navOpen ? 'static' : 'absolute', top: '100%', left: 0, marginTop: '0.25rem', background: 'rgba(30,41,59,0.98)', borderRadius: '8px', padding: '0.5rem 0', minWidth: '180px', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
-                    <Link href="/visa-d2" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D2 Entrepreneur</Link>
-                    <Link href="/visa-d7" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D7 Passive Income</Link>
-                    <Link href="/visa-d8" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff' }}>D8 Digital Nomad</Link>
-                    <Link href="/services" onClick={() => { setServicesOpen(false); setNavOpen(false); }} style={{ display: 'block', padding: '0.5rem 1rem', color: '#fff', borderTop: '1px solid rgba(255,255,255,0.1)' }}>All Services</Link>
-                  </div>
-                )}
-              </div>
-              <Link href="/how-we-work" onClick={() => setNavOpen(false)} className="no-underline font-medium">How We Work</Link>
-              <Link href="/faq" onClick={() => setNavOpen(false)} className="no-underline font-medium">FAQ</Link>
-              <Link href="/contact" onClick={() => setNavOpen(false)} className="no-underline font-medium">Contact</Link>
-              <AuthNavLinks onNavigate={() => { setServicesOpen(false); setNavOpen(false); }} linkClass="no-underline font-medium" signupClass="home-nav-signup no-underline" />
-            </div>
-          </div>
-        </nav>
+        <SiteNav />
 
         <main>
-          {/* 1. Hero */}
           <section className="section-with-bg" style={{ padding: '5.5rem 0', backgroundImage: `url(${D8_HERO_IMAGE})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-              <span className="d2-section-label d2-section-label-light">D8 Digital Nomad Visa</span>
-              <h1 className="d2-hero-title">
-                D8 Digital Nomad Visa Portugal 2026 – Residency for Remote Workers
-              </h1>
-              <p className="d2-hero-sub" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                For remote employees and freelancers who work for foreign employers or clients. Live in Portugal while you keep your job or client base abroad—with full residency rights, Schengen mobility, and a path to citizenship.
-              </p>
+              <span className="d2-section-label d2-section-label-light">{d8.hero_label}</span>
+              <h1 className="d2-hero-title">{d8.hero_title}</h1>
+              <p className="d2-hero-sub" style={{ marginLeft: 'auto', marginRight: 'auto' }}>{d8.hero_subtitle}</p>
             </div>
           </section>
 
@@ -246,7 +211,7 @@ export default function VisaD8() {
           {/* 8. Why Us */}
           <section id="why-us" className="section-with-bg visa-section-center-header" style={{ padding: '4.5rem 0', backgroundImage: `url(${D8_PAGE_IMAGES[7]})` }}>
             <div className="section-with-bg-inner home-container fade-in-on-scroll" data-fade-in>
-              <span className="d2-section-label d2-section-label-light">Our support</span>
+              <span className="d2-section-label d2-section-label-light">How we can help you</span>
               <h2 className="d2-heading d2-heading-light" style={{ marginBottom: '1rem' }}>How We Help D8 Applicants</h2>
               <p className="d2-body-light" style={{ marginBottom: '1.5rem', maxWidth: '640px', fontSize: '1.05rem' }}>
                 We specialise in remote workers and digital nomads relocating to Portugal.
