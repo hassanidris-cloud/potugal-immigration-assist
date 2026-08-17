@@ -309,9 +309,9 @@ export default function TemporaryLandingPage() {
             <div className="bex-container">
               <h2 id="bex-numbers-title">BEX by the numbers</h2>
               <div className="bex-number-grid">
-                <div><strong>0</strong><span>Projects Completed</span></div>
-                <div><strong>0</strong><span>In house SAP Resources</span></div>
-                <div><strong>0</strong><span>Satisfied Customers</span></div>
+                <div><strong>50+</strong><span>Projects Completed</span></div>
+                <div><strong>22</strong><span>In house SAP Resources</span></div>
+                <div><strong>30</strong><span>Satisfied Customers</span></div>
               </div>
             </div>
           </section>
