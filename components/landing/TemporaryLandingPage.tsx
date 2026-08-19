@@ -1,33 +1,34 @@
 import Head from 'next/head'
 
-const BEX_URL = 'https://bexsofts.com'
-const LOGO = `${BEX_URL}/wp-content/uploads/2024/08/about-us-logo-1.png`
-const FOOTER_LOGO = `${BEX_URL}/wp-content/uploads/2024/08/footer-logo-new-1-300x109.jpg`
+const SOURCE_ASSET_URL = 'https://bexsofts.com'
+const WINIT_URL = 'https://www.winit.biz'
+const WINIT_EMAIL = 'info@winit.biz'
+const LOGO = '/logo.png'
+const FOOTER_LOGO = '/logo.png'
+const SERVICE_HREF = '#services'
+const CONTACT_HREF = '/contact'
+const STORIES_HREF = '#success-stories'
 const HERO_IMAGES = [
-  `${BEX_URL}/wp-content/uploads/2024/08/1-scaled.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/08/2-scaled.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/08/1-scaled.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/08/2-scaled.jpg`,
 ]
 
 const categories = [
   {
     title: 'STAFFING',
-    href: `${BEX_URL}/staffing/`,
-    image: `${BEX_URL}/wp-content/uploads/2024/11/pexels-tima-miroshnichenko-6694475-scaled.jpg`,
+    image: `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-tima-miroshnichenko-6694475-scaled.jpg`,
   },
   {
     title: 'IT Advisory',
-    href: `${BEX_URL}/it-advisory/`,
-    image: `${BEX_URL}/wp-content/uploads/2024/11/pexels-a-darmel-8134165-scaled.jpg`,
+    image: `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-a-darmel-8134165-scaled.jpg`,
   },
   {
     title: 'SAP',
-    href: `${BEX_URL}/sap-service-offers/`,
-    image: `${BEX_URL}/wp-content/uploads/2024/11/pexels-yankrukov-7793745-scaled.jpg`,
+    image: `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-yankrukov-7793745-scaled.jpg`,
   },
   {
     title: 'E-commerce',
-    href: `${BEX_URL}/e-commerce-services/`,
-    image: `${BEX_URL}/wp-content/uploads/2024/11/pexels-negativespace-34577-scaled.jpg`,
+    image: `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-negativespace-34577-scaled.jpg`,
   },
 ]
 
@@ -50,38 +51,38 @@ const services = [
   {
     title: 'Staffing',
     items: [
-      ['Contract-to-Hire Staffing Service', `${BEX_URL}/service/contract-to-hire-staffing-service/`],
-      ['Permanent Staffing Service', `${BEX_URL}/service/permanent-staffing-service/`],
-      ['Staff Augmentation Service', `${BEX_URL}/service/staff-augmentation-service/`],
-      ['Offshore Staffing Service', `${BEX_URL}/service/offshore-staffing-service/`],
+      'Contract-to-Hire Staffing Service',
+      'Permanent Staffing Service',
+      'Staff Augmentation Service',
+      'Offshore Staffing Service',
     ],
   },
   {
     title: 'IT Advisory',
     items: [
-      ['AI Advisory Services', `${BEX_URL}/service/ai-advisory-services/`],
-      ['Digital Transformation Advisory Services', `${BEX_URL}/service/digital-transformation-advisory-services/`],
-      ['IT Strategy Advisory Services', `${BEX_URL}/service/it-strategy-advisory-services/`],
-      ['SAP Project Management Advisory Service', `${BEX_URL}/service/sap-project-management-advisory-service/`],
-      ['SAP Advisory Service', `${BEX_URL}/service/sap-advisory-service/`],
+      'AI Advisory Services',
+      'Digital Transformation Advisory Services',
+      'IT Strategy Advisory Services',
+      'SAP Project Management Advisory Service',
+      'SAP Advisory Service',
     ],
   },
   {
     title: 'SAP',
     items: [
-      ['SAP Training', `${BEX_URL}/service/sap-training/`],
-      ['SAP Application Managed Services', `${BEX_URL}/service/sap-application-managed-services/`],
-      ['SAP Custom Development', `${BEX_URL}/service/sap-custom-development/`],
-      ['SAP S4 HANA Upgrade', `${BEX_URL}/service/sap-s4-hana-upgrade/`],
-      ['SAP S4 HANA Implementation', `${BEX_URL}/service/sap-s4-hana-implementation/`],
+      'SAP Training',
+      'SAP Application Managed Services',
+      'SAP Custom Development',
+      'SAP S4 HANA Upgrade',
+      'SAP S4 HANA Implementation',
     ],
   },
   {
     title: 'E-commerce',
     items: [
-      ['E-Commerce Advisory Services', `${BEX_URL}/service/e-commerce-advisory-services/`],
-      ['E-Commerce Insights', `${BEX_URL}/service/e-commerce-insights/`],
-      ['E-commerce Project Workflow', `${BEX_URL}/service/e-commerce-project-workflow/`],
+      'E-Commerce Advisory Services',
+      'E-Commerce Insights',
+      'E-commerce Project Workflow',
     ],
   },
 ]
@@ -89,11 +90,11 @@ const services = [
 const reasons = [
   {
     title: 'Tailored Digital Solutions',
-    text: 'BEX specializes in creating custom, innovative solutions to address your unique business needs, ensuring maximum performance and productivity.',
+    text: 'WinIT specializes in creating custom, innovative solutions to address your unique business needs, ensuring maximum performance and productivity.',
   },
   {
     title: 'Comprehensive Expertise',
-    text: 'From website and mobile app development to ERP, CRM, and SAP services, BEX provides a full spectrum of IT solutions under one roof.',
+    text: 'From website and mobile app development to ERP, CRM, and SAP services, WinIT provides a full spectrum of IT solutions under one roof.',
   },
   {
     title: 'Cutting-Edge Technology',
@@ -101,7 +102,7 @@ const reasons = [
   },
   {
     title: 'End-to-End Support',
-    text: "Enjoy seamless project execution with BEX's full-cycle development, IT advisory, and ongoing support to ensure success beyond deployment.",
+    text: "Enjoy seamless project execution with WinIT's full-cycle development, IT advisory, and ongoing support to ensure success beyond deployment.",
   },
 ]
 
@@ -121,87 +122,88 @@ const process = [
 ]
 
 const storyImages = [
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-fauxels-3184339-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-fauxels-3184357-1-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-pavel-danilyuk-8112180-1-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-anna-nekrashevich-7552374-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-cottonbro-6153354-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-cristian-rojas-10041276-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2016/01/pexels-shvets-production-9052581-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2016/01/qw2-400x400.png`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-shvetsa-5325104-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-rdne-9034736-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-ekrulila-2261059-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-mikhail-nilov-8939054-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-lara-jameson-9363535-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-fauxels-3184416-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-rdne-8069475-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-julio-lopez-75309646-29502378-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/11/pexels-divinetechygirl-1181345-scaled-400x400.jpg`,
-  `${BEX_URL}/wp-content/uploads/2024/12/pexels-erfin-ekarana-494408160-29583970-scaled-360x190.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-fauxels-3184339-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-fauxels-3184357-1-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-pavel-danilyuk-8112180-1-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-anna-nekrashevich-7552374-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-cottonbro-6153354-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-cristian-rojas-10041276-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2016/01/pexels-shvets-production-9052581-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2016/01/qw2-400x400.png`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-shvetsa-5325104-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-rdne-9034736-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-ekrulila-2261059-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-mikhail-nilov-8939054-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-lara-jameson-9363535-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-fauxels-3184416-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-rdne-8069475-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-julio-lopez-75309646-29502378-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/11/pexels-divinetechygirl-1181345-scaled-400x400.jpg`,
+  `${SOURCE_ASSET_URL}/wp-content/uploads/2024/12/pexels-erfin-ekarana-494408160-29583970-scaled-360x190.jpg`,
 ]
 
 const stories = [
-  ['Empowering Industrial Manufacturing Staffing with SAP Training Services', `${BEX_URL}/works/empowering-industrial-manufacturing-with-sap-training-services/`],
-  ['Boosting Fashion Retail Performance with E-Commerce Solutions', `${BEX_URL}/works/boosting-fashion-retail-performance-with-e-commerce-solutions/`],
-  ['Empowering BPO Operations with SAP Offshore Staffing Services', `${BEX_URL}/works/empowering-bpo-operations-with-sap-offshore-staffing-services/`],
-  ['Optimizing Automobile Operations with SAP Application Managed Services', `${BEX_URL}/works/optimizing-automobile-operations-with-sap-application-managed-services/`],
-  ['Transforming Utility Operations with a Custom SAP S/4HANA Upgrade', `${BEX_URL}/works/transforming-utility-operations-with-a-custom-sap-s-4hana-upgrade/`],
-  ['Empowering Consumer Goods Operations with SAP S/4HANA Upgrade', `${BEX_URL}/works/empowering-consumer-goods-operations-with-sap-s-4hana-upgrade/`],
-  ['Revolutionizing Textile Manufacturing with Digital Transformation Advisory', `${BEX_URL}/works/revolutionizing-textile-manufacturing-with-digital-transformation-advisory/`],
-  ['Driving Operational Excellence in Wholesale Distribution with IT Strategy Advisory', `${BEX_URL}/works/driving-operational-excellence-in-wholesale-distribution-with-it-strategy-advisory/`],
-  ['Transforming Financial Operations with SAP AI Advisory Services', `${BEX_URL}/works/transforming-financial-operations-with-sap-ai-advisory-services/`],
-  ['Streamlining Retail Operations with Third-Party SAP Project Management Advisory', `${BEX_URL}/works/streamlining-retail-operations-with-third-party-sap-project-management-advisory/`],
-  ['SAP Greenfield Implementation & Data Migration (ERP)', `${BEX_URL}/works/sap-greenfield-implementation-data-migration-erp/`],
-  ['SAP Basis Setup, Integrate with Middleware & DR setup', `${BEX_URL}/works/sap-basis-setup-integrate-with-middleware-dr-setup/`],
-  ['SAP ECC Integration with FactoryTalk - Automobile Sector', `${BEX_URL}/works/sap-ecc-integration-with-factorytalk-automobile-sector/`],
-  ['SAP Solution Implementation for Construction Industry', `${BEX_URL}/works/sap-solution-implementation-for-construction-industry/`],
-  ['SAP Solution Implementation for Healthcare Industry', `${BEX_URL}/works/sap-solution-implementation-for-healthcare-industry/`],
-  ['SAP Solution Implementation for Manufacturing Industry', `${BEX_URL}/works/sap-solution-implementation-for-manufacturing-industry/`],
-  ['SAP Implementation for Oil and Gas Industry', `${BEX_URL}/works/sap-implementation-for-oil-and-gas-industry/`],
-  ['SAP Implementation for Utilities Sector', `${BEX_URL}/works/healthcare-giant-overcomes-merger-risks-for-growth/`],
+  'Empowering Industrial Manufacturing Staffing with SAP Training Services',
+  'Boosting Fashion Retail Performance with E-Commerce Solutions',
+  'Empowering BPO Operations with SAP Offshore Staffing Services',
+  'Optimizing Automobile Operations with SAP Application Managed Services',
+  'Transforming Utility Operations with a Custom SAP S/4HANA Upgrade',
+  'Empowering Consumer Goods Operations with SAP S/4HANA Upgrade',
+  'Revolutionizing Textile Manufacturing with Digital Transformation Advisory',
+  'Driving Operational Excellence in Wholesale Distribution with IT Strategy Advisory',
+  'Transforming Financial Operations with SAP AI Advisory Services',
+  'Streamlining Retail Operations with Third-Party SAP Project Management Advisory',
+  'SAP Greenfield Implementation & Data Migration (ERP)',
+  'SAP Basis Setup, Integrate with Middleware & DR setup',
+  'SAP ECC Integration with FactoryTalk - Automobile Sector',
+  'SAP Solution Implementation for Construction Industry',
+  'SAP Solution Implementation for Healthcare Industry',
+  'SAP Solution Implementation for Manufacturing Industry',
+  'SAP Implementation for Oil and Gas Industry',
+  'SAP Implementation for Utilities Sector',
 ]
 
 const navLinks = [
   ['Home', '#home'],
   ['About us', '#about'],
   ['Services', '#services'],
-  ['Staffing', `${BEX_URL}/staffing/`],
-  ['IT Advisory', `${BEX_URL}/it-advisory/`],
-  ['SAP', `${BEX_URL}/sap-service-offers/`],
-  ['E-commerce', `${BEX_URL}/e-commerce-services/`],
+  ['Staffing', SERVICE_HREF],
+  ['IT Advisory', SERVICE_HREF],
+  ['SAP', SERVICE_HREF],
+  ['E-commerce', SERVICE_HREF],
   ['Success Stories', '#success-stories'],
-  ['Jobs', `${BEX_URL}/jobs/`],
-  ['Contact us', `${BEX_URL}/contact/`],
+  ['Jobs', CONTACT_HREF],
+  ['Contact us', CONTACT_HREF],
 ]
 
 export default function TemporaryLandingPage() {
   return (
     <>
       <Head>
-        <title>BEX - We empower your digital transformation.</title>
+        <title>WinIT - We empower your digital transformation.</title>
         <meta name="landing-page-version" content="temporary" />
         <meta
           name="description"
-          content="BEX Software Solutions empowers digital transformation through staffing, IT advisory, SAP, and e-commerce services."
+          content="WinIT is a Portugal-based company empowering digital transformation through staffing, IT advisory, SAP, and e-commerce services."
         />
-        <meta property="og:title" content="BEX - We empower your digital transformation." />
+        <meta property="og:title" content="WinIT - We empower your digital transformation." />
         <meta property="og:description" content="Strategic Advisory, Advanced SAP Integration, and Scalable E-Commerce Services for Lasting Success." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={BEX_URL} />
+        <meta property="og:url" content={WINIT_URL} />
         <meta property="og:image" content={LOGO} />
+        <meta property="og:site_name" content="WinIT" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="BEX - We empower your digital transformation." />
+        <meta name="twitter:title" content="WinIT - We empower your digital transformation." />
         <meta name="twitter:description" content="Strategic Advisory, Advanced SAP Integration, and Scalable E-Commerce Services for Lasting Success." />
         <meta name="twitter:image" content={LOGO} />
-        <link rel="canonical" href={BEX_URL} />
+        <link rel="canonical" href={WINIT_URL} />
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
 
       <div className="bex-home" id="home">
         <header className="bex-header">
-          <a className="bex-logo" href="#home" aria-label="BEX home">
-            <img src={LOGO} alt="BEX" />
+          <a className="bex-logo" href="#home" aria-label="WinIT home">
+            <img src={LOGO} alt="WinIT" />
           </a>
           <nav className="bex-nav" aria-label="Primary navigation">
             {navLinks.map(([label, href]) => (
@@ -219,9 +221,9 @@ export default function TemporaryLandingPage() {
             <div className="bex-hero-overlay" aria-hidden />
             <div className="bex-container bex-hero-content">
               <p className="bex-super">We empower your digital transformation.</p>
-              <h1 id="bex-hero-title">BEX SOFTWARE SOLUTIONS</h1>
+              <h1 id="bex-hero-title">WinIT</h1>
               <div className="bex-hero-actions">
-                <a href={`${BEX_URL}/contact/`} className="bex-btn bex-btn-link">talk to us</a>
+                <a href={CONTACT_HREF} className="bex-btn bex-btn-link">talk to us</a>
               </div>
               <p className="bex-hero-lead">
                 Empowering Your Business with End-to-End Digital Solutions
@@ -229,7 +231,7 @@ export default function TemporaryLandingPage() {
               <p className="bex-hero-sub">
                 Strategic Advisory, Advanced SAP Integration, and Scalable E-Commerce Services for Lasting Success.
               </p>
-              <a href={`${BEX_URL}/service-categories/`} className="bex-btn bex-btn-primary">BROWSE SERVICES</a>
+              <a href={SERVICE_HREF} className="bex-btn bex-btn-primary">BROWSE SERVICES</a>
             </div>
           </section>
 
@@ -238,7 +240,7 @@ export default function TemporaryLandingPage() {
               <div className="bex-copy">
                 <h2 id="bex-about-title">About us</h2>
                 <p>
-                  <strong>BEX Software Solutions</strong> is a global transformational enterprise <strong>based in Qatar</strong>, with a presence in UAE, Pakistan, Saudi Arabia, and Philippines. Partnered with SAP, BEX brings certified expertise and industry experience to deliver smart, customer-focused solutions tailored to clients' needs.
+                  <strong>WinIT</strong> is a Portugal-based company focused on digital transformation and practical business technology. With expertise across SAP, ERP, advisory, staffing, and e-commerce services, WinIT delivers smart, customer-focused solutions tailored to clients' needs.
                 </p>
                 <p>
                   We offer a comprehensive suite of services, spanning <strong>Staffing services</strong>, <strong>IT Advisory services</strong>, <strong>SAP services</strong>, and <strong>E-commerce services</strong>. Our customer-centric approach emphasizes high-quality, innovative business solutions designed to maximize client performance, streamline operations, and drive productivity.
@@ -246,7 +248,7 @@ export default function TemporaryLandingPage() {
               </div>
               <div className="bex-logo-panel">
                 <div className="bex-dot-map" aria-hidden />
-                <img src={LOGO} alt="BEX" />
+                <img src={LOGO} alt="WinIT" />
               </div>
             </div>
           </section>
@@ -256,7 +258,7 @@ export default function TemporaryLandingPage() {
               <h2 id="bex-what-title" className="bex-centered-title">What we do</h2>
               <div className="bex-category-grid">
                 {categories.map((category) => (
-                  <a href={category.href} className="bex-category" key={category.title}>
+                  <a href={SERVICE_HREF} className="bex-category" key={category.title}>
                     <img src={category.image} alt="" />
                     <span>{category.title}</span>
                   </a>
@@ -290,9 +292,9 @@ export default function TemporaryLandingPage() {
                   <article className="bex-service-group" key={group.title}>
                     <h3>{group.title}</h3>
                     <ul>
-                      {group.items.map(([name, href]) => (
+                      {group.items.map((name) => (
                         <li key={name}>
-                          <a href={href}>
+                          <a href={SERVICE_HREF}>
                             <span>{name}</span>
                             <em>Read more</em>
                           </a>
@@ -307,7 +309,7 @@ export default function TemporaryLandingPage() {
 
           <section className="bex-numbers" aria-labelledby="bex-numbers-title">
             <div className="bex-container">
-              <h2 id="bex-numbers-title">BEX by the numbers</h2>
+              <h2 id="bex-numbers-title">WinIT by the numbers</h2>
               <div className="bex-number-grid">
                 <div><strong>50+</strong><span>Projects Completed</span></div>
                 <div><strong>22</strong><span>In house SAP Resources</span></div>
@@ -332,8 +334,8 @@ export default function TemporaryLandingPage() {
 
           <section className="bex-process" aria-labelledby="bex-process-title">
             <div className="bex-container">
-              <p className="bex-process-kicker">BEX Service Approach Identification Process</p>
-              <h2 id="bex-process-title">BEX Service Approach Identification Process</h2>
+              <p className="bex-process-kicker">WinIT Service Approach Identification Process</p>
+              <h2 id="bex-process-title">WinIT Service Approach Identification Process</h2>
               <div className="bex-process-grid">
                 {process.map((step) => (
                   <article className="bex-process-card" key={step.title}>
@@ -349,13 +351,13 @@ export default function TemporaryLandingPage() {
             <div className="bex-container">
               <h2 id="bex-stories-title" className="bex-centered-title">Success Stories</h2>
               <div className="bex-story-grid">
-                {stories.map(([title, href], index) => (
+                {stories.map((title, index) => (
                   <article className="bex-story" key={title}>
-                    <a href={href}>
+                    <a href={STORIES_HREF}>
                       <img src={storyImages[index] || storyImages[0]} alt="" />
                       <span>{title}</span>
                     </a>
-                    <a className="bex-read-more" href={href}>Read more</a>
+                    <a className="bex-read-more" href={STORIES_HREF}>Read more</a>
                   </article>
                 ))}
               </div>
@@ -366,23 +368,23 @@ export default function TemporaryLandingPage() {
         <footer className="bex-footer">
           <div className="bex-container bex-footer-grid">
             <div>
-              <img className="bex-footer-logo" src={FOOTER_LOGO} alt="BEX" />
+              <img className="bex-footer-logo" src={FOOTER_LOGO} alt="WinIT" />
               <p>We empower your digital transformation.</p>
             </div>
             <div>
               <h2>Contact Info</h2>
-              <p>Email: <a href="mailto:info@bexsofts.com">info@bexsofts.com</a></p>
-              <p>Doha, Qatar</p>
+              <p>Email: <a href={`mailto:${WINIT_EMAIL}`}>{WINIT_EMAIL}</a></p>
+              <p>Portugal</p>
             </div>
             <div>
               <h2>Our Service Categories</h2>
-              <a href={`${BEX_URL}/staffing/`}>Staffing</a>
-              <a href={`${BEX_URL}/it-advisory/`}>IT Advisory</a>
-              <a href={`${BEX_URL}/sap-service-offers/`}>SAP</a>
-              <a href={`${BEX_URL}/e-commerce-services/`}>E-commerce</a>
+              <a href={SERVICE_HREF}>Staffing</a>
+              <a href={SERVICE_HREF}>IT Advisory</a>
+              <a href={SERVICE_HREF}>SAP</a>
+              <a href={SERVICE_HREF}>E-commerce</a>
             </div>
           </div>
-          <div className="bex-copyright">© 2026 BEX SOFTWARE SOLUTIONS</div>
+          <div className="bex-copyright">&copy; 2026 WinIT</div>
         </footer>
       </div>
 
